@@ -13,16 +13,23 @@ app.post("/items", async(req, res) => {
     try {
         const {description} = req.body;
         const newItem = await pool.query(
-            "INSERT into sample (description) VALUES($1)", 
+            "INSERT INTO sample (description) VALUES($1) RETURNING *", 
             [description]
         );
-
+        res.json(newItem.rows[0]);
     } catch (err) {
         console.log(err.message);
     }
 });
 //get all items
-
+app.get("/items", async(req, res) => {
+    try {
+        const allItems = await pool.query("SELECT * FROM sample")
+        res.json(allItems.rows);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
 //get an item
 
 //update an item
