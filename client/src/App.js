@@ -4,6 +4,7 @@ import './App.css';
 //components
  import InputItem from "./components/Input";
  import ListItems from "./components/ItemList";
+ 
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <div className="container">
       <InputItem />
       <ListItems />
+      
       </div>
       
       

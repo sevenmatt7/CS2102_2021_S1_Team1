@@ -1,8 +1,22 @@
 import React, {Fragment, useEffect, useState} from "react";
 
+import EditItem from "./EditItems"
+
 const ListItems = () => {
 
     const [items, setItems] = useState([]);
+
+    const deleteItem = async (id) => {
+        try {
+            const deleteItem = await fetch(`http://localhost:5000/items/${id}`, {
+                method: "DELETE"
+            });
+
+            setItems(items.filter(item => item.id !== id))
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
 
     const getItems = async() => {
         try {
@@ -19,24 +33,27 @@ const ListItems = () => {
 
     return <Fragment>
         <table class="table mt-5 text-center">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Edit</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      {items.map(item => (
-          <tr>
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {items.map(item => (
+            <tr key={item.id}>
               <td>{item.description}</td>
-              <td>Edit</td>
-              <td>Delete</td>
-          </tr>
-      ))
-      }
-    </tbody>
-  </table>
+              <td>
+                  <EditItem item={item}/>
+              </td>
+              <td>
+                  <button className="btn btn-danger" onClick={() => deleteItem(item.id)}>Delete</button>
+              </td>
+            </tr>
+            ))}
+            </tbody>
+        </table>
     </Fragment>
 
 }
