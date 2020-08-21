@@ -7,6 +7,8 @@ Guan Yew Tan
 
 Glen Wong
 
+Sean Lim
+
 
 <!-- ## Available Scripts
 
