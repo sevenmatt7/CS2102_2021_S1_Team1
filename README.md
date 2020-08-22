@@ -3,7 +3,7 @@ Matthew Nathanael Sugiri
 
 Joshua Tam
 
-Guan Yew Tan
+Tan Guan Yew
 
 Glen Wong
 
