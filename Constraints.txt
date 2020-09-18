@@ -1,0 +1,16 @@
+1. A User can be a Pet Owner or Care Taker
+2. One PCS Admin is assigned to each user
+3. A Pet can only have one owner
+4. Users ISA relationship satisfies overlap and covering constraints (user can only be one of the three categories but user can be both a pet owner and a caretaker)
+5. Each user is identified using user_id and their full name, email, password and address must be recorded.
+6. Each user can only be a PCSAdmin or Caretaker or PetOwner or (Caretaker and PetOwner).
+7. Each Caretaker is managed by exactly one PCS Admin but each PCS Admin must manage at least one Caretaker.
+8. Each Caretaker must have employment type (either full or part-timer), average rating and number of reviews.
+9. Each Enquiry is identified using e_id and their type (Getting Started, Account and Profile, Finding Sitter, Bookings, Payments, Safety), message of concern and date must be recorded.
+10. Each Pet is owned by exactly one PetOwner but each PetOwner can own any number of pets.
+11. Each Pet is identified using pet_id and their name, type, gender and special requirements of the pet must be recorded.
+12. If a PetOwner is deleted, all records of his/her Pets will be deleted. The pet_id of a Pet can uniquely identify its PetOwner. 
+13. Each transaction detail has exactly one transaction.
+14. Each transaction is identified using tx_id and the review, rating, payment mode (pre-registered credit card or cash), cost, mode of transfer (pet owner deliver, caretaker pick up or via physical building of PCS) and duration of the transaction must be recorded.
+15. Each Service is identified using type. The availability, type preference and daily price of the service must be recorded.
+16. The type attribute of Service cannot uniquely identify its offer. If an Offer is deleted, all records of Service will be deleted.
