@@ -1,14 +1,85 @@
-# CS2102 Project AY20/21
-Matthew Nathanael Sugiri
+# CS2102 Project AY20/21 Team 1 Repository
 
-Joshua Tam
+## 📝 Table of Contents
+- [Team](#info)
+- [About](#about)
+<!-- - [Getting Started](#getting_started)
+- [Deployment](#deployment)
+- [Usage](#usage) -->
+- [Built Using](#built_using)
+- [TODO](../TODO.md)
+<!-- - [Contributing](../CONTRIBUTING.md) -->
+- [Acknowledgments](#acknowledgement)
 
-Tan Guan Yew
+## 👨‍💻  Team <a name = "info"></a>
+- Matthew Nathanael Sugiri *A0183805B*
+- Joshua Tam *A0190309H*
+- Tan Guan Yew *A0183464Y*
+- Sean Lim *A0187123H*
+- Glen Wong *A0188100N*
 
-Glen Wong
+## 🧐 About <a name = "about"></a>
+Essentially the best project of CS2102 AY20/21, please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
 
-Sean Lim
+<!-- ## 🏁 Getting Started <a name = "getting_started"></a>
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
+### Prerequisites
+What things you need to install the software and how to install them.
+
+```
+Give examples
+```
+
+### Installing
+A step by step series of examples that tell you how to get a development env running.
+
+Say what the step will be
+
+```
+Give the example
+```
+
+And repeat
+
+```
+until finished
+```
+
+End with an example of getting some data out of the system or using it for a little demo.
+
+## 🔧 Running the tests <a name = "tests"></a>
+Explain how to run the automated tests for this system.
+
+### Break down into end to end tests
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+### And coding style tests
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## 🎈 Usage <a name="usage"></a>
+Add notes about how to use the system.
+
+## 🚀 Deployment <a name = "deployment"></a>
+Add additional notes about how to deploy this on a live system.
+ -->
+## ⛏️ Built Using <a name = "built_using"></a>
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [Express](https://expressjs.com/) - Server Framework
+- [ReactJS](https://reactjs.org/) - Frontend 
+- [NodeJS](https://nodejs.org/en/) - Server Environment
+
+
+## 🎉 Acknowledgements <a name = "acknowledgement"></a>
+- README inspiration from [here](https://github.com/kylelobo/The-Documentation-Compendium)
 
 <!-- ## Available Scripts
 
