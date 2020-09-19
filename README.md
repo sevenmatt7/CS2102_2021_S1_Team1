@@ -16,6 +16,7 @@
 - Joshua Tam *A0190309H*
 - Tan Guan Yew *A0183464Y*
 - Sean Lim *A0187123H*
+- Glen Wong *A0188100N*
 
 ## 🧐 About <a name = "about"></a>
 Essentially the best project of CS2102 AY20/21, please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
