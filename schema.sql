@@ -1,8 +1,8 @@
 CREATE TABLE Users (
 	user_id INTEGER PRIMARY KEY,
-	full_name VARCHAR,
-	email VARCHAR,
-	password VARCHAR,
+	full_name VARCHAR NOT NULL,
+	email VARCHAR NOT NULL,
+	password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
 	address VARCHAR
 );
@@ -16,7 +16,7 @@ CREATE TABLE Caretakers(
 	caretaker_id INTEGER PRIMARY KEY
 	REFERENCES Users(user_id)
 	ON DELETE cascade,
-	employment_type VARCHAR,
+	employment_type VARCHAR NOT NULL,
 	avg_rating NUMERIC,
 	no_of_reviews INTEGER,
 );
@@ -35,10 +35,10 @@ CREATE TABLE Owns_Pets (
 	owner_id INTEGER REFERENCES PetOwners(owner_id)
 	ON DELETE cascade,
 	pet_id INTEGER PRIMARY KEY,
-	gender CHAR,
+	gender CHAR NOT NULL,
 	name VARCHAR,
 	special_req VARCHAR,
-	type VARCHAR,
+	type VARCHAR NOT NULL,
 	display_pic_address VARCHAR
 );
 
@@ -61,10 +61,10 @@ CREATE TABLE Owns_aggregate (
 CREATE TABLE Offers_Services (  
 	caretaker_id INTEGER REFERENCES Caretakers(caretaker_id)
 	ON DELETE cascade,
-	type VARCHAR NOT NULL,
-	availability VARCHAR,
-	type_pref VARCHAR,
-	daily_price NUMERIC,
+	type VARCHAR,
+	availability VARCHAR NOT NULL,
+	type_pref VARCHAR NOT NULL,
+	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_id, type)
 );
 
@@ -76,10 +76,10 @@ CREATE TABLE Transactions_Details (
 	tx_id INTEGER NOT NULL,
 	owner_review VARCHAR,
 	owner_rating VARCHAR,
-	payment_mode VARCHAR,
-	cost NUMERIC,
-	mode_of_transfer VARCHAR,
-	duration INTEGER,
+	payment_mode VARCHAR NOT NULL,
+	cost NUMERIC NOT NULL,
+	mode_of_transfer VARCHAR NOT NULL,
+	duration INTEGER NOT NULL,
 	PRIMARY KEY (tx_id)
 );
 
@@ -100,4 +100,4 @@ CREATE TABLE Answers (
 	e_id INTEGER REFERENCES Enquiries(e_id),
 	admin_id INTEGER REFERENCES PCSAdmins(admin_id),
 	PRIMARY KEY (e_id, admin_id)
-);
+); 
