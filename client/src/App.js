@@ -1,4 +1,5 @@
 import React, {Fragment} from 'react';
+import Appbar from './components/Appbar'
 import './App.css';
 
 //components
@@ -9,10 +10,10 @@ import './App.css';
 function App() {
   return (
     <Fragment>
+    <Appbar />
       <div className="container">
-      <InputItem />
-      <ListItems />
-      
+        <InputItem />
+        <ListItems />
       </div>
       
       
