@@ -3,9 +3,10 @@ const pool = require("../db");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("../utils/jwtGenerator");
+const validInfo = require("../middleware/validInfo");
 
 //register a user
-router.post("/register", async (req, res) => {
+router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
         const { name, email, password, profile_pic, address} = req.body;
