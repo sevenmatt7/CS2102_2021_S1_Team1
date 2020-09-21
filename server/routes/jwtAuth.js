@@ -4,6 +4,7 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("../utils/jwtGenerator");
 const validInfo = require("../middleware/validInfo");
+const authorize = require("../middleware/authorize");
 
 //register a user
 router.post("/register", validInfo, async (req, res) => {
@@ -39,7 +40,7 @@ router.post("/register", validInfo, async (req, res) => {
 });
 
 //login a user 
-router.post("/login", async (req, res) => {
+router.post("/login", validInfo, async (req, res) => {
     try {
         const {email, password} = req.body;
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -58,6 +59,15 @@ router.post("/login", async (req, res) => {
         res.json({jwtToken});
 
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+})
+
+router.get("/is-verify", authorize, async (req, res) => {
+    try {
+        res.json(true);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
