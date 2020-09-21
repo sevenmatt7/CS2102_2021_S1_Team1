@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
         
         if (user.rows.length !== 0) {
-            return res.status(401).send("A user with the email is already registered!")
+            return res.status(401).json("A user with the email is already registered!")
         }
 
         //step 3: encrypt the user's password using bcrypt
@@ -37,4 +37,29 @@ router.post("/register", async (req, res) => {
     }
 });
 
+//login a user 
+router.post("/login", async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
+        
+        if (user.rows.length === 0) {
+            return res.status(401).json("A user with the email you entered does not exist!")
+        }
+
+        const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
+
+        if (!validPassword) {
+            return res.status(401).json("Password or email is incorrect")
+        }
+
+        const jwtToken = jwtGenerator(user.rows[0].user_id);
+        res.json({jwtToken});
+
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+})
 module.exports = router;
