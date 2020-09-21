@@ -8,6 +8,8 @@ app.use(express.json());
 
 //routes
 
+app.use("/auth", require("./routes/jwtAuth"));
+
 //creating an item
 app.post("/items", async(req, res) => {
     try {
