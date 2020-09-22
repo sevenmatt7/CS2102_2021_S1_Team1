@@ -1,11 +1,47 @@
-import React, {Fragment} from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const Homepage = () => {
-    return (
-        <Fragment>
-            <h1>Homepage</h1>
-        </Fragment>
-    );
+const Homepage = ({ setAuth }) => {
+  const [name, setName] = useState("");
+
+  const getProfile = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/home/", {
+        method: "GET",
+        headers: { token: localStorage.token }
+      });
+
+      const parseData = await res.json();
+      setName(parseData.full_name);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const logout = async e => {
+    e.preventDefault();
+    try {
+      localStorage.removeItem("token");
+      setAuth(false);
+      toast.success("Logout successfully");
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+  return (
+    <div>
+      <h1 className="mt-5">Pet Caring app </h1>
+      <h2>Welcome {name}</h2>
+      <button onClick={e => logout(e)} className="btn btn-primary">
+        Logout
+      </button>
+    </div>
+  );
 };
 
 export default Homepage;
