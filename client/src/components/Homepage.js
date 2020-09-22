@@ -37,7 +37,7 @@ const Homepage = ({ setAuth }) => {
     <div>
       <h1 className="mt-5">Pet Caring app </h1>
       <h2>Welcome {name}</h2>
-      <button onClick={e => logout(e)} className="btn btn-primary">
+      <button onClick={e => logout(e)} className="btn btn-primary mt-5">
         Logout
       </button>
     </div>
