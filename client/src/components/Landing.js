@@ -5,6 +5,7 @@ const LandingPage = () => {
 
     return (
         <Fragment>
+            
             <h1 className="text-center mt-5 mb-5">Welcome to Pet Society!</h1>
             {/* <form className="d-flex mt-5" onSubmit={onSubmitForm}>
                 <input type="text" className="form-control" value={description} 
