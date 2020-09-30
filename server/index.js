@@ -8,6 +8,12 @@ app.use(express.json());
 
 //routes
 
+//register and login
+app.use("/auth", require("./routes/jwtAuth"));
+
+//user homepage
+app.use("/home", require("./routes/homepage"));
+
 //creating an item
 app.post("/items", async(req, res) => {
     try {
