@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node index.js"
-    
   },
   "author": "CS2102 Group 1",
   "license": "MIT",
