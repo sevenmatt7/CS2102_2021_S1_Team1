@@ -46,10 +46,6 @@ function App() {
       <Router>
         <div className="container">
           <Switch>
-          <Route exact path = "/petowner" render={() => <PetOwner/>}/>
-          </Switch>
-          
-          <Switch>
           <Route exact path = "/" render={props => !isAuthenticated ? 
               (<LandingPage {...props} setAuth={setAuth}/>) : (<Redirect to="/home" />) } />
             <Route exact path = "/login" render={props => !isAuthenticated ? 
