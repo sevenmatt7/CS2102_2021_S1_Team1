@@ -5,6 +5,7 @@ import imposter from "../Assets/Images/imposter.jpg";
 const Homepage = ({ setAuth }) => {
   const [name, setName] = useState("");
   const [searches, setSearches] = useState([]);
+  const [form, setForm] = useState("");
   const [filters, setFilters] = useState({
     employment_type: "",
     avg_rating: ""
@@ -55,16 +56,33 @@ const Homepage = ({ setAuth }) => {
       }), {
         method: "GET"
       });
-      const jsonData = await response.json()
+      const jsonData = await response.json();
       setSearches(jsonData);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
+    }
+  }
+
+  const getFormSearch = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/formsearch?' + new URLSearchParams({
+        form: form,
+      }) , {
+        method: "GET"
+      });
+      const jsonData = await response.json();
+      setSearches(jsonData);
+    } catch (error) {
+      console.log(error.message);
     }
   }
 
   const onSelect = (e) => {
-    const { name, value } = e.target;
     setFilters({ ...filters, [e.target.name]: e.target.value })
+  }
+
+  const onChangeForm = (e) => {
+    setForm(e.target.value)
   }
 
   useEffect(() => {
@@ -76,15 +94,22 @@ const Homepage = ({ setAuth }) => {
     getFiltered();
   }, [filters])
 
+  useEffect(() => {
+    getFormSearch();
+  }, [form])
+
   return (
     <Fragment>
-      <div class="jumbotron jumbotron-fluid">
+      <div style={{ background: "transparent" }} class="jumbotron jumbotron-fluid">
         <div class="container">
           <h1 class="display-4">Welcome {name}</h1>
           <p class="lead">This is 1 Imposter among pets.</p>
-          <button onClick={e => logout(e)} className="btn btn-primary mt-5">
-            Logout
+          <hr class="my-4"></hr>
+          <p class="lead">
+            <button onClick={e => logout(e)} className="btn btn-primary btn-lg">
+              Logout
           </button>
+          </p>
         </div>
       </div>
 
@@ -109,8 +134,10 @@ const Homepage = ({ setAuth }) => {
           <option value="1">1</option>
         </select>
       </div>
-      <div className="input-group mb-3">
-
+      
+      <div class="active-purple-4 mb-4">
+        <input class="form-control" type="text" placeholder="Search by name" aria-label="Search" 
+        value={form} onChange={(e) => onChangeForm(e)}/>
       </div>
 
       <div className="card-deck">
