@@ -45,6 +45,9 @@ const PetOwner = () => {
 
     useEffect(() => {
         getSearches();
+    }, [])
+
+    useEffect(() => {
         getFiltered();
     }, [filters])
 

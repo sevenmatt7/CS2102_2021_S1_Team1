@@ -39,7 +39,6 @@ const Homepage = ({ setAuth }) => {
     try {
       const response = await fetch("http://localhost:5000/caretakers");
       const jsonData = await response.json();
-      console.log(jsonData);
       setSearches(jsonData);
     } catch (error) {
       console.log(error.message)
@@ -71,6 +70,9 @@ const Homepage = ({ setAuth }) => {
   useEffect(() => {
     getProfile();
     getSearches();
+  }, [])
+
+  useEffect(() => {
     getFiltered();
   }, [filters])
 
@@ -78,7 +80,7 @@ const Homepage = ({ setAuth }) => {
     <Fragment>
       <div class="jumbotron jumbotron-fluid">
         <div class="container">
-          <h2 class="display-4">Welcome {name}</h2>
+          <h1 class="display-4">Welcome {name}</h1>
           <p class="lead">This is 1 Imposter among pets.</p>
           <button onClick={e => logout(e)} className="btn btn-primary mt-5">
             Logout
