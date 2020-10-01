@@ -3,8 +3,8 @@
 ## 📝 Table of Contents
 - [Team](#info)
 - [About](#about)
-<!-- - [Getting Started](#getting_started)
-- [Deployment](#deployment)
+- [Getting Started](#getting_started)
+<!-- - [Deployment](#deployment)
 - [Usage](#usage) -->
 - [Built Using](#built_using)
 - [TODO](../TODO.md)
@@ -21,32 +21,53 @@
 ## 🧐 About <a name = "about"></a>
 Essentially the best project of CS2102 AY20/21, please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
 
-<!-- ## 🏁 Getting Started <a name = "getting_started"></a>
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+ ## 🏁 Getting Started <a name = "getting_started"></a>
+The instructions below will help to get you set up to develop the project on your local machine.
 
 ### Prerequisites
-What things you need to install the software and how to install them.
+You will need to have:
+- NodeJS
+- PostgreSQL
+- npm 
+installed on your system
 
-```
-Give examples
-```
 
-### Installing
-A step by step series of examples that tell you how to get a development env running.
+### Setting up and installing
+1. Clone the repo
+2. Run the command below inside both the **client** and **server** folder
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
+```javascript
+npm install
 ```
 
-End with an example of getting some data out of the system or using it for a little demo.
+3. Go into the **server** folder and open your terminal and start up *psql* and log in as postgres using the command below
+```
+psql -U postgres
+```
+4. Enter your password (default password when you set up postgres) when prompted.
+5. Once inside the psql env, run the command below to initialise a local database.
+```
+\i database.sql
+```
+6. Edit the **db.js** file in the server folder and change the password to whatever password you used to log in to psql
+
+## Running the project
+
+### Front end
+Make sure you are in the client folder and run the command below.
+```javascript
+npm start // This will start the front end in development mode.
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+### Back end
+Make sure you are in the server folder and run the command below.
+```javascript
+node index // Run nodemon dev server.
+```
+
+<!-- End with an example of getting some data out of the system or using it for a little demo.
 
 ## 🔧 Running the tests <a name = "tests"></a>
 Explain how to run the automated tests for this system.
@@ -70,7 +91,7 @@ Add notes about how to use the system.
 
 ## 🚀 Deployment <a name = "deployment"></a>
 Add additional notes about how to deploy this on a live system.
- -->
+ --> 
 ## ⛏️ Built Using <a name = "built_using"></a>
 - [PostgreSQL](https://www.postgresql.org/) - Database
 - [Express](https://expressjs.com/) - Server Framework
