@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import imposter from "../Assets/Images/imposter.jpg";
+import RequestService from "./RequestService";
 
 const Homepage = ({ setAuth }) => {
   const [name, setName] = useState("");
@@ -67,7 +68,7 @@ const Homepage = ({ setAuth }) => {
     try {
       const response = await fetch('http://localhost:5000/formsearch?' + new URLSearchParams({
         form: form,
-      }) , {
+      }), {
         method: "GET"
       });
       const jsonData = await response.json();
@@ -85,6 +86,7 @@ const Homepage = ({ setAuth }) => {
     setForm(e.target.value)
   }
 
+
   useEffect(() => {
     getProfile();
     getSearches();
@@ -100,12 +102,12 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
-      <div style={{ background: "transparent" }} class="jumbotron jumbotron-fluid">
-        <div class="container">
-          <h1 class="display-4">Welcome {name}</h1>
-          <p class="lead">This is 1 Imposter among pets.</p>
-          <hr class="my-4"></hr>
-          <p class="lead">
+      <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
+        <div className="container">
+          <h1 className="display-4">Welcome {name}</h1>
+          <p className="lead">This is 1 Imposter among pets.</p>
+          <hr className="my-4"></hr>
+          <p className="lead">
             <button onClick={e => logout(e)} className="btn btn-primary btn-lg">
               Logout
           </button>
@@ -134,10 +136,9 @@ const Homepage = ({ setAuth }) => {
           <option value="1">1</option>
         </select>
       </div>
-      
-      <div class="active-purple-4 mb-4">
-        <input class="form-control" type="text" placeholder="Search by name" aria-label="Search" 
-        value={form} onChange={(e) => onChangeForm(e)}/>
+
+      <div className="active-purple-4 mb-4">
+        <input className="form-control" type="text" placeholder="Search by name" aria-label="Search" value={form} onChange={(e) => onChangeForm(e)} />
       </div>
 
       <div className="card-deck">
@@ -153,13 +154,15 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 15 }}>Address: {search.user_address}</p>
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Employment Type: {search.employment_type}</p>
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Rating: {search.avg_rating}</p>
-                  <a href="#" className="btn btn-success">Request service!</a>
+                  <RequestService search={search}/>
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+
     </Fragment>
 
   );

@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import imposter from "../Assets/Images/imposter.jpg";
 
 const PetOwner = () => {
@@ -39,7 +38,6 @@ const PetOwner = () => {
     }
 
     const onSelect = (e) => {
-        const {name, value} = e.target;
         setFilters({...filters, [e.target.name]: e.target.value })       
     }
 
