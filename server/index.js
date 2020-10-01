@@ -57,7 +57,6 @@ app.get("/formsearch", async (req, res) => {
         var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_id, \
         employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_id=Users.user_id WHERE LOWER(full_name) LIKE LOWER(";
         sql += "'%" + req.query.form + "%')";
-        console.log(sql)
         const filteredSearches = await pool.query(sql);
         res.json(filteredSearches.rows);
     } catch (error) {
