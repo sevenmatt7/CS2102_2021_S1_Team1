@@ -12,6 +12,7 @@ import {BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom
  import Homepage from "./components/Homepage";
  import Register from "./components/Register";
  import Login from "./components/Login";
+ import PetOwner from "./components/PetOwner";
 
 toast.configure();
 
@@ -44,6 +45,10 @@ function App() {
     <Fragment>
       <Router>
         <div className="container">
+          <Switch>
+          <Route exact path = "/petowner" render={() => <PetOwner/>}/>
+          </Switch>
+          
           <Switch>
           <Route exact path = "/" render={props => !isAuthenticated ? 
               (<LandingPage {...props} setAuth={setAuth}/>) : (<Redirect to="/home" />) } />
