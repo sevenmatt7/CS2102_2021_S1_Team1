@@ -1,14 +1,12 @@
 import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
-import "../components/navbar.css"
-
 
 const LandingPage = () => {
 
     return (
         <Fragment>
-            <Navbar className="navbar-pastelpurple" variant="dark" expand="md" fixed="top" style={{ padding: "0" }}>
+            <Navbar variant="dark" expand="md" fixed="top" style={{ padding: "0", backgroundColor: "#b19cd9" }}>
                 <Container>
                     <Navbar.Brand style={{ paddingTop: "0" }} href="/">
                         <img
@@ -23,7 +21,7 @@ const LandingPage = () => {
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="mr-auto">
                             <Nav.Link href="/">Search Sitters</Nav.Link>
-                            <Nav.Link href="/">Browse Services</Nav.Link>
+                            <Nav.Link href="/">Services</Nav.Link>
                         </Nav>
                         <Nav>
                             <Nav.Link href="/login">Login</Nav.Link>
