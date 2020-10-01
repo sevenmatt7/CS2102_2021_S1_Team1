@@ -105,7 +105,7 @@ const Homepage = ({ setAuth }) => {
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
           <h1 className="display-4">Welcome {name}</h1>
-          <p className="lead">This is 1 Imposter among pets.</p>
+          <p className="lead">There is 1 Imposter among pets.</p>
           <hr className="my-4"></hr>
           <p className="lead">
             <button onClick={e => logout(e)} className="btn btn-primary btn-lg">
