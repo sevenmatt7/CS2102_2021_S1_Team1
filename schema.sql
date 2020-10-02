@@ -1,9 +1,16 @@
 CREATE TABLE Users (
+<<<<<<< HEAD
 	user_id uuid 
     DEFAULT uuid_generate_v4(),
 	full_name VARCHAR NOT NULL,
 	email VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
+=======
+	user_id INTEGER PRIMARY KEY,
+	full_name VARCHAR NOT NULL,
+	email VARCHAR NOT NULL,
+	password VARCHAR NOT NULL,
+>>>>>>> 0110bd9614231161d1aebb8f061a448314235604
 	profile_pic_address VARCHAR,
 	user_address VARCHAR
 	PRIMARY KEY (user_id)
@@ -20,7 +27,7 @@ CREATE TABLE Caretakers(
 	caretaker_id uuid
 	REFERENCES Users(user_id)
 	ON DELETE cascade,
-	employment_type VARCHAR,
+	employment_type VARCHAR NOT NULL,
 	avg_rating NUMERIC,
 	no_of_reviews INTEGER,
 	PRIMARY KEY (caretaker_id)
@@ -42,6 +49,7 @@ CREATE TABLE Manages (
 CREATE TABLE Owns_Pets (
 	owner_id uuid REFERENCES PetOwners(owner_id)
 	ON DELETE cascade,
+<<<<<<< HEAD
 	pet_id uuid,
 	gender CHAR,
 	pet_name VARCHAR,
@@ -49,6 +57,14 @@ CREATE TABLE Owns_Pets (
 	pet_type VARCHAR,
 	display_pic_address VARCHAR,
 	PRIMARY KEY (pet_id)
+=======
+	pet_id INTEGER PRIMARY KEY,
+	gender CHAR NOT NULL,
+	name VARCHAR,
+	special_req VARCHAR,
+	type VARCHAR NOT NULL,
+	display_pic_address VARCHAR
+>>>>>>> 0110bd9614231161d1aebb8f061a448314235604
 );
 
 CREATE TABLE Belongs_to (
@@ -70,11 +86,19 @@ CREATE TABLE Owns_aggregate (
 CREATE TABLE Offers_Services (  
 	caretaker_id uuid REFERENCES Caretakers(caretaker_id)
 	ON DELETE cascade,
+<<<<<<< HEAD
 	service_type VARCHAR NOT NULL,
 	service_avail VARCHAR,
 	type_pref VARCHAR,
 	daily_price NUMERIC,
 	PRIMARY KEY (caretaker_id, service_type)
+=======
+	type VARCHAR,
+	availability VARCHAR NOT NULL,
+	type_pref VARCHAR NOT NULL,
+	daily_price NUMERIC NOT NULL,
+	PRIMARY KEY (caretaker_id, type)
+>>>>>>> 0110bd9614231161d1aebb8f061a448314235604
 );
 
 CREATE TABLE Transactions_Details (
@@ -85,10 +109,10 @@ CREATE TABLE Transactions_Details (
 	tx_id uuid DEFAULT uuid_generate_v4(),
 	owner_review VARCHAR,
 	owner_rating VARCHAR,
-	payment_mode VARCHAR,
-	cost NUMERIC,
-	mode_of_transfer VARCHAR,
-	duration INTEGER,
+	payment_mode VARCHAR NOT NULL,
+	cost NUMERIC NOT NULL,
+	mode_of_transfer VARCHAR NOT NULL,
+	duration INTEGER NOT NULL,
 	PRIMARY KEY (tx_id)
 );
 
@@ -111,4 +135,4 @@ CREATE TABLE Answers (
 	e_id uuid REFERENCES Enquiries(e_id),
 	admin_id uuid REFERENCES PCSAdmins(admin_id),
 	PRIMARY KEY (e_id, admin_id)
-);
+); 
