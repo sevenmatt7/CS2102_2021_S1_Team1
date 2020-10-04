@@ -1,35 +1,68 @@
-import React, { Fragment, useState } from "react"
+import React, { Fragment, useState, useEffect } from "react"
 
-import NavBar from "./NavBar"
+import NavBar from "./PCSAdmin/NavBar"
 
 const ContactUs = () => {
     const [state, setState] = useState({
-        name: '',
-        email: '',
         subject: '',
-        message: ''
+        message: '',
+        date: new Date()
     });
 
-    const sendEmail = event => {
-        event.preventDefault();
-
-        console.log('We will fill this up shortly.');
-        // code to trigger Sending email
-    };
+    const [enquiries, setEnquiries] = useState([])
 
     const onInputChange = event => {
+        console.log("enter onInputChange")
         const { name, value } = event.target;
 
         setState({
             ...state,
             [name]: value
         });
+        console.log(state)
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async e => {
         e.preventDefault()
-        console.log('hi')
+        try {
+            // console.log(e)
+            console.log((new Date()).getDate())
+            setState({
+                ...state,
+                datetime: new Date().toLocaleDateString()
+            })
+            const body = state
+            // console.log(body)
+            const response = await fetch(
+                "http://localhost:5000/contact",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                }
+            )
+            console.log(response)
+        } catch (err) {
+            console.error(err.message)
+        }
     }
+
+    const getEnquiries = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/contact")
+            const data = await response.json()
+            setEnquiries(data)
+        } catch (err) {
+            console.error(err.message)
+        }
+    }
+
+
+
+    // get enquiries on mount
+    useEffect(() => {
+        getEnquiries()
+    }, [])
 
     return (
         <Fragment>
@@ -37,69 +70,62 @@ const ContactUs = () => {
 
             <h1>Submit your enquiries here!</h1>
 
-            <form id="contact-form" onSubmit={handleSubmit} method="POST">
-                <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input type="text" className="form-control" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">User ID</label>
-                    <input type="email" className="form-control" aria-describedby="emailHelp" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="message">Enquiry</label>
-                    <textarea className="form-control" rows="5"></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
+            <form onSubmit={handleSubmit}>
 
-            {/* <form onSubmit={sendEmail}> */}
-
-            {/* <div className="form-group" controlId="name">
-                    <Form.Label>Full Name</Form.Label>
-                    <Form.Control
+                <div className="form-group" controlId="subject">
+                    <label>Subject</label>
+                    <input
                         type="text"
-                        name="name"
-                        value={state.name}
-                        placeholder="Enter your full name"
-                    // onChange={onInputChange}
-                    />
-                </Form.Group> */}
-            {/* <Form.Group controlId="email">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="email"
-                        value={state.email}
-                        placeholder="Enter your email"
-                        onChange={onInputChange}
-                    />
-                </Form.Group>
-                <Form.Group controlId="subject">
-                    <Form.Label>Subject</Form.Label>
-                    <Form.Control
-                        type="text"
+                        className="form-control"
                         name="subject"
                         value={state.subject}
                         placeholder="Enter subject"
                         onChange={onInputChange}
                     />
-                </Form.Group>
-                <Form.Group controlId="subject">
-                    <Form.Label>Message</Form.Label>
-                    <Form.Control
-                        as="textarea"
+                </div>
+
+                <div className="form-group" controlId="subject">
+                    <label>Message</label>
+                    <textarea
+                        className="form-control"
                         name="message"
                         value={state.message}
                         rows="3"
                         placeholder="Enter your message"
                         onChange={onInputChange}
                     />
-                </Form.Group> */}
-            {/* <button className="btn btn-warning" variant="primary" type="submit">
+                </div>
+                <button className="btn btn-primary" variant="primary" type="submit">
                     Submit
                 </button>
-            </form> */}
+            </form>
+            <br></br>
+            <h2>FAQ</h2>
+            <table className="table mt-5">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {/* <tr>
+                        <td>John</td>
+                        <td>Doe</td>
+                        <td>john@example.com</td>
+                    </tr> */}
+                    {
+                        enquiries.map(enquiry => (
+                            <tr key={enquiry.e_id}>
+                                <td>{enquiry.enq_type}</td>
+                                <td>
+                                    {enquiry.enq_message}
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
         </Fragment>
     )
 }
