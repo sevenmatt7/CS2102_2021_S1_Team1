@@ -14,12 +14,37 @@ app.use("/auth", require("./routes/jwtAuth"));
 //user homepage
 app.use("/home", require("./routes/homepage"));
 
-//creating an item
-app.post("/items", async(req, res) => {
+//submit enquiry
+app.post("/contact", async (req, res) => {
     try {
-        const {description} = req.body;
+        const { subject, message, date } = req.body
+        const newEnquiry = await pool.query(
+            "INSERT INTO enquiries (enq_type, submission, enq_message) VALUES($1, $2, $3)",
+            [subject, date, message]
+        )
+        res.json(newEnquiry.rows[0])
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+//get enquiries
+app.get("/contact", async (req, res) => {
+    try {
+        const enquiries = await pool.query("SELECT * FROM enquiries")
+        res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+
+//creating an item
+app.post("/items", async (req, res) => {
+    try {
+        const { description } = req.body;
         const newItem = await pool.query(
-            "INSERT INTO sample (description) VALUES($1) RETURNING *", 
+            "INSERT INTO sample (description) VALUES($1) RETURNING *",
             [description]
         );
         res.json(newItem.rows[0]);
@@ -29,7 +54,7 @@ app.post("/items", async(req, res) => {
 });
 
 //get all items
-app.get("/items", async(req, res) => {
+app.get("/items", async (req, res) => {
     try {
         const allItems = await pool.query("SELECT * FROM sample")
         res.json(allItems.rows);
@@ -39,9 +64,9 @@ app.get("/items", async(req, res) => {
 });
 
 //get an item
-app.get("/items/:id", async(req, res) => {
+app.get("/items/:id", async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const item = await pool.query("SELECT * FROM sample WHERE id = $1", [id])
 
         res.json(item.rows[0]);
@@ -51,12 +76,12 @@ app.get("/items/:id", async(req, res) => {
 });
 
 //update an item
-app.put("/items/:id", async(req, res) => {
+app.put("/items/:id", async (req, res) => {
     try {
-        const {id} = req.params;
-        const {description} = req.body;
+        const { id } = req.params;
+        const { description } = req.body;
         const updateItem = await pool.query(
-            "UPDATE sample SET description = $1 WHERE id = $2", 
+            "UPDATE sample SET description = $1 WHERE id = $2",
             [description, id]
         );
 
@@ -67,11 +92,11 @@ app.put("/items/:id", async(req, res) => {
 });
 
 //delete an item
-app.delete("/items/:id", async(req, res) => {
+app.delete("/items/:id", async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const deleteItem = await pool.query(
-            "DELETE FROM sample WHERE id = $1", 
+            "DELETE FROM sample WHERE id = $1",
             [id]
         );
 
