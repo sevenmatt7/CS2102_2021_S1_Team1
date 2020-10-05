@@ -12,6 +12,7 @@ import LandingPage from "./components/Landing";
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 

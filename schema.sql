@@ -43,10 +43,10 @@ CREATE TABLE Owns_Pets (
 	owner_id uuid REFERENCES PetOwners(owner_id)
 	ON DELETE cascade,
 	pet_id uuid,
-	gender CHAR,
+	gender CHAR NOT NULL,
 	pet_name VARCHAR,
 	special_req VARCHAR,
-	pet_type VARCHAR,
+	pet_type VARCHAR NOT NULL,
 	display_pic_address VARCHAR,
 	PRIMARY KEY (pet_id)
 );
@@ -71,9 +71,9 @@ CREATE TABLE Offers_Services (
 	caretaker_id uuid REFERENCES Caretakers(caretaker_id)
 	ON DELETE cascade,
 	service_type VARCHAR NOT NULL,
-	service_avail VARCHAR,
-	type_pref VARCHAR,
-	daily_price NUMERIC,
+	service_avail VARCHAR NOT NULL,
+	type_pref VARCHAR NOT NULL,
+	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_id, service_type)
 );
 
