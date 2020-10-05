@@ -46,10 +46,6 @@ const LandingPage = () => {
                 </div>
 
 
-
-
-
-
                 {/* <div class="card-body">
                             <form name="">
                                 <h3 class="text-center">
@@ -96,6 +92,7 @@ const LandingPage = () => {
                         <div class="form-group">
                             <label for="formGroupExampleInput">Select your pet:</label>
                             <select class="form-control form-control-lg">
+                                <option value="">-NIL-</option>
                                 <option>Dog</option>
                                 <option>Cat</option>
                             </select>
@@ -103,12 +100,14 @@ const LandingPage = () => {
                         <div class="form-group">
                             <label for="formGroupExampleInput">Select service type:</label>
                             <select class="form-control form-control-lg">
+                                <option value="">-NIL-</option>
                                 <option>Large select</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="formGroupExampleInput">Select (?)</label>
                             <select class="form-control form-control-lg">
+                                <option value="">-NIL-</option>
                                 <option>Large select</option>
                             </select>
                         </div>
