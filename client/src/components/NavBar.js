@@ -1,6 +1,8 @@
 import React, { Fragment } from "react"
 import { Link } from "react-router-dom"
 
+//Older implementation of the navigation bar
+
 const NavBar = () => {
   return (
     <Fragment>

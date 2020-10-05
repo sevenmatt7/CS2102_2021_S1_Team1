@@ -2,6 +2,11 @@ import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
 
+
+//New implementation of navigation bar. To add to component, just add <Nav_bar /> under the <Fragment> of the component
+//and import Nav_bar from "./Nav_bar.js"
+
+
 export default function Nav_bar() {
     return (
         <Fragment>

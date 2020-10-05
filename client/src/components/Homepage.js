@@ -1,7 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom"
-import NavBar from "./NavBar"
+import { Link } from "react-router-dom";
+import Nav_bar from "./Nav_bar.js";
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 
@@ -104,7 +105,7 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
-      <NavBar />
+      <Nav_bar />
 
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
