@@ -1,5 +1,6 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
+import Nav_bar from "./Nav_bar.js"
 
 const Register = ({setAuth}) => {
 
@@ -39,6 +40,7 @@ const Register = ({setAuth}) => {
     
     return (
         <Fragment>
+            <Nav_bar />
             <div className="container">
                 <h1 className="text-center my-5">Register</h1>
                 <form onSubmit={onSubmitForm}> 
