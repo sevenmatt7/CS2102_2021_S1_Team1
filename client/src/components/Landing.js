@@ -1,77 +1,51 @@
 import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
-import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
+import { Navbar, Nav, Container, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
+import Nav_bar from "./Nav_bar.js"
+import LandingBg from '../Assets/Images/LandingBg.jpg';
 
 const LandingPage = () => {
 
     return (
         <Fragment>
-            <Navbar variant="dark" expand="md" fixed="top" style={{ padding: "0", backgroundColor: "#b19cd9" }}>
+            <Nav_bar />
+
+            <style>
+                {`
+                     .jumbo {
+                        background: url(${LandingBg}) no-repeat fixed bottom;
+                        background-size: cover;
+                        color: #efefef;
+                        height: 500px;
+                        position: relative;
+                        z-index: -2;
+                      }
+                      .overlay {
+                        background-color: #000;
+                        opacity: 0.6;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        z-index: -1;
+                      }
+                    `}
+            </style>
+
+            <Jumbo fluid className="jumbo">
+                <div className="overlay"></div>
                 <Container>
-                    <Navbar.Brand style={{ paddingTop: "0" }} href="/">
-                        <img
-                            alt=""
-                            src={process.env.PUBLIC_URL + '/PetSocietyShadow.png'}
-                            width="175"
-                            height="50"
-                            className="d-inline-block align-top"
-                        />
-                    </Navbar.Brand>
-                    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                    <Navbar.Collapse id="responsive-navbar-nav">
-                        <Nav className="mr-auto">
-                            <Nav.Link href="/">Search Sitters</Nav.Link>
-                            <Nav.Link href="/">Services</Nav.Link>
-                        </Nav>
-                        <Nav>
-                            <Nav.Link href="/login">Login</Nav.Link>
-                            <Nav.Link eventKey={2} href="/register">
-                                Register
-                        </Nav.Link>
-                        </Nav>
-                    </Navbar.Collapse>
+                    <h1>Welcome</h1>
+                    <p>Learn to code from my YouTube videos</p>
                 </Container>
-            </Navbar>
-
-            {/* {<h1 className="text-center mt-5 mb-5">Welcome to Pet Society!</h1>} */}
-            {/* <form className="d-flex mt-5" onSubmit={onSubmitForm}>
-                <input type="text" className="form-control" value={description} 
-                onChange={e => setDescription(e.target.value)}/> 
-                </form>*/}
-
-            {/* <div class="view full-page-intro" >
-                <div class="mask rgba-black-light d-flex justify-content-center align-items-center">
-                    <div class="container">
-                        <div class="row wow fadeIn">
-                            <div class="col-md-6 mb-4 white-text text-center text-md-center">
-                                <h1 class="display-4 font-weight-bold">Learn Bootstrap 4 with MDB</h1>
-                                <p>
-                                    <strong>Best & free guide of responsive web design</strong>
-                                </p>
-                                <p class="mb-4 d-none d-md-block">
-                                    <strong>Book trusted sitters and dog walkers who'll treat your pets like family.</strong>
-                                </p>
-                                <a target="_blank" href="https://mdbootstrap.com/education/bootstrap/" class="btn btn-indigo btn-lg">Start free tutorial
-                                    <i class="fas fa-graduation-cap ml-2"></i>
-                                </a>
-                            </div>
-                            <div class="col-md-6 col-xl-5 mb-4">
+            </Jumbo>
 
 
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div> */}
-
-            <Container fluid="md" style={{padding:55}}>
+            <Container fluid="md" style={{ padding: 55 }}>
                 <Row>
                     <Col>
-                        <h1 class="display-4 font-weight-bold text-center" style={{marginBottom: 16}}>
+                        <h1 class="display-4 font-weight-bold text-center" style={{ marginBottom: 16 }}>
                             Welcome to Pet Society!
                         </h1>
                         <h2 class="text-center">
