@@ -41,7 +41,7 @@ const ContactUs = () => {
                     body: JSON.stringify(body)
                 }
             )
-            console.log(response)
+            window.location.reload(false)
         } catch (err) {
             console.error(err.message)
         }
