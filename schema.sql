@@ -96,7 +96,7 @@ CREATE TABLE Enquiries (
 	e_id uuid 
     DEFAULT uuid_generate_v4(),
 	enq_type VARCHAR,
-	submission DATETIME,
+	submission DATE,
 	enq_message VARCHAR,
 	PRIMARY KEY (e_id)
 );
