@@ -63,18 +63,6 @@ const PCSAdmin = () => {
     <Fragment>
 
       {/* <NavBar /> */}
-      {/* <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-4">
-                        <h2>Number of pets taken care of this month:</h2>
-                    </div>
-
-                </div>
-
-            </div> */}
-
-
-
       {/* <div className="wrapper">
 
         <Sidebar />
@@ -204,14 +192,14 @@ const PCSAdmin = () => {
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">Number of jobs this month</h4>
-                    <p className="card-category">Last Campaign Performance</p>
+                    <p className="card-category">October</p>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={dataPie} type="Pie" options={options} />
                     <div className="legend">
-                      <i className="fa fa-circle text-info"></i> Open
+                      {/* <i className="fa fa-circle text-info"></i> Open
                       <i className="fa fa-circle text-danger"></i> Bounce
-                      <i className="fa fa-circle text-warning"></i> Unsubscribe
+                      <i className="fa fa-circle text-warning"></i> Unsubscribe */}
                     </div>
                     <hr />
                     <div className="stats">
@@ -224,18 +212,18 @@ const PCSAdmin = () => {
               <div className="col-md-8">
                 <div className="card">
                   <div className="card-header ">
-                    <h4 className="card-title">Number of jobs</h4>
-                    <p className="card-category">24 Hours performance</p>
+                    <h4 className="card-title">Number of jobs this year</h4>
+                    <p className="card-category">2020</p>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={dataSales} type="Line" />
                   </div>
                   <div className="card-footer ">
                     <div className="legend">
-                      <i className="fa fa-circle text-info"></i> Open
+                      {/* <i className="fa fa-circle text-info"></i> Open
                       <i className="fa fa-circle text-danger"></i> Click
-                      <i className="fa fa-circle text-warning"></i> Click Second Time
-                  </div>
+                      <i className="fa fa-circle text-warning"></i> Click Second Time */}
+                    </div>
                     <hr />
                     <div className="stats">
                       <i className="fa fa-history"></i> Updated 3 minutes ago
@@ -247,7 +235,7 @@ const PCSAdmin = () => {
 
 
 
-            <h2>Section title</h2>
+            <h2>Overview</h2>
             <div className="table-responsive">
               <table className="table table-striped table-sm">
                 <thead>
