@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react"
 
-import NavBar from "./PCSAdmin/NavBar"
+import NavBar from "./NavBar"
 
 const ContactUs = () => {
     const [state, setState] = useState({

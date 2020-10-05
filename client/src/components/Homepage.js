@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom"
+import NavBar from "./NavBar"
 
 const Homepage = ({ setAuth }) => {
   const [name, setName] = useState("");
@@ -35,8 +37,12 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <div>
+      <NavBar />
       <h1 className="mt-5">Pet Caring app </h1>
       <h2>Welcome {name}</h2>
+      <Link to="/PCS">
+        <button className="btn btn-secondary btn-block mt-3">PCSAdmin</button>
+      </Link>
       <button onClick={e => logout(e)} className="btn btn-primary mt-5">
         Logout
       </button>
