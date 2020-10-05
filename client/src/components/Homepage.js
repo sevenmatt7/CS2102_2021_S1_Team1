@@ -1,5 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom"
+import NavBar from "./NavBar"
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 
@@ -102,6 +104,8 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
+      <NavBar />
+
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
           <h1 className="display-4">Welcome {name}</h1>
@@ -114,7 +118,9 @@ const Homepage = ({ setAuth }) => {
           </p>
         </div>
       </div>
-
+      <Link to="/PCS">
+        <button className="btn btn-secondary btn-block mt-3">PCSAdmin</button>
+      </Link>
       <div className="input-group mb-3">
         <div className="input-group-prepend">
           <label className="input-group-text" htmlFor="inputGroupSelect01">Employment Type</label>
@@ -154,7 +160,7 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 15 }}>Address: {search.user_address}</p>
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Employment Type: {search.employment_type}</p>
                   <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Rating: {search.avg_rating}</p>
-                  <RequestService search={search}/>
+                  <RequestService search={search} />
                 </div>
               </div>
             </div>
