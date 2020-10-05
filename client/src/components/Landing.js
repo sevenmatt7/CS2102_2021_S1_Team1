@@ -1,6 +1,6 @@
 import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
-import { Navbar, Nav, Container, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
 import Nav_bar from "./Nav_bar.js"
 import LandingBg from '../Assets/Images/LandingBg.jpg';
 
@@ -17,6 +17,7 @@ const LandingPage = () => {
                         background-size: cover;
                         color: #efefef;
                         height: 500px;
+                        margin-bottom: 0;
                         position: relative;
                         z-index: -2;
                       }
@@ -33,29 +34,88 @@ const LandingPage = () => {
                     `}
             </style>
 
+
             <Jumbo fluid className="jumbo">
+
                 <div className="overlay"></div>
-                <Container>
-                    <h1>Welcome</h1>
-                    <p>Learn to code from my YouTube videos</p>
-                </Container>
+
+                <div class="container text-center">
+                    <h1 class="display-3 font-weight-bold">Welcome to Pet Society!</h1>
+                    <hr color="white"></hr>
+                    <p>Browse services offered by our trusted sitters, based on what you or your beloved pet needs.</p>
+                </div>
+
+
+
+
+
+
+                {/* <div class="card-body">
+                            <form name="">
+                                <h3 class="text-center">
+                                    <strong>Write to us:</strong>
+                                </h3>
+                                <hr></hr>
+
+                                <div class="md-form">
+                                    <i class="fas fa-user prefix grey-text"></i>
+                                    <input type="text" id="form3" class="form-control"></input>
+                                    <label for="form3">Your name</label>
+                                </div>
+                                <div class="md-form">
+                                    <i class="fas fa-envelope prefix grey-text"></i>
+                                    <input type="text" id="form2" class="form-control"></input>
+                                    <label for="form2">Your email</label>
+                                </div>
+
+                                <div class="md-form">
+                                    <i class="fas fa-pencil-alt prefix grey-text"></i>
+                                    <textarea type="text" id="form8" class="md-textarea"></textarea>
+                                    <label for="form8">Your message</label>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-indigo">Send</button>
+                                    <hr></hr>
+                                    <fieldset class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="checkbox1"></input>
+                                        <label for="checkbox1" class="form-check-label dark-grey-text">Subscribe me to the newsletter</label>
+                                    </fieldset>
+                                </div>
+                            </form>
+                        </div> */}
+
+
+
             </Jumbo>
 
 
-            <Container fluid="md" style={{ padding: 55 }}>
-                <Row>
-                    <Col>
-                        <h1 class="display-4 font-weight-bold text-center" style={{ marginBottom: 16 }}>
-                            Welcome to Pet Society!
-                        </h1>
-                        <h2 class="text-center">
-                            <strong>Browse services and book trusted sitters who'll fulfill your pet's needs.</strong>
-                        </h2>
-                    </Col>
-                </Row>
-            </Container>
-
-
+            <div class="container-fluid">
+                <div class="card" style={{ width: "30rem" }}>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="formGroupExampleInput">Select your pet:</label>
+                            <select class="form-control form-control-lg">
+                                <option>Dog</option>
+                                <option>Cat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="formGroupExampleInput">Select service type:</label>
+                            <select class="form-control form-control-lg">
+                                <option>Large select</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="formGroupExampleInput">Select (?)</label>
+                            <select class="form-control form-control-lg">
+                                <option>Large select</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-success">Search!</button>
+                    </div>
+                </div>
+            </div>
 
         </Fragment>
     );

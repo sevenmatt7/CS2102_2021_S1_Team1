@@ -21,6 +21,8 @@ export default function Nav_bar() {
                         <Nav className="mr-auto">
                             <Nav.Link href="/">Services</Nav.Link>
                             <Nav.Link href="/">Sitters</Nav.Link>
+                            <Nav.Link href="/contact">Contact Us</Nav.Link>
+                            <Nav.Link href="/FAQ">FAQ</Nav.Link> 
                         </Nav>
                         <Nav>
                             <Nav.Link href="/login">Login</Nav.Link>

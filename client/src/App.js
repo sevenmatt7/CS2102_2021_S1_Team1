@@ -46,7 +46,7 @@ function App() {
   return (
     <Fragment>
       <Router>
-        <div className="container">
+        {/* <div className="container"> */}
           <Switch>
             <Route exact path="/" render={props => !isAuthenticated ?
               (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
@@ -65,7 +65,7 @@ function App() {
               (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
 
           </Switch>
-        </div>
+        {/* </div> */}
       </Router>
       {/* <div className="container">
       <InputItem />
