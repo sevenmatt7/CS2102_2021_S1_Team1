@@ -16,7 +16,7 @@ const LandingPage = () => {
                         background: url(${LandingBg}) no-repeat fixed bottom;
                         background-size: cover;
                         color: #efefef;
-                        height: 500px;
+                        height: 400px;
                         margin-bottom: 0;
                         position: relative;
                         z-index: -2;
@@ -39,7 +39,7 @@ const LandingPage = () => {
 
                 <div className="overlay"></div>
 
-                <div class="container text-center">
+                <div class="container mt-4 text-center">
                     <h1 class="display-3 font-weight-bold">Welcome to Pet Society!</h1>
                     <hr color="white"></hr>
                     <p>Browse services offered by our trusted sitters, based on what you or your beloved pet needs.</p>
