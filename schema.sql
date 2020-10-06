@@ -1,4 +1,5 @@
 CREATE TABLE Users (
+
 	user_id uuid 
     DEFAULT uuid_generate_v4(),
 	full_name VARCHAR NOT NULL,
@@ -20,7 +21,7 @@ CREATE TABLE Caretakers(
 	caretaker_id uuid
 	REFERENCES Users(user_id)
 	ON DELETE cascade,
-	employment_type VARCHAR,
+	employment_type VARCHAR NOT NULL,
 	avg_rating NUMERIC,
 	no_of_reviews INTEGER,
 	PRIMARY KEY (caretaker_id)
@@ -43,10 +44,10 @@ CREATE TABLE Owns_Pets (
 	owner_id uuid REFERENCES PetOwners(owner_id)
 	ON DELETE cascade,
 	pet_id uuid,
-	gender CHAR,
+	gender CHAR NOT NULL,
 	pet_name VARCHAR,
 	special_req VARCHAR,
-	pet_type VARCHAR,
+	pet_type VARCHAR NOT NULL,
 	display_pic_address VARCHAR,
 	PRIMARY KEY (pet_id)
 );
@@ -71,9 +72,9 @@ CREATE TABLE Offers_Services (
 	caretaker_id uuid REFERENCES Caretakers(caretaker_id)
 	ON DELETE cascade,
 	service_type VARCHAR NOT NULL,
-	service_avail VARCHAR,
-	type_pref VARCHAR,
-	daily_price NUMERIC,
+	service_avail VARCHAR NOT NULL,
+	type_pref VARCHAR NOT NULL,
+	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_id, service_type)
 );
 
@@ -85,10 +86,10 @@ CREATE TABLE Transactions_Details (
 	tx_id uuid DEFAULT uuid_generate_v4(),
 	owner_review VARCHAR,
 	owner_rating VARCHAR,
-	payment_mode VARCHAR,
-	cost NUMERIC,
-	mode_of_transfer VARCHAR,
-	duration INTEGER,
+	payment_mode VARCHAR NOT NULL,
+	cost NUMERIC NOT NULL,
+	mode_of_transfer VARCHAR NOT NULL,
+	duration INTEGER NOT NULL,
 	PRIMARY KEY (tx_id)
 );
 
@@ -111,4 +112,4 @@ CREATE TABLE Answers (
 	e_id uuid REFERENCES Enquiries(e_id),
 	admin_id uuid REFERENCES PCSAdmins(admin_id),
 	PRIMARY KEY (e_id, admin_id)
-);
+); 
