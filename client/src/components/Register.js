@@ -1,5 +1,6 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
+import Nav_bar from "./Nav_bar.js"
 
 const Register = ({setAuth}) => {
 
@@ -39,41 +40,44 @@ const Register = ({setAuth}) => {
     
     return (
         <Fragment>
-            <h1 className="text-center my-5">Register</h1>
-            <form onSubmit={onSubmitForm}> 
-                <input type="email" 
-                name="email" 
-                placeholder="Email"
-                className="form-control my-3"
-                value={email}
-                onChange={e => onChange(e)}/>
-                <input type="password" 
-                name="password" 
-                placeholder="Password"
-                className="form-control my-3"
-                value={password}
-                onChange={e => onChange(e)}/>
-                <input type="text" 
-                name="name" 
-                placeholder="Full Name"
-                className="form-control my-3"
-                value={name}
-                onChange={e => onChange(e)}/>
-                <input type="text" 
-                name="profile_pic" 
-                placeholder="Profile Pic"
-                className="form-control my-3"
-                value={profile_pic}
-                onChange={e => onChange(e)}/>
-                <input type="text" 
-                name="address" 
-                placeholder="Address"
-                className="form-control my-3"
-                value={address}
-                onChange={e => onChange(e)}/>
-                <button className="btn btn-success btn-block">Submit</button>
-            </form>
-            <Link to="/login">Login</Link>
+            <Nav_bar />
+            <div className="container">
+                <h1 className="text-center my-5">Register</h1>
+                <form onSubmit={onSubmitForm}> 
+                    <input type="email" 
+                    name="email" 
+                    placeholder="Email"
+                    className="form-control my-3"
+                    value={email}
+                    onChange={e => onChange(e)}/>
+                    <input type="password" 
+                    name="password" 
+                    placeholder="Password"
+                    className="form-control my-3"
+                    value={password}
+                    onChange={e => onChange(e)}/>
+                    <input type="text" 
+                    name="name" 
+                    placeholder="Full Name"
+                    className="form-control my-3"
+                    value={name}
+                    onChange={e => onChange(e)}/>
+                    <input type="text" 
+                    name="profile_pic" 
+                    placeholder="Profile Pic"
+                    className="form-control my-3"
+                    value={profile_pic}
+                    onChange={e => onChange(e)}/>
+                    <input type="text" 
+                    name="address" 
+                    placeholder="Address"
+                    className="form-control my-3"
+                    value={address}
+                    onChange={e => onChange(e)}/>
+                    <button className="btn btn-success btn-block">Submit</button>
+                </form>
+                <Link to="/login">Login</Link>
+            </div>
         </Fragment>
     );
 };

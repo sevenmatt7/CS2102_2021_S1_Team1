@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
 import { toast } from "react-toastify";
+import Nav_bar from "./Nav_bar.js"
 
 const Login = ({ setAuth }) => {
 
@@ -35,23 +36,26 @@ const Login = ({ setAuth }) => {
     }
     return (
         <Fragment>
-            <h1 className="text-center my-5">Login</h1>
-            <form onSubmit={onSubmitForm}>
-                <input type="email" 
-                name="email" 
-                placeholder="Email"
-                className="form-control my-3"
-                value={email}
-                onChange={e => onChange(e)}/>
-                <input type="password" 
-                name="password" 
-                placeholder="Password"
-                className="form-control my-3"
-                value={password}
-                onChange={e => onChange(e)}/>
-                <button className="btn btn-success btn-block">Submit</button>
-            </form>
-            <Link to="/register">Register</Link>
+            <Nav_bar />
+            <div className="container">
+                <h1 className="text-center my-5">Login</h1>
+                <form onSubmit={onSubmitForm}>
+                    <input type="email" 
+                    name="email" 
+                    placeholder="Email"
+                    className="form-control my-3"
+                    value={email}
+                    onChange={e => onChange(e)}/>
+                    <input type="password" 
+                    name="password" 
+                    placeholder="Password"
+                    className="form-control my-3"
+                    value={password}
+                    onChange={e => onChange(e)}/>
+                    <button className="btn btn-success btn-block">Submit</button>
+                </form>
+                <Link to="/register">Register</Link>
+            </div>
         </Fragment>
     );
 };
