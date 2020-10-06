@@ -1,17 +1,20 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import {BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 
 //components
- import InputItem from "./components/Input";
- import ListItems from "./components/ItemList";
- import LandingPage from "./components/Landing";
+import InputItem from "./components/Input";
+import ListItems from "./components/ItemList";
+import LandingPage from "./components/Landing";
 
- import Homepage from "./components/Homepage";
- import Register from "./components/Register";
- import Login from "./components/Login";
+import Homepage from "./components/Homepage";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import PetOwner from "./components/PetOwner";
+import PCSAdmin from "./components/PCSAdmin";
+import ContactUs from "./components/ContactUs";
 
 toast.configure();
 
@@ -27,7 +30,7 @@ function App() {
     try {
       const response = await fetch("http://localhost:5000/auth/is-verify", {
         method: "GET",
-        headers: {token: localStorage.token}
+        headers: { token: localStorage.token }
       });
 
       const parseResponse = await response.json()
@@ -43,38 +46,49 @@ function App() {
   return (
     <Fragment>
       <Router>
-        <div className="container">
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <a className="navbar-brand" href="#">🐶 Pet Society</a>
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div className="navbar-nav">
-                      <a className="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-                      <a className="nav-item nav-link" href="#">Features</a>
-                      <a className="nav-item nav-link" href="#">Pricing</a>
-                    </div>
-                </div>
-            </nav>
+
+        // <div className="container">
+        //     <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        //         <a className="navbar-brand" href="#">🐶 Pet Society</a>
+        //         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        //         <span className="navbar-toggler-icon"></span>
+        //         </button>
+        //         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+        //             <div className="navbar-nav">
+        //               <a className="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+        //               <a className="nav-item nav-link" href="#">Features</a>
+        //               <a className="nav-item nav-link" href="#">Pricing</a>
+        //             </div>
+        //         </div>
+        //     </nav>
+
+        // {/* <div className="container"> */}
           <Switch>
-          <Route exact path = "/" render={props => !isAuthenticated ? 
-              (<LandingPage {...props} setAuth={setAuth}/>) : (<Redirect to="/home" />) } />
-            <Route exact path = "/login" render={props => !isAuthenticated ? 
-              (<Login {...props} setAuth={setAuth}/>) : (<Redirect to="/home" />) } />
-            <Route exact path = "/register" render={props => !isAuthenticated ? 
-              (<Register {...props} setAuth={setAuth}/>) : (<Redirect to="/home" />)}/>
-            <Route exact path = "/home" render={props => isAuthenticated ? 
-            (<Homepage {...props} setAuth={setAuth}/>) : (<Login {...props} setAuth={setAuth}/>) }/>
+            <Route exact path="/" render={props => !isAuthenticated ?
+              (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+            <Route exact path="/login" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+            <Route exact path="/register" render={props => !isAuthenticated ?
+              (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+
+            <Route exact path="/PCS" render={(props) => !isAuthenticated ?
+              (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
+
+            <Route exact path="/contact" render={props => !isAuthenticated ?
+              (<Redirect to="/login" />) : (<ContactUs {...props} setAuth={setAuth} />)} />
+
+            <Route exact path="/home" render={props => isAuthenticated ?
+              (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
+
           </Switch>
-        </div>
+        {/* </div> */}
       </Router>
       {/* <div className="container">
       <InputItem />
       <ListItems />
       </div> */}
-      
-      
+
+
     </Fragment>
   );
 }

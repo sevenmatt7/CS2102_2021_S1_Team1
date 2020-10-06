@@ -62,7 +62,7 @@ npm start // This will start the front end in development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### Back end
-Makre sure you are in the server folder and run the command below.
+Make sure you are in the server folder and run the command below.
 ```javascript
 node index // Run nodemon dev server.
 ```
