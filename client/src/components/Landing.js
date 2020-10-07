@@ -47,8 +47,8 @@ const LandingPage = () => {
 
             </Jumbo>
 
-            <div class="container-fluid  p-3" style={{backgroundColor: "#ffbbcb"}}>
-                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#81ceeb" }}>
+            <div class="container-fluid  p-3" style={{backgroundColor: "#ffffff"}}>
+                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
                     <div class="card-body">
                         <div class="form-group">
                             <label for="formGroupExampleInput">Select your pet:</label>

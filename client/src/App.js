@@ -52,12 +52,11 @@ function App() {
 
           <Switch>
             <Route exact path="/" render={props => !isAuthenticated ?
-              (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+              (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} /> 
             <Route exact path="/login" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
             <Route exact path="/register" render={props => !isAuthenticated ?
-              (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
-
+              (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />    
             <Route exact path="/PCS" render={(props) => !isAuthenticated ?
               (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
