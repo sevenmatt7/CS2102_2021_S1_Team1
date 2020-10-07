@@ -2,6 +2,7 @@ import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
 import Nav_bar from "./Nav_bar.js"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
+import { toast } from "react-toastify";
 
 const Register = ({setAuth}) => {
 
@@ -23,7 +24,7 @@ const Register = ({setAuth}) => {
         e.preventDefault();
         try {
 
-            const body = { name, email, password, profile_pic, address}
+            const body = { name, email, password, address}
             const response = await fetch("http://localhost:5000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
@@ -31,8 +32,14 @@ const Register = ({setAuth}) => {
             });
             
             const parseResponse = await response.json();
-            localStorage.setItem("token", parseResponse.jwtToken)
-            setAuth(true)
+            if (parseResponse.jwtToken) {
+                localStorage.setItem("token", parseResponse.jwtToken);
+                setAuth(true);
+                toast.success("Register Successfully");
+              } else {
+                setAuth(false);
+                toast.error(parseResponse);
+              }
         } catch (err) {
             console.error(err.message)
         }

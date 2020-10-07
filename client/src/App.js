@@ -5,8 +5,6 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 
 
 //components
-import InputItem from "./components/Input";
-import ListItems from "./components/ItemList";
 import LandingPage from "./components/Landing";
 
 import Homepage from "./components/Homepage";
@@ -25,23 +23,24 @@ function App() {
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
   }
-
-  async function isAuth() {
+  const checkAuthenticated = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/is-verify", {
-        method: "GET",
+      const response = await fetch("http://localhost:5000/auth/verify", {
+        method: "POST",
         headers: { token: localStorage.token }
       });
 
-      const parseResponse = await response.json()
+      const parseResponse = await response.json();
+
       parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
     } catch (err) {
-      console.error(err.message)
+      console.error(err.message);
     }
-  }
+  };
+
   useEffect(() => {
-    isAuth()
-  })
+    checkAuthenticated()
+  }, []);
 
   return (
     <Fragment>

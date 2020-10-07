@@ -10,7 +10,7 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        const { name, email, password, profile_pic, address} = req.body;
+        const { name, email, password, address} = req.body;
 
         //step 2: check if user exists (throw error)
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -26,11 +26,11 @@ router.post("/register", validInfo, async (req, res) => {
 
         //step 4: enter new user into database
         const newUser = await pool.query(
-            "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
-            [name, email, encryptedPassword, profile_pic, address] );
+            "INSERT INTO Users (full_name, email, user_password, user_address) VALUES ($1, $2, $3, $4) RETURNING *" , 
+            [name, email, encryptedPassword, address] );
         
         //step 5: generate jwt token
-        const jwtToken = jwtGenerator(newUser.rows[0].user_id);
+        const jwtToken = jwtGenerator(newUser.rows[0].email);
         res.json({jwtToken});
 
     } catch (err) {
@@ -65,7 +65,7 @@ router.post("/login", validInfo, async (req, res) => {
     }
 })
 
-router.get("/is-verify", authorize, async (req, res) => {
+router.get("/verify", authorize, async (req, res) => {
     try {
         res.json(true);
     } catch (err) {

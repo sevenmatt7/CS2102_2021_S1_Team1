@@ -29,8 +29,14 @@ const Login = ({ setAuth }) => {
             });
 
             const parseResponse = await response.json()
-            localStorage.setItem("token", parseResponse.jwtToken)
-            setAuth(true)
+            if (parseResponse.jwtToken) {
+                localStorage.setItem("token", parseResponse.jwtToken);
+                setAuth(true);
+                toast.success("Logged in Successfully");
+              } else {
+                setAuth(false);
+                toast.error(parseResponse);
+              }
         } catch (err) {
             console.error(err.message)
         }
