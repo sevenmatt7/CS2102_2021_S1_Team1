@@ -1,7 +1,6 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
 import { toast } from "react-toastify";
-import Nav_bar from "./Nav_bar.js"
 import LoginPage from '../Assets/Images/LoginPage.jpg';
 
 const Login = ({ setAuth }) => {
@@ -31,6 +30,7 @@ const Login = ({ setAuth }) => {
             const parseResponse = await response.json()
             if (parseResponse.jwtToken) {
                 localStorage.setItem("token", parseResponse.jwtToken);
+                localStorage.setItem("acc_type", parseResponse.acc_type)
                 setAuth(true);
                 toast.success("Logged in Successfully");
               } else {

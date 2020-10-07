@@ -37,8 +37,8 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)" , [email, emp_type])
         }
         //step 5: generate jwt token
-        const jwtToken = jwtGenerator(newUser.rows[0].email);
-        res.json({jwtToken});
+        const jwtToken = jwtGenerator(newUser.rows[0].email, acc_type);
+        res.json({jwtToken, acc_type});
 
     } catch (err) {
         console.error(err.message);
@@ -73,21 +73,31 @@ router.post("/registerpet", validInfo, async (req, res) => {
 router.post("/login", validInfo, async (req, res) => {
     try {
         const {email, password} = req.body;
+
+        let acc_type = "";
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
+        const petOwner = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
+        const caretaker = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
+        const admin = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]);
+
         
         if (user.rows.length === 0) {
             return res.status(401).json("A user with the email you entered does not exist!")
-        }
+        } else if (petOwner.rows.length !== 0) {
+            acc_type = "petowner"
+        } else if (caretaker.rows.length !== 0) {
+            acc_type = "caretaker"
+        } else if (admin.rows.length !== 0) {
+            acc_type = "admin"
+        } 
 
         const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
 
         if (!validPassword) {
             return res.status(401).json("Password or email is incorrect")
         }
-
-        const jwtToken = jwtGenerator(user.rows[0].email);
-        res.json({jwtToken});
-
+        const jwtToken = jwtGenerator(user.rows[0].email, acc_type);
+        res.json({jwtToken, acc_type});
 
     } catch (err) {
         console.error(err.message);

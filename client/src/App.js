@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 
 //components
 import LandingPage from "./components/Landing";
-import Nav_bar from "./components/Nav_bar"
+import NavBar from "./components/NavBar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
@@ -44,7 +44,7 @@ function App() {
 
   return (
     <Fragment>
-      <Nav_bar />
+      <NavBar isAuth={isAuthenticated} setAuth={setAuth}/>
       
       <Router>
           <Switch>
@@ -61,7 +61,7 @@ function App() {
               (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/contact" render={props => !isAuthenticated ?
-              (<Redirect to="/login" />) : (<ContactUs {...props} setAuth={setAuth} />)} />
+              (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/registerpet" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />

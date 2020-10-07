@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import Nav_bar from "./Nav_bar.js";
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 
@@ -28,16 +27,6 @@ const Homepage = ({ setAuth }) => {
     }
   };
 
-  const logout = async e => {
-    e.preventDefault();
-    try {
-      localStorage.removeItem("token");
-      setAuth(false);
-      toast.success("Logout successfully");
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
 
   const getSearches = async () => {
     try {
@@ -106,13 +95,10 @@ const Homepage = ({ setAuth }) => {
     <Fragment>
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
-          <h1 className="display-4">Welcome {name}</h1>
+          <h1 className="display-4">Welcome back {name}!</h1>
           <p className="lead">There is 1 Imposter among pets.</p>
           <hr className="my-4"></hr>
           <p className="lead">
-            <button onClick={e => logout(e)} className="btn btn-primary btn-lg">
-              Logout
-          </button>
           </p>
         </div>
       </div>

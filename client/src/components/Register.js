@@ -1,6 +1,5 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
-import Nav_bar from "./Nav_bar.js"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
@@ -36,6 +35,7 @@ const Register = ({setAuth}) => {
             const parseResponse = await response.json();
             if (parseResponse.jwtToken) {
                 localStorage.setItem("token", parseResponse.jwtToken);
+                localStorage.setItem("acc_type", parseResponse.acc_type);
                 setAuth(true);
                 toast.success("Register Successfully");
               } else {

@@ -1,6 +1,5 @@
 import React, { Fragment } from "react"
 import { Link } from "react-router-dom"
-import NavBar from "./NavBar"
 import ChartistGraph from 'react-chartist'
 import Chartist from 'chartist'
 import ChartistLegend from 'chartist-plugin-legend'
