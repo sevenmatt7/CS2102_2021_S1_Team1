@@ -1,7 +1,7 @@
 import React, { Fragment } from "react"
 import { Link } from "react-router-dom"
 
-import { Button, Navbar as Nav } from 'react-bootstrap'
+//Older implementation of the navigation bar
 
 const NavBar = () => {
   return (
