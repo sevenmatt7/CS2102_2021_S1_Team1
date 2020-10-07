@@ -1,6 +1,8 @@
 import React, { Fragment } from "react"
 import { Link } from "react-router-dom"
 
+import { Button, Navbar as Nav } from 'react-bootstrap'
+
 const NavBar = () => {
   return (
     <Fragment>
@@ -23,6 +25,7 @@ const NavBar = () => {
               <li className="nav-item">
                 <Link className="nav-link" to="/FAQ">FAQ</Link>
               </li>
+
               {/* <li className="nav-item">                                
                                 <a className="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                             </li> */}
@@ -33,6 +36,11 @@ const NavBar = () => {
                   <a className="dropdown-item" href="#">Another action</a>
                   <a className="dropdown-item" href="#">Something else here</a>
                 </div>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/home/RegisterPet">
+                    Register Your Pet!
+                </Link>
               </li>
             </ul>
             <form className="form-inline my-2 my-md-0">
