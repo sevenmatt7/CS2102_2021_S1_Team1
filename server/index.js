@@ -42,10 +42,10 @@ app.get("/contact", async (req, res) => {
 app.get("/caretakers", async (req, res) => {
     try {
         const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
-                                            avg_rating, caretaker_id, employment_type \
+                                            avg_rating, caretaker_email, employment_type \
                                             FROM Caretakers \
                                             JOIN Users \
-                                            ON Caretakers.caretaker_id=Users.user_id \
+                                            ON Caretakers.caretaker_email = Users.email \
                                             ");
         res.json(searches.rows);
     } catch (error) {
@@ -56,8 +56,8 @@ app.get("/caretakers", async (req, res) => {
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_id, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_id=Users.user_id WHERE 1 = 1";
+        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
+        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE 1 = 1";
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
             sql += " AND employment_type = ";
@@ -78,8 +78,8 @@ app.get("/caretakersq", async (req, res) => {
 //get by name
 app.get("/formsearch", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_id, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_id=Users.user_id WHERE LOWER(full_name) LIKE LOWER(";
+        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
+        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE LOWER(full_name) LIKE LOWER(";
         sql += "'%" + req.query.form + "%')";
         const filteredSearches = await pool.query(sql);
         res.json(filteredSearches.rows);
@@ -88,72 +88,72 @@ app.get("/formsearch", async (req, res) => {
     }
 });
 
-//creating an item
-app.post("/items", async (req, res) => {
-    try {
-        const { description } = req.body;
-        const newItem = await pool.query(
-            "INSERT INTO sample (description) VALUES($1) RETURNING *",
-            [description]
-        );
-        res.json(newItem.rows[0]);
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+// //creating an item
+// app.post("/items", async (req, res) => {
+//     try {
+//         const { description } = req.body;
+//         const newItem = await pool.query(
+//             "INSERT INTO sample (description) VALUES($1) RETURNING *",
+//             [description]
+//         );
+//         res.json(newItem.rows[0]);
+//     } catch (err) {
+//         console.log(err.message);
+//     }
+// });
 
-//get all items
-app.get("/items", async (req, res) => {
-    try {
-        const allItems = await pool.query("SELECT * FROM sample")
-        res.json(allItems.rows);
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+// //get all items
+// app.get("/items", async (req, res) => {
+//     try {
+//         const allItems = await pool.query("SELECT * FROM sample")
+//         res.json(allItems.rows);
+//     } catch (err) {
+//         console.log(err.message);
+//     }
+// });
 
-//get an item
-app.get("/items/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const item = await pool.query("SELECT * FROM sample WHERE id = $1", [id])
+// //get an item
+// app.get("/items/:id", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const item = await pool.query("SELECT * FROM sample WHERE id = $1", [id])
 
-        res.json(item.rows[0]);
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+//         res.json(item.rows[0]);
+//     } catch (err) {
+//         console.log(err.message);
+//     }
+// });
 
-//update an item
-app.put("/items/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { description } = req.body;
-        const updateItem = await pool.query(
-            "UPDATE sample SET description = $1 WHERE id = $2",
-            [description, id]
-        );
+// //update an item
+// app.put("/items/:id", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { description } = req.body;
+//         const updateItem = await pool.query(
+//             "UPDATE sample SET description = $1 WHERE id = $2",
+//             [description, id]
+//         );
 
-        res.json("Updated item");
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+//         res.json("Updated item");
+//     } catch (err) {
+//         console.log(err.message);
+//     }
+// });
 
-//delete an item
-app.delete("/items/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deleteItem = await pool.query(
-            "DELETE FROM sample WHERE id = $1",
-            [id]
-        );
+// //delete an item
+// app.delete("/items/:id", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const deleteItem = await pool.query(
+//             "DELETE FROM sample WHERE id = $1",
+//             [id]
+//         );
 
-        res.json("Deleted item");
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+//         res.json("Deleted item");
+//     } catch (err) {
+//         console.log(err.message);
+//     }
+// });
 
 app.listen(5000, () => {
     console.log('server has started at port 5000');

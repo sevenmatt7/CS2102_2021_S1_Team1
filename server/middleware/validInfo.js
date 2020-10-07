@@ -19,7 +19,12 @@ module.exports = function(req, res, next) {
       } else if (!validEmail(email)) {
         return res.status(401).json("Invalid Email");
       }
-    }
+    } 
+    // else if (req.path === "/registerpet") {
+    //   if (![pet_name, special_req, pet_type, gender].every(Boolean)) {
+    //     return res.status(401).json("Missing Info");
+    //   } 
+    // }
   
     next();
   };

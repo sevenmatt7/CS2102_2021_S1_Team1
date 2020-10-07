@@ -13,7 +13,7 @@ import Login from "./components/Login";
 import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
-import RequestService from "./components/RequestService";
+import RegisterPet from "./components/RegisterPet";
 toast.configure();
 
 function App() {
@@ -31,20 +31,21 @@ function App() {
       });
 
       const parseResponse = await response.json();
-
       parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+      console.log(isAuthenticated)
     } catch (err) {
-      console.error(err.message);
+      // console.error(err.message);
     }
   };
 
   useEffect(() => {
     checkAuthenticated()
-  }, []);
+  });
 
   return (
     <Fragment>
       <Nav_bar />
+      
       <Router>
           <Switch>
             <Route exact path="/" render={props => !isAuthenticated ?
@@ -61,6 +62,9 @@ function App() {
 
             <Route exact path="/contact" render={props => !isAuthenticated ?
               (<Redirect to="/login" />) : (<ContactUs {...props} setAuth={setAuth} />)} />
+
+            <Route exact path="/registerpet" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/home" render={props => isAuthenticated ?
               (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />

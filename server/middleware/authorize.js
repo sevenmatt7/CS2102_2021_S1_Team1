@@ -8,12 +8,10 @@ module.exports = async (req, res, next) => {
         return res.status(403).json("User is not authorized to view content");
     }
     try {
-        console.log("passed here")
         const payload = jwt.verify(jwtToken, process.env.jwtSecret);
         req.user = payload.user;
         next();
     } catch (err) {
-        console.error(err.message);
         return res.status(403).json("User is not authorized to view content");
     }
 }

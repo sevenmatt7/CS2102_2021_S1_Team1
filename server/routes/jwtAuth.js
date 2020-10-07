@@ -2,6 +2,7 @@ const pool = require("../db");
 
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const jwtGenerator = require("../utils/jwtGenerator");
 const validInfo = require("../middleware/validInfo");
 const authorize = require("../middleware/authorize");
@@ -45,6 +46,29 @@ router.post("/register", validInfo, async (req, res) => {
     }
 });
 
+//register a pet
+router.post("/registerpet", validInfo, async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const {pet_name, special_req, pet_type, gender} = req.body;
+        
+        //get user_email from jwt token
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email)
+        
+        const newPet = await pool.query(
+            "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
+            [user_email, pet_name, special_req, pet_type, gender] );
+
+        res.json(newPet.rows[0].pet_name);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
+
 //login a user 
 router.post("/login", validInfo, async (req, res) => {
     try {
@@ -61,7 +85,7 @@ router.post("/login", validInfo, async (req, res) => {
             return res.status(401).json("Password or email is incorrect")
         }
 
-        const jwtToken = jwtGenerator(user.rows[0].user_id);
+        const jwtToken = jwtGenerator(user.rows[0].email);
         res.json({jwtToken});
 
 
@@ -71,7 +95,7 @@ router.post("/login", validInfo, async (req, res) => {
     }
 })
 
-router.get("/verify", authorize, async (req, res) => {
+router.post("/verify", authorize, async (req, res) => {
     try {
         res.json(true);
     } catch (err) {

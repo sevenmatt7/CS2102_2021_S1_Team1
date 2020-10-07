@@ -116,17 +116,17 @@ const Homepage = ({ setAuth }) => {
           </p>
         </div>
       </div>
-      <Link to="/PCS">
+      {/* <Link to="/PCS">
         <button className="btn btn-secondary btn-block mt-3">PCSAdmin</button>
-      </Link>
-      <div className="input-group mb-3">
+      </Link> */}
+      <div className="input-group mb-3 mt-3">
         <div className="input-group-prepend">
           <label className="input-group-text" htmlFor="inputGroupSelect01">Employment Type</label>
         </div>
         <select value={filters.employment_type} name="employment_type" className="custom-select" id="inputGroupSelect01" onChange={(e) => onSelect(e)}>
           <option value="" disabled>Choose...</option>
-          <option value="full-time">Full-Time</option>
-          <option value="part-time">Part-Time</option>
+          <option value="fulltime">Full-Time</option>
+          <option value="parttime">Part-Time</option>
         </select>
         <div className="input-group-prepend">
           <label className="input-group-text" htmlFor="inputGroupSelect02">Rating</label>
