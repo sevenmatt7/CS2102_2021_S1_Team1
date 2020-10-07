@@ -104,8 +104,6 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
-      <Nav_bar />
-
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
           <h1 className="display-4">Welcome {name}</h1>

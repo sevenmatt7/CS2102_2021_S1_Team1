@@ -48,7 +48,6 @@ const Register = ({setAuth}) => {
     
     return (
         <Fragment>
-            <Nav_bar />
             <div className="container">
                 <div class="row">
                     

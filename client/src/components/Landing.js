@@ -8,8 +8,6 @@ const LandingPage = () => {
 
     return (
         <Fragment>
-            <Nav_bar />
-
             <style>
                 {`
                      .jumbo {

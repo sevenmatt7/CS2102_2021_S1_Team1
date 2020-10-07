@@ -53,7 +53,6 @@ const PetOwner = () => {
 
     return (
         <Fragment>
-            <Nav_bar/>
             <h1 className="text-center my-3">
                 PetOwner Homepage
             </h1>

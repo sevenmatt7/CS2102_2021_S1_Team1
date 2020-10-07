@@ -43,7 +43,6 @@ const Login = ({ setAuth }) => {
     }
     return (
         <Fragment>
-            <Nav_bar />
             
             {/* Container for Login components */}
             <div className="container">

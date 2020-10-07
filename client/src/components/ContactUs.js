@@ -66,8 +66,6 @@ const ContactUs = () => {
 
     return (
         <Fragment>
-            <NavBar />
-
             <h1>Submit your enquiries here!</h1>
 
             <form onSubmit={handleSubmit}>

@@ -6,14 +6,14 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 
 //components
 import LandingPage from "./components/Landing";
-
+import Nav_bar from "./components/Nav_bar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
-
+import RequestService from "./components/RequestService";
 toast.configure();
 
 function App() {
@@ -44,18 +44,18 @@ function App() {
 
   return (
     <Fragment>
+      <Nav_bar />
       <Router>
-
-    
-
-
           <Switch>
             <Route exact path="/" render={props => !isAuthenticated ?
               (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} /> 
+            
             <Route exact path="/login" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+            
             <Route exact path="/register" render={props => !isAuthenticated ?
               (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />    
+            
             <Route exact path="/PCS" render={(props) => !isAuthenticated ?
               (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
@@ -64,12 +64,8 @@ function App() {
 
             <Route exact path="/home" render={props => isAuthenticated ?
               (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
-
           </Switch>
-
       </Router>
-
-
     </Fragment>
   );
 }
