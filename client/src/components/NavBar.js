@@ -41,13 +41,13 @@ export default function NavBar({isAuth, setAuth}) {
                             <Nav.Link href="/">Services</Nav.Link>
                             <Nav.Link href="/">Sitters</Nav.Link>
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
-                            <Nav.Link href="/FAQ">{localStorage.acc_type}</Nav.Link> 
+                            {acc_type === "caretaker" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}
                         </Nav>
                         <Nav>
                             {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}
                             {!isAuth && <Nav.Link eventKey={2} href="/register">Register</Nav.Link>}
-                            {isAuth && <Nav.Link eventKey={3} href="/logout" onClick={e => logout(e)}>Logout</Nav.Link>}
+                            {isAuth && <Nav.Link eventKey={3} href="/" onClick={e => logout(e)}>Logout</Nav.Link>}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

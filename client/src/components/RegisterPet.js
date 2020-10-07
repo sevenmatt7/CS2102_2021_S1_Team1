@@ -48,7 +48,7 @@ const RegisterPet = ({setAuth}) => {
                     <div class="col-sm">
                         <div className="auth-wrapper"> 
                             <div className="auth-inner">
-                                <h1 className="text-center my-5">Register</h1>
+                                <h1 className="text-center my-5">Register Your Pet!</h1>
                                 <form onSubmit={onSubmitForm}> 
                                     <div className="form-group">
                                         <label>Pet Name</label>

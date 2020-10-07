@@ -14,6 +14,7 @@ import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
+import SetAvail from "./components/SetAvail";
 toast.configure();
 
 function App() {
@@ -65,6 +66,9 @@ function App() {
 
             <Route exact path="/registerpet" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
+
+            <Route exact path="/setavail" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/home" render={props => isAuthenticated ?
               (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />

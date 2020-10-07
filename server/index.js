@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
+const jwt = require("jsonwebtoken");
 
 app.use(cors());
 app.use(express.json());
@@ -88,6 +89,29 @@ app.get("/formsearch", async (req, res) => {
     }
 });
 
+
+//indicate availabilities for care takers
+app.post("/setavail", async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const {service_avail, service_type, daily_price, pet_type} = req.body;
+        
+        // get user_email from jwt token
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email)
+        
+        const newService = await pool.query(
+            "INSERT INTO Offers_Services (caretaker_email, service_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
+            [user_email, service_type, service_avail, pet_type, daily_price] );
+
+        res.json(newService.rows[0].service_avail);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
 // //creating an item
 // app.post("/items", async (req, res) => {
 //     try {

@@ -96,10 +96,7 @@ const Homepage = ({ setAuth }) => {
       <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
           <h1 className="display-4">Welcome back {name}!</h1>
-          <p className="lead">There is 1 Imposter among pets.</p>
           <hr className="my-4"></hr>
-          <p className="lead">
-          </p>
         </div>
       </div>
       {/* <Link to="/PCS">
