@@ -50,8 +50,8 @@ function App() {
       
       <Router>
           <Switch>
-            <Route exact path="/" render={props => !isAuthenticated ?
-              (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} /> 
+            <Route exact path="/" render={props => 
+              (<LandingPage {...props} setAuth={setAuth} />)} /> 
             
             <Route exact path="/login" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
@@ -75,7 +75,7 @@ function App() {
               (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/home" render={props => isAuthenticated ?
-              (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
+              (<Homepage {...props} setAuth={setAuth} />) : (<LandingPage {...props} setAuth={setAuth} />)} />
           </Switch>
       </Router>
     </Fragment>

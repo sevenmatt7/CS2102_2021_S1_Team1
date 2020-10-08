@@ -41,6 +41,9 @@ CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
 
+INSERT INTO Categories (pet_type)
+VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
+
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
 	ON DELETE cascade,
@@ -59,9 +62,10 @@ CREATE TABLE Owns_Pets (
 -- );
 
 CREATE TABLE Owns_aggregate (
-	owner_email VARCHAR REFERENCES PetOwners(owner_email),
+	owner_email VARCHAR,
 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
-	PRIMARY KEY (owner_email, pet_id)
+	pet_name VARCHAR,
+	PRIMARY KEY (owner_email, pet_id, pet_name)
 );
 
 CREATE TABLE Offers_Services (  
@@ -74,10 +78,24 @@ CREATE TABLE Offers_Services (
 	PRIMARY KEY (caretaker_email, service_type)
 );
 
+CREATE TABLE Petowner_Bids (  
+	owner_email VARCHAR REFERENCES PetOwners(owner_email)
+	ON DELETE cascade,
+	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
+	ON DELETE cascade,
+	selected_pet VARCHAR NOT NULL,
+	pet_type VARCHAR NOT NULL,
+	service_request_period VARCHAR NOT NULL,
+	offer_price NUMERIC NOT NULL,
+	transfer_mode INTEGER NOT NULL, 
+	PRIMARY KEY (owner_email, caretaker_email, selected_pet, service_request_period)
+);
+
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	tx_type VARCHAR,
 	pet_id INTEGER,
+	pet_name VARCHAR,
 	owner_email VARCHAR,
 	tx_id SERIAL,
 	owner_review VARCHAR,
@@ -85,10 +103,10 @@ CREATE TABLE Transactions_Details (
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
-	duration INTEGER NOT NULL,
+	duration VARCHAR NOT NULL,
 	PRIMARY KEY (tx_id),
 	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
-	FOREIGN KEY (pet_id, owner_email) REFERENCES Owns_aggregate(pet_id, owner_email)
+	FOREIGN KEY (pet_id, pet_name, owner_email) REFERENCES Owns_aggregate(pet_id, pet_name, owner_email)
 );
 
 CREATE TABLE Enquiries (

@@ -1,7 +1,9 @@
 import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
-const RequestService = ({ search, pet_type, caretaker_email }) => {
+const RequestService = ({ search }) => {
+    const pet_type = search.type_pref
+    const caretaker_email = search.caretaker_email
     const[petList, setPets] = useState([]);
 
     const getPetList = async () => {
@@ -36,8 +38,6 @@ const RequestService = ({ search, pet_type, caretaker_email }) => {
             const successMessage = 'You have submitted your offer for ' + dateArr[0] + ' to ' +
                                     dateArr[1] + '!';
             toast.success(successMessage);
-
-            // window.location = "/"
         } catch (err) {
             console.error(err.message)
         }
@@ -62,6 +62,7 @@ const RequestService = ({ search, pet_type, caretaker_email }) => {
         <Fragment>
             <button className="btn btn-success" data-toggle="modal" data-target={`#id${search.caretaker_id}`}
               onClick={e => getPetList(e)}>Request service!</button>
+              
             <div className="modal fade" id={`id${search.caretaker_id}`} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
@@ -85,14 +86,14 @@ const RequestService = ({ search, pet_type, caretaker_email }) => {
                             </select>
 
                             <div className="md-form mb-4">
-                                <label data-error="wrong" data-success="right" htmlFor={`bid${search.caretaker_id}`}>Bidding Offer ($ per hr)</label>
+                                <label data-error="wrong" data-success="right">Bidding Offer ($ per hr)</label>
                                 <input type="number" 
                                 pattern="[0-9]+" 
                                 maxLength="4" 
                                 name="bidding_offer"
                                 value={bidding_offer}
                                 onChange={e => onChange(e)}
-                                id={`bid${search.caretaker_id}`} 
+                                id={`bid${search.full_name}`} 
                                 className="form-control validate" 
                                 required="required" />
                             </div>

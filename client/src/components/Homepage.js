@@ -130,7 +130,7 @@ const Homepage = ({ setAuth }) => {
         <input className="form-control" type="text" placeholder="Search by name" aria-label="Search" value={form} onChange={(e) => onChangeForm(e)} />
       </div>
 
-      <div className="card-deck">
+      {acc_type === "petowner" && <div className="card-deck">
         {searches.map((search, i) => (
           <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
             <div className="row no-gutters">
@@ -145,13 +145,13 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text">Available: {search.service_avail}</p>
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
-                  <RequestService search={search} pet_type={search.type_pref} caretaker_email={search.caretaker_email} />
+                  <RequestService search={search} />
                 </div>
               </div>
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
 
     </Fragment>

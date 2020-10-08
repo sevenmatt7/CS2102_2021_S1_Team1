@@ -38,7 +38,7 @@ router.post("/register", validInfo, async (req, res) => {
         }
         //step 5: generate jwt token
         const jwtToken = jwtGenerator(newUser.rows[0].email, acc_type);
-        res.json({jwtToken, acc_type});
+        res.json({jwtToken, acc_type, emp_type});
 
     } catch (err) {
         console.error(err.message);
@@ -75,6 +75,7 @@ router.post("/login", validInfo, async (req, res) => {
         const {email, password} = req.body;
 
         let acc_type = "";
+        let emp_type = "";
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
         const petOwner = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
         const caretaker = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
@@ -87,17 +88,17 @@ router.post("/login", validInfo, async (req, res) => {
             acc_type = "petowner"
         } else if (caretaker.rows.length !== 0) {
             acc_type = "caretaker"
+            emp_type = caretaker.rows[0].employment_type
         } else if (admin.rows.length !== 0) {
             acc_type = "admin"
         } 
 
         const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
-
         if (!validPassword) {
             return res.status(401).json("Password or email is incorrect")
         }
         const jwtToken = jwtGenerator(user.rows[0].email, acc_type);
-        res.json({jwtToken, acc_type});
+        res.json({jwtToken, acc_type, emp_type});
 
     } catch (err) {
         console.error(err.message);

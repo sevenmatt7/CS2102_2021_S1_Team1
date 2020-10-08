@@ -15,6 +15,9 @@ export default function NavBar({isAuth, setAuth}) {
         try {
           localStorage.removeItem("token");
           localStorage.removeItem("acc_type");
+          if (localStorage.emp_type) {
+              localStorage.removeItem("emp_type");
+          }
           setAuth(false);
           toast.success("Logout successfully");
         } catch (err) {
@@ -26,7 +29,7 @@ export default function NavBar({isAuth, setAuth}) {
         <Fragment>
             <Navbar variant="dark" expand="md" sticky="top" style={{ padding: "0", backgroundColor: "#b19cd9" }}>
                 <Container>
-                    <Navbar.Brand style={{ paddingTop: "0" , marginRight: "2rem"}} href="/">
+                    <Navbar.Brand style={{ paddingTop: "0" , marginRight: "2rem"}} href="/home">
                         <img
                             alt=""
                             src={process.env.PUBLIC_URL + '/PetSocietyShadow.png'}

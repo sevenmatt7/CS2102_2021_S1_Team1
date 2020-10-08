@@ -31,6 +31,9 @@ const Login = ({ setAuth }) => {
             if (parseResponse.jwtToken) {
                 localStorage.setItem("token", parseResponse.jwtToken);
                 localStorage.setItem("acc_type", parseResponse.acc_type)
+                if (parseResponse.emp_type) {
+                    localStorage.setItem("emp_type", parseResponse.emp_type)
+                }
                 setAuth(true);
                 toast.success("Logged in Successfully");
               } else {

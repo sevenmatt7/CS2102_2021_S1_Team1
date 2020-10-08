@@ -62,9 +62,10 @@ CREATE TABLE Owns_Pets (
 -- );
 
 CREATE TABLE Owns_aggregate (
-	owner_email VARCHAR REFERENCES PetOwners(owner_email),
+	owner_email VARCHAR,
 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
-	PRIMARY KEY (owner_email, pet_id)
+	pet_name VARCHAR,
+	PRIMARY KEY (owner_email, pet_id, pet_name)
 );
 
 CREATE TABLE Offers_Services (  
@@ -74,7 +75,7 @@ CREATE TABLE Offers_Services (
 	service_avail VARCHAR NOT NULL,
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
-	PRIMARY KEY (caretaker_email, service_type)
+	PRIMARY KEY (caretaker_email, service_type, service_avail)
 );
 
 CREATE TABLE Petowner_Bids (  
@@ -94,6 +95,7 @@ CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	tx_type VARCHAR,
 	pet_id INTEGER,
+	pet_name VARCHAR,
 	owner_email VARCHAR,
 	tx_id SERIAL,
 	owner_review VARCHAR,
@@ -101,10 +103,10 @@ CREATE TABLE Transactions_Details (
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
-	duration INTEGER NOT NULL,
+	duration VARCHAR NOT NULL,
 	PRIMARY KEY (tx_id),
-	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
-	FOREIGN KEY (pet_id, owner_email) REFERENCES Owns_aggregate(pet_id, owner_email)
+	-- FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type, service_avail),
+	FOREIGN KEY (pet_id, pet_name, owner_email) REFERENCES Owns_aggregate(pet_id, pet_name, owner_email)
 );
 
 CREATE TABLE Enquiries (

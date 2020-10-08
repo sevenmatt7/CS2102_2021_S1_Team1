@@ -5,15 +5,16 @@ import { toast } from "react-toastify";
 
 const SetAvail = ({setAuth}) => {
 
+    const service_type = localStorage.emp_type;
+
     const [inputs, setInputs] = useState({
         service_avail_from: "",
         service_avail_to: "",
-        service_type: "",
         daily_price: 0,
     });
     
     const [pet_type, setPetType] = useState("dog");
-    const {service_avail_from, service_avail_to, service_type, daily_price} = inputs;
+    const {service_avail_from, service_avail_to, daily_price} = inputs;
 
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
@@ -100,10 +101,10 @@ const SetAvail = ({setAuth}) => {
                                         <label>Service Type</label>
                                         <input type="text" 
                                         name="service_type" 
-                                        placeholder="Pet sitting, dog walking .etc"
+                                        readOnly
                                         className="form-control"
-                                        value={service_type}
-                                        onChange={e => onChange(e)}/>
+                                        value={service_type === "parttime" ? "Part-time" : "Full-time"}
+                                        />
                                     </div>
                                     <button className="btn btn-success btn-block">Submit</button>
                                 </form>

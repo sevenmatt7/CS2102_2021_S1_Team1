@@ -82,21 +82,20 @@ app.get("/bids", async (req, res) => {
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(caretaker_email)
-        const searches = await pool.query(`SELECT DISTINCT users.full_name, pet_name, \
-                                            gender, special_req, pet_type \
-                                            FROM PetOwner_bids LEFT JOIN Users \
-                                            ON Petowner_Bids.owner_email = users.email \
-                                            ; \ 
+        const searches = await pool.query(`SELECT users.full_name, users.user_address, Petowner_bids.owner_email, Petowner_bids.selected_pet, \
+                                            gender, special_req, service_request_period, offer_price, transfer_mode, Petowner_bids.pet_type \
+                                            FROM Petowner_bids LEFT JOIN Owns_pets  \
+                                            ON (Petowner_bids.selected_pet = Owns_pets.pet_name AND Owns_pets.owner_email = Petowner_bids.owner_email) \
+                                            LEFT JOIN Users ON users.email = Petowner_bids.owner_email
+                                            WHERE Petowner_bids.caretaker_email = '${caretaker_email}';\ 
                                             ` );
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
     }
 });
-//WHERE owner_email = '${caretaker_email}'
-// SELECT users.full_name, Petowner_bids.owner_email, pet_name, gender, special_req, caretaker_email, Petowner_bids.pet_type, service_request_period, offer_price, transfer_mode 
-// FROM Petowner_bids LEFT JOIN Users ON users.email = Petowner_bids.owner_email 
-// LEFT JOIN Owns_pets ON Petowner_bids.owner_email = Owns_pets.owner_email;
+
+
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
@@ -172,6 +171,31 @@ app.post("/submitbid", async (req, res) => {
             [owner_email, caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet] );
 
         res.json(newService.rows[0].service_request_period);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
+
+//caretaker to accept bid
+app.post("/acceptbid", async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price
+            , service_request_period, transfer_mode, owner_email, emp_type} = req.body;
+        
+        const payment_mode = 'cash';
+
+        // get user_email from jwt token
+        const jwtToken = req.header("token")
+        const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+        const newTxn = await pool.query(
+            "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *" , 
+            [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period] );
+
+        res.json(newTxn.rows[0]);
 
     } catch (err) {
         console.error(err.message);

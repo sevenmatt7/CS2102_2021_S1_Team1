@@ -15,27 +15,31 @@ const Profile = ({setAuth}) => {
     //     setInputs({...inputs, [e.target.name]: e.target.value})
     // }
 
-    // const onSubmitForm = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const service_avail = service_avail_from + ',' + service_avail_to;
-    //         const body = {service_avail, service_type, daily_price, pet_type}
-    //         const response = await fetch("http://localhost:5000/setavail", {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json",
-    //                         token: localStorage.token },
-    //             body: JSON.stringify(body)
-    //         });
+    const submitTransaction = async (e, search) => {
+        e.preventDefault();
+        const emp_type = localStorage.emp_type;
+
+        try {
+            const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price,
+                     service_request_period, transfer_mode, owner_email} = search;
+
+            const body = { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price,
+                            service_request_period, transfer_mode, owner_email, emp_type }
+            const response = await fetch("http://localhost:5000/acceptbid", {
+                method: "POST",
+                headers: { "Content-Type": "application/json",
+                            token: localStorage.token },
+                body: JSON.stringify(body)
+            });
             
-    //         const parseResponse = await response.json();
-    //         let dateArr = parseResponse.split(',')
-    //         const successMessage = 'You have indicated your availability from ' + dateArr[0] + ' to ' +
-    //                                 dateArr[1] + '!';
-    //         toast.success(successMessage);
-    //     } catch (err) {
-    //         console.error(err.message)
-    //     }
-    // }
+            const parseResponse = await response.json();
+            
+            const successMessage = `You have accepted the offer from ${full_name}!`
+            toast.success(successMessage);
+        } catch (err) {
+            console.error(err.message)
+        }
+    }
 
     const getProfile = async () => {
         try {
@@ -60,11 +64,15 @@ const Profile = ({setAuth}) => {
                 method: "GET",
                 headers: {token: localStorage.token}
                 });
+                const jsonData = await response.json();
+                setSearches(jsonData);
             } else if (acc_type === "caretaker") {
-                const response = await fetch("http://localhost:5000/offers", {
+                const response = await fetch("http://localhost:5000/bids", {
                 method: "GET",
                 headers: {token: localStorage.token}
                 }); 
+                const jsonData = await response.json();
+                setSearches(jsonData);
             }
 
           const jsonData = await response.json();
@@ -110,14 +118,20 @@ const Profile = ({setAuth}) => {
               </div>
               <div className="col-md-8">
                 <div className="card-body">
-                  <h5 className="card-title">{search.full_name}</h5>
+                  <h5 className="card-title">Offer from {search.full_name}</h5>
                   <p className="card-text" >Address: {search.user_address}</p>
-                  <p className="card-text">Employment Type: {search.employment_type}</p>
-                  <p className="card-text">Available: {search.service_avail}</p>
-                  <p className="card-text" >Price/day: {search.daily_price}</p>
-                  <p className="card-text">Pet type: {search.type_pref}</p>
-                  <button className="btn btn-success btn-block">Submit</button>
-                  {/* <RequestService search={search} pet_type={search.type_pref} caretaker_email={search.caretaker_email} /> */}
+                  <p className="card-text">Pet Name: {search.selected_pet}</p>
+                  <p className="card-text">Gender: {search.gender}</p>
+                  <p className="card-text">Type: {search.pet_type}</p>
+                  <p className="card-text">Special requirments: {search.special_req}</p>
+                  <p className="card-text"> Offered price/day: {search.offer_price}</p>
+                  <p className="card-text">Requested period: {search.service_request_period}</p>
+                  <p className="card-text">Transfer mode: {search.transfer_mode}</p>
+                  <div className ="row">
+                    <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => submitTransaction(e, search)} >Submit</button>
+                    <div className="col-md-1 col-sm-1 col-12"/>
+                    <button className="btn btn-danger  col-md-5 col-sm-5 col-12">Reject</button>
+                  </div>
                 </div>
               </div>
             </div>
