@@ -15,6 +15,7 @@ import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
 import SetAvail from "./components/SetAvail";
+import Profile from "./components/Profile";
 toast.configure();
 
 function App() {
@@ -69,6 +70,9 @@ function App() {
 
             <Route exact path="/setavail" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
+
+            <Route exact path="/profile" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/home" render={props => isAuthenticated ?
               (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />

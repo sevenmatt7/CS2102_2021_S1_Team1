@@ -43,10 +43,13 @@ app.get("/contact", async (req, res) => {
 app.get("/caretakers", async (req, res) => {
     try {
         const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
-                                            avg_rating, caretaker_email, employment_type \
-                                            FROM Caretakers \
-                                            JOIN Users \
-                                            ON Caretakers.caretaker_email = Users.email \
+                                            avg_rating, Caretakers.caretaker_email, employment_type, \
+                                            type_pref, service_avail, daily_price \
+                                            FROM Offers_services \
+                                            LEFT JOIN Users \
+                                            ON Offers_services.caretaker_email = Users.email \
+                                            LEFT JOIN Caretakers \
+                                            ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
                                             ");
         res.json(searches.rows);
     } catch (error) {
@@ -54,6 +57,46 @@ app.get("/caretakers", async (req, res) => {
     }
 });
 
+//get all pets owned by petowner
+app.get("/pets", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email)
+        const searches = await pool.query(`SELECT DISTINCT pet_name, \
+                                            gender, special_req, pet_type \
+                                            FROM Owns_Pets, \
+                                             Users \
+                                             \
+                                            WHERE owner_email = '${user_email}'; \ 
+                                            ` );
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
+//get all bids from petowner for caretaker
+app.get("/bids", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(caretaker_email)
+        const searches = await pool.query(`SELECT DISTINCT users.full_name, pet_name, \
+                                            gender, special_req, pet_type \
+                                            FROM PetOwner_bids LEFT JOIN Users \
+                                            ON Petowner_Bids.owner_email = users.email \
+                                            ; \ 
+                                            ` );
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+//WHERE owner_email = '${caretaker_email}'
+// SELECT users.full_name, Petowner_bids.owner_email, pet_name, gender, special_req, caretaker_email, Petowner_bids.pet_type, service_request_period, offer_price, transfer_mode 
+// FROM Petowner_bids LEFT JOIN Users ON users.email = Petowner_bids.owner_email 
+// LEFT JOIN Owns_pets ON Petowner_bids.owner_email = Owns_pets.owner_email;
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
@@ -112,19 +155,30 @@ app.post("/setavail", async (req, res) => {
         res.status(500).send("A server error has been encountered");
     }
 });
-// //creating an item
-// app.post("/items", async (req, res) => {
-//     try {
-//         const { description } = req.body;
-//         const newItem = await pool.query(
-//             "INSERT INTO sample (description) VALUES($1) RETURNING *",
-//             [description]
-//         );
-//         res.json(newItem.rows[0]);
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
+
+//petowner to submit bid for service
+app.post("/submitbid", async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const { caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet } = req.body;
+        
+        // get user_email from jwt token
+        const jwtToken = req.header("token")
+        const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(owner_email)
+        
+        const newService = await pool.query(
+            "INSERT INTO Petowner_Bids (owner_email, caretaker_email, pet_type, service_request_period, offer_price, transfer_mode, selected_pet) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *" , 
+            [owner_email, caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet] );
+
+        res.json(newService.rows[0].service_request_period);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
+
 
 // //get all items
 // app.get("/items", async (req, res) => {

@@ -48,6 +48,7 @@ export default function NavBar({isAuth, setAuth}) {
                             {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}
                             {!isAuth && <Nav.Link eventKey={2} href="/register">Register</Nav.Link>}
                             {isAuth && <Nav.Link eventKey={3} href="/" onClick={e => logout(e)}>Logout</Nav.Link>}
+                            {isAuth && <Nav.Link eventKey={4} href="/profile">My Profile</Nav.Link>}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

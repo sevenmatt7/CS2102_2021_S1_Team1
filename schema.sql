@@ -82,10 +82,12 @@ CREATE TABLE Petowner_Bids (
 	ON DELETE cascade,
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
+	selected_pet VARCHAR NOT NULL,
 	pet_type VARCHAR NOT NULL,
 	service_request_period VARCHAR NOT NULL,
 	offer_price NUMERIC NOT NULL,
-	PRIMARY KEY (owner_email, caretaker_email, pet_type, service_request_period)
+	transfer_mode INTEGER NOT NULL, 
+	PRIMARY KEY (owner_email, caretaker_email, selected_pet, service_request_period)
 );
 
 CREATE TABLE Transactions_Details (

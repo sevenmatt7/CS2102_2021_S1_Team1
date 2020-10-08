@@ -5,6 +5,7 @@ import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 
 const Homepage = ({ setAuth }) => {
+  const acc_type = localStorage.acc_type;
   const [name, setName] = useState("");
   const [searches, setSearches] = useState([]);
   const [form, setForm] = useState("");
@@ -30,6 +31,7 @@ const Homepage = ({ setAuth }) => {
 
   const getSearches = async () => {
     try {
+      let available_pets;
       const response = await fetch("http://localhost:5000/caretakers");
       const jsonData = await response.json();
       setSearches(jsonData);
@@ -84,11 +86,11 @@ const Homepage = ({ setAuth }) => {
   }, [])
 
   useEffect(() => {
-    getFiltered();
+    // getFiltered();
   }, [filters])
 
   useEffect(() => {
-    getFormSearch();
+    // getFormSearch();
   }, [form])
 
   return (
@@ -137,11 +139,13 @@ const Homepage = ({ setAuth }) => {
               </div>
               <div className="col-md-8">
                 <div className="card-body">
-                  <h5 className="card-title" style={{ fontFamily: 'verdana', fontSize: 20 }}>{search.full_name}</h5>
-                  <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 15 }}>Address: {search.user_address}</p>
-                  <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Employment Type: {search.employment_type}</p>
-                  <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Rating: {search.avg_rating}</p>
-                  <RequestService search={search} />
+                  <h5 className="card-title">{search.full_name}</h5>
+                  <p className="card-text" >Address: {search.user_address}</p>
+                  <p className="card-text">Employment Type: {search.employment_type}</p>
+                  <p className="card-text">Available: {search.service_avail}</p>
+                  <p className="card-text" >Price/day: {search.daily_price}</p>
+                  <p className="card-text">Pet type: {search.type_pref}</p>
+                  <RequestService search={search} pet_type={search.type_pref} caretaker_email={search.caretaker_email} />
                 </div>
               </div>
             </div>

@@ -96,7 +96,7 @@ const RegisterPet = ({setAuth}) => {
                         <div class="card" >
                             <img class="img-wrapper" src={RegisterPage} />
                             <div class="card-body">
-                                <h5 class="card-title">Join Us!</h5>
+                                <h5 class="card-title">Join us!</h5>
                                 <p class="card-text">We are a loving community of Pet Owners and Care Takers, we're sure you'll find a home with us!</p>
                     
                             </div>
