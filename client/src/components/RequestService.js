@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
-const RequestService = ({ search }) => {
+const RequestService = ({ search, i }) => {
     const pet_type = search.type_pref
     const caretaker_email = search.caretaker_email
     const[petList, setPets] = useState([]);
@@ -60,10 +60,10 @@ const RequestService = ({ search }) => {
 
     return (
         <Fragment>
-            <button className="btn btn-success" data-toggle="modal" data-target={`#id${search.caretaker_id}`}
+            <button className="btn btn-success" data-toggle="modal" data-target={`#id${i}`}
               onClick={e => getPetList(e)}>Request service!</button>
               
-            <div className="modal fade" id={`id${search.caretaker_id}`} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id={`id${i}`} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
 

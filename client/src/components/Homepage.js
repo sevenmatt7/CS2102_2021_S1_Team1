@@ -145,7 +145,7 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text">Available: {search.service_avail}</p>
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
-                  <RequestService search={search} />
+                  <RequestService search={search} i={i}/>
                 </div>
               </div>
             </div>
