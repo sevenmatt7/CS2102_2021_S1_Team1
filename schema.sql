@@ -77,6 +77,17 @@ CREATE TABLE Offers_Services (
 	PRIMARY KEY (caretaker_email, service_type)
 );
 
+CREATE TABLE Petowner_Bids (  
+	owner_email VARCHAR REFERENCES PetOwners(owner_email)
+	ON DELETE cascade,
+	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
+	ON DELETE cascade,
+	pet_type VARCHAR NOT NULL,
+	service_request_period VARCHAR NOT NULL,
+	offer_price NUMERIC NOT NULL,
+	PRIMARY KEY (owner_email, caretaker_email, pet_type, service_request_period)
+);
+
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	tx_type VARCHAR,
