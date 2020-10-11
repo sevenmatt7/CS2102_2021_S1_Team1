@@ -1,15 +1,12 @@
 import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Form, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
-import Nav_bar from "./Nav_bar.js"
 import LandingBg from '../Assets/Images/LandingBg.jpg';
 
 const LandingPage = () => {
 
     return (
         <Fragment>
-            <Nav_bar />
-
             <style>
                 {`
                      .jumbo {
@@ -47,8 +44,8 @@ const LandingPage = () => {
 
             </Jumbo>
 
-            <div class="container-fluid  p-3" style={{backgroundColor: "#ffbbcb"}}>
-                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#81ceeb" }}>
+            <div class="container-fluid  p-3" style={{backgroundColor: "#ffffff"}}>
+                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
                     <div class="card-body">
                         <div class="form-group">
                             <label for="formGroupExampleInput">Select your pet:</label>
@@ -78,9 +75,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </div>
-
-
-
         </Fragment>
     );
 

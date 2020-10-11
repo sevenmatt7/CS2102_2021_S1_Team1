@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react"
 
-import NavBar from "./NavBar"
 
 const ContactUs = () => {
     const [state, setState] = useState({
@@ -66,8 +65,6 @@ const ContactUs = () => {
 
     return (
         <Fragment>
-            <NavBar />
-
             <h1>Submit your enquiries here!</h1>
 
             <form onSubmit={handleSubmit}>
