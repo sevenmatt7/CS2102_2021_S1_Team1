@@ -5,7 +5,7 @@ const authorize = require("../middleware/authorize");
 router.get("/", authorize, async (req, res) => {
     try {
         //req.user has the payload from the authorize middleware
-        const user = await pool.query("SELECT full_name FROM users WHERE user_id = $1", [req.user.id]);
+        const user = await pool.query("SELECT full_name FROM users WHERE email = $1", [req.user.email]);
         res.json(user.rows[0]);
     } catch (err) {
         console.error(err.message);

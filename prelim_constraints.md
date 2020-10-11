@@ -30,3 +30,51 @@ and a petowner)
 18. A Caretaker offers Services to the Pet Owners, these Services are categorised into the their types (dog caretaking, cat caretaking .etc)
 19. Each Service can only be identified with the Caretaker's user_id
 20. The type attribute of Service cannot uniquely identify its offer. If an Offer is deleted, all records of Service will be deleted.
+
+# Comments from Prof Adi
+- [ ] try not to cross the line if possible **need to change in ER diagram**
+- [ ] why are some lines in red?  is it for relationship? **need to change in ER diagram**
+
+- [X] Each user is identified by his/her user_id. Their full name, email, password and address must be recorded.
+==> so "email" is not unique? **Already changed the primary keys to email instead of uuid**
+
+- [X] Each Caretaker must have employment type (either full or part-timer), average rating and number of reviews.
+--> on "average rating and number of reviews."
+    is this computed or updated? need to make sure they are consistent **Yes the average rating and the number of reviews are computed and updated**
+    
+- [ ] Each Caretaker is managed by exactly one PCS Admin.
+==> key+total but a normal line? **(not implicit constraint?)**
+
+- [ ] Each PCS Admin must manage at least one Caretaker. 
+==> wrong type of line **(not implicit constraint?)**
+
+- [ ] Each Pet is identified using pet_id and their name, type, gender and special requirements of the pet must be recorded.
+==> why pet_id?
+    in fact, why must it be existential dependency and not identity dependency? **It is existential dependency because the pet can uniquely identify who its owner is**
+
+- [ ] If a PetOwner is deleted, all records of his/her Pets will be deleted. The pet_id of a Pet can uniquely identify its PetOwner.
+==> so yeah, why?  I would assume this is serial, but without justification.
+
+- [ ] A Pet can have a breed but it must be one of the breeds that is listed in the Breeds entity.
+--> may want to generalize this into "categories" instead
+    breed may be too specific, but this is up to you
+    also, the notion of breed typically only exists for dogs/cats and not lizards
+
+- [ ] The Enquiries entity contains any questions or help messages that any Pet Owner or Caretaker can send, a user can send any number of these Enquiries
+==> no constraint between "Enquiry" and "Enquiries"?
+
+- [ ] Each Enquiry is identified by its e_id. Their type (Getting Started, Account and Profile, Finding Sitter, Bookings, Payments, Safety),
+==> again, no justification for e_id
+
+- [ ] Each transaction detail will link to exactly one transaction.
+--> probably naming problem, but is it any "bids" or only "successful bids"?
+
+- [ ] Each transaction detail will be identified using its tx_id. The review, rating, payment mode (pre-registered credit card or cash),
+==> again, no justification for e_id
+
+- [ ] cost, mode of transfer (pet owner deliver, caretaker pick up or via physical building of PCS) and duration of the transaction must be recorded.
+--> is cost computed or updated or filled in?  make sure it is consistent
+
+- [ ] Each Service can only be identified with the Caretaker's user_id
+==> this does not make sense since it means that there can only be one "service" for each "caretaker"
+    there should be identity even on weak entity, otherwise why not make attribute?

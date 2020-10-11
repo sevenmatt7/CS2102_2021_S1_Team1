@@ -12,7 +12,6 @@ module.exports = async (req, res, next) => {
         req.user = payload.user;
         next();
     } catch (err) {
-        console.error(err.message);
         return res.status(403).json("User is not authorized to view content");
     }
 }

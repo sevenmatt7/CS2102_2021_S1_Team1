@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
 import imposter from "../Assets/Images/imposter.jpg";
-import Nav_bar from "./Nav_bar.js"
 
 const PetOwner = () => {
 
@@ -53,7 +52,6 @@ const PetOwner = () => {
 
     return (
         <Fragment>
-            <Nav_bar/>
             <h1 className="text-center my-3">
                 PetOwner Homepage
             </h1>
