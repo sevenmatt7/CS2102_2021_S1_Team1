@@ -51,8 +51,8 @@ const Login = ({ setAuth }) => {
             <div className="container">
                 <div class="row">
 
-                    <div class="col-sm">
-                        <div class="card" >
+                    <div class="col-sm" >
+                        <div class="card" id="login-banner">
                             <img class="img-wrapper" src={LoginPage} />
                             <div class="card-body">
                                 <h5 class="card-title">Welcome Home!</h5>
