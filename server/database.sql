@@ -55,13 +55,6 @@ CREATE TABLE Owns_Pets (
 	PRIMARY KEY (owner_email, pet_name)
 );
 
---CREATE TABLE Owns_aggregate (
---	owner_email VARCHAR,
---	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
---	pet_name VARCHAR,
---	PRIMARY KEY (owner_email, pet_id, pet_name)
---);
-
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
@@ -120,3 +113,9 @@ CREATE TABLE Answers (
 	FOREIGN KEY (user_email, enq_message) REFERENCES Enquires(user_email, enq_message),
 	PRIMARY KEY (user_email, enq_message, admin_email)
 ); 
+
+-- CREATE TABLE Belongs_to (
+-- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
+-- 	breed_name VARCHAR,
+-- 	PRIMARY KEY (pet_id)
+-- );
