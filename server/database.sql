@@ -44,29 +44,23 @@ CREATE TABLE Categories (
 INSERT INTO Categories (pet_type)
 VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
 
+--Removed pet_id, changed primary key to (owner_email, pet_name)
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
 	ON DELETE cascade,
-	pet_id SERIAL,
 	gender CHAR NOT NULL,
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (pet_id)
+	PRIMARY KEY (owner_email, pet_name)
 );
 
--- CREATE TABLE Belongs_to (
--- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
--- 	breed_name VARCHAR,
--- 	PRIMARY KEY (pet_id)
--- );
-
-CREATE TABLE Owns_aggregate (
-	owner_email VARCHAR,
-	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
-	pet_name VARCHAR,
-	PRIMARY KEY (owner_email, pet_id, pet_name)
-);
+--CREATE TABLE Owns_aggregate (
+--	owner_email VARCHAR,
+--	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
+--	pet_name VARCHAR,
+--	PRIMARY KEY (owner_email, pet_id, pet_name)
+--);
 
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
@@ -91,10 +85,10 @@ CREATE TABLE Petowner_Bids (
 	PRIMARY KEY (owner_email, caretaker_email, selected_pet, service_request_period)
 );
 
+--Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	tx_type VARCHAR,
-	pet_id INTEGER,
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	tx_id SERIAL,
@@ -106,25 +100,23 @@ CREATE TABLE Transactions_Details (
 	duration VARCHAR NOT NULL,
 	PRIMARY KEY (tx_id),
 	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
-	FOREIGN KEY (pet_id, pet_name, owner_email) REFERENCES Owns_aggregate(pet_id, pet_name, owner_email)
+	FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
 );
 
-CREATE TABLE Enquiries (
-	e_id SERIAL,
+--Combined Enquires and Enquiries table, removed e_id, primary key changed to (user_email, enq_message)
+CREATE TABLE Enquires (
+	user_email VARCHAR REFERENCES Users(email),
 	enq_type VARCHAR,
 	submission DATE,
 	enq_message VARCHAR,
-	PRIMARY KEY (e_id)
+	PRIMARY KEY (user_email, enq_message)
 );
 
-CREATE TABLE Enquires (
-	e_id INTEGER REFERENCES Enquiries(e_id),
-	user_email VARCHAR REFERENCES Users(email),
-	PRIMARY KEY (e_id, user_email)
-);
-
+--Removed e_id, changed foreign key, changed primary key
 CREATE TABLE Answers (
-	e_id INTEGER REFERENCES Enquiries(e_id),
+	user_email VARCHAR,
+	enq_message VARCHAR,
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
-	PRIMARY KEY (e_id, admin_email)
+	FOREIGN KEY (user_email, enq_message) REFERENCES Enquires(user_email, enq_message),
+	PRIMARY KEY (user_email, enq_message, admin_email)
 ); 

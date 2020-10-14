@@ -94,7 +94,7 @@ CREATE TABLE Petowner_Bids (
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	tx_type VARCHAR,
-	pet_id INTEGER,
+	pet_id INTEGER, --to be changed
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	tx_id SERIAL,
