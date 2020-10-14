@@ -55,12 +55,6 @@ CREATE TABLE Owns_Pets (
 	PRIMARY KEY (pet_id)
 );
 
--- CREATE TABLE Belongs_to (
--- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
--- 	breed_name VARCHAR,
--- 	PRIMARY KEY (pet_id)
--- );
-
 CREATE TABLE Owns_aggregate (
 	owner_email VARCHAR,
 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
@@ -128,3 +122,9 @@ CREATE TABLE Answers (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
 	PRIMARY KEY (e_id, admin_email)
 ); 
+
+-- CREATE TABLE Belongs_to (
+-- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
+-- 	breed_name VARCHAR,
+-- 	PRIMARY KEY (pet_id)
+-- );

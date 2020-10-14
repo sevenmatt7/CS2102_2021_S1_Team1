@@ -127,7 +127,7 @@ const Register = ({setAuth}) => {
                     </div>
 
                     <div class="col-sm">
-                        <div class="card" >
+                        <div class="card" id="register-banner">
                             <img class="img-wrapper" src={RegisterPage} />
                             <div class="card-body">
                                 <h5 class="card-title">Join Us!</h5>
