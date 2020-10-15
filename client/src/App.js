@@ -5,10 +5,8 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 
 
 //components
-import InputItem from "./components/Input";
-import ListItems from "./components/ItemList";
 import LandingPage from "./components/Landing";
-
+import NavBar from "./components/NavBar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
@@ -16,7 +14,12 @@ import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
+<<<<<<< HEAD
 
+=======
+import SetAvail from "./components/SetAvail";
+import Profile from "./components/Profile";
+>>>>>>> 0425d950e81201961774b8299d2578cac0411dd0
 toast.configure();
 
 function App() {
@@ -26,44 +29,50 @@ function App() {
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
   }
-
-  async function isAuth() {
+  const checkAuthenticated = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/is-verify", {
-        method: "GET",
+      const response = await fetch("http://localhost:5000/auth/verify", {
+        method: "POST",
         headers: { token: localStorage.token }
       });
 
-      const parseResponse = await response.json()
+      const parseResponse = await response.json();
       parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+      console.log(isAuthenticated)
     } catch (err) {
-      console.error(err.message)
+      // console.error(err.message);
     }
-  }
+  };
+
   useEffect(() => {
-    isAuth()
-  })
+    checkAuthenticated()
+  });
 
   return (
     <Fragment>
+      <NavBar isAuth={isAuthenticated} setAuth={setAuth}/>
+      
       <Router>
-        {/* <div className="container"> */}
           <Switch>
-            <Route exact path="/" render={props => !isAuthenticated ?
-              (<LandingPage {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} /> 
+            <Route exact path="/" render={props => 
+              (<LandingPage {...props} setAuth={setAuth} />)} /> 
+            
             <Route exact path="/login" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+            
             <Route exact path="/register" render={props => !isAuthenticated ?
               (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />    
+            
             <Route exact path="/PCS" render={(props) => !isAuthenticated ?
               (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
             <Route exact path="/contact" render={props => !isAuthenticated ?
-              (<Redirect to="/login" />) : (<ContactUs {...props} setAuth={setAuth} />)} />
+              (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
 
-            <Route exact path="/home" render={props => isAuthenticated ?
-              (<Homepage {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
+            <Route exact path="/registerpet" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
 
+<<<<<<< HEAD
             <Route exact path="/home/RegisterPet" render={props => isAuthenticated ?
               (<RegisterPet {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
 
@@ -74,8 +83,18 @@ function App() {
       <InputItem />
       <ListItems />
       </div> */}
+=======
+            <Route exact path="/setavail" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
+>>>>>>> 0425d950e81201961774b8299d2578cac0411dd0
 
+            <Route exact path="/profile" render={props => !isAuthenticated ?
+              (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
 
+            <Route exact path="/home" render={props => isAuthenticated ?
+              (<Homepage {...props} setAuth={setAuth} />) : (<LandingPage {...props} setAuth={setAuth} />)} />
+          </Switch>
+      </Router>
     </Fragment>
   );
 }

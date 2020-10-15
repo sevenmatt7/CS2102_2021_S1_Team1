@@ -1,15 +1,12 @@
 import React, { Fragment, useState, Component } from "react";
 import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Form, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
-import Nav_bar from "./Nav_bar.js"
 import LandingBg from '../Assets/Images/LandingBg.jpg';
 
 const LandingPage = () => {
 
     return (
         <Fragment>
-            <Nav_bar />
-
             <style>
                 {`
                      .jumbo {
@@ -78,9 +75,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </div>
-
-
-
         </Fragment>
     );
 

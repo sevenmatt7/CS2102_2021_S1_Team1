@@ -1,7 +1,7 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
-import Nav_bar from "./Nav_bar.js"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
+import { toast } from "react-toastify";
 
 const Register = ({setAuth}) => {
 
@@ -9,11 +9,13 @@ const Register = ({setAuth}) => {
         email: "",
         password: "",
         name: "",
-        profile_pic: "",
         address: ""
     });
 
-    const {email, password, name, profile_pic, address} = inputs;
+    const [acc_type, setAcctype] = useState("petowner");
+    const [emp_type, setEmployment] = useState("fulltime");
+
+    const {email, password, name, address} = inputs;
 
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
@@ -23,7 +25,7 @@ const Register = ({setAuth}) => {
         e.preventDefault();
         try {
 
-            const body = { name, email, password, profile_pic, address}
+            const body = { name, email, password, address, acc_type, emp_type}
             const response = await fetch("http://localhost:5000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
@@ -31,8 +33,16 @@ const Register = ({setAuth}) => {
             });
             
             const parseResponse = await response.json();
-            localStorage.setItem("token", parseResponse.jwtToken)
-            setAuth(true)
+            if (parseResponse.jwtToken) {
+                localStorage.setItem("token", parseResponse.jwtToken);
+                localStorage.setItem("acc_type", parseResponse.acc_type);
+                localStorage.setItem("emp_type", parseResponse.emp_type);
+                setAuth(true);
+                toast.success("Register Successfully");
+              } else {
+                setAuth(false);
+                toast.error(parseResponse);
+              }
         } catch (err) {
             console.error(err.message)
         }
@@ -41,7 +51,6 @@ const Register = ({setAuth}) => {
     
     return (
         <Fragment>
-            <Nav_bar />
             <div className="container">
                 <div class="row">
                     
@@ -50,6 +59,22 @@ const Register = ({setAuth}) => {
                             <div className="auth-inner">
                                 <h1 className="text-center my-5">Register</h1>
                                 <form onSubmit={onSubmitForm}> 
+                                    <div className="form-group">
+                                        <label>What would you like to register as?</label>
+                                        <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
+                                            <option value="petowner">Pet Owner</option>
+                                            <option value="caretaker">Caretaker</option>
+                                        </select>
+                                    </div>
+                                    {acc_type === "caretaker" &&
+                                        <div className="form-group">
+                                            <label>Part-time or Full-time?</label>
+                                            <select className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>
+                                                <option value="fulltime">Full-time</option>
+                                                <option value="parttime">Part-time</option>
+                                            </select>
+                                        </div>
+                                    }
                                     <div className="form-group">
                                         <label>Email Address</label>
                                         <input type="email" 
@@ -102,7 +127,7 @@ const Register = ({setAuth}) => {
                     </div>
 
                     <div class="col-sm">
-                        <div class="card" >
+                        <div class="card" id="register-banner">
                             <img class="img-wrapper" src={RegisterPage} />
                             <div class="card-body">
                                 <h5 class="card-title">Join Us!</h5>

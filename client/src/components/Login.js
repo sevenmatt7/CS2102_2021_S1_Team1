@@ -1,7 +1,6 @@
 import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom"
 import { toast } from "react-toastify";
-import Nav_bar from "./Nav_bar.js"
 import LoginPage from '../Assets/Images/LoginPage.jpg';
 
 const Login = ({ setAuth }) => {
@@ -29,22 +28,31 @@ const Login = ({ setAuth }) => {
             });
 
             const parseResponse = await response.json()
-            localStorage.setItem("token", parseResponse.jwtToken)
-            setAuth(true)
+            if (parseResponse.jwtToken) {
+                localStorage.setItem("token", parseResponse.jwtToken);
+                localStorage.setItem("acc_type", parseResponse.acc_type)
+                if (parseResponse.emp_type) {
+                    localStorage.setItem("emp_type", parseResponse.emp_type)
+                }
+                setAuth(true);
+                toast.success("Logged in Successfully");
+              } else {
+                setAuth(false);
+                toast.error(parseResponse);
+              }
         } catch (err) {
             console.error(err.message)
         }
     }
     return (
         <Fragment>
-            <Nav_bar />
             
             {/* Container for Login components */}
             <div className="container">
                 <div class="row">
 
-                    <div class="col-sm">
-                        <div class="card" >
+                    <div class="col-sm" >
+                        <div class="card" id="login-banner">
                             <img class="img-wrapper" src={LoginPage} />
                             <div class="card-body">
                                 <h5 class="card-title">Welcome Home!</h5>
