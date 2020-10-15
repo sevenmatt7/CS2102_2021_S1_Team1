@@ -2,35 +2,27 @@ import React, { Fragment, useState, useEffect } from "react"
 
 
 const ContactUs = () => {
-    const [state, setState] = useState({
-        subject: '',
-        message: '',
-        date: new Date()
-    });
+    const [subject, setSubject] = useState('Getting Started')
+    const [message, setMessage] = useState()
+    const [date, setDate] = useState(new Date())
 
     const [enquiries, setEnquiries] = useState([])
 
     const onInputChange = event => {
-        console.log("enter onInputChange")
-        const { name, value } = event.target;
-
-        setState({
-            ...state,
-            [name]: value
-        });
-        console.log(state)
+        // console.log("enter onInputChange")
+        const value = event.target.value;
+        setMessage(value)
+        // console.log(value)
     };
+
 
     const handleSubmit = async e => {
         e.preventDefault()
         try {
             // console.log(e)
             console.log((new Date()).getDate())
-            setState({
-                ...state,
-                datetime: new Date().toLocaleDateString()
-            })
-            const body = state
+            setDate(new Date().toLocaleDateString())
+            const body = { subject: subject, message: message, date: date }
             // console.log(body)
             const response = await fetch(
                 "http://localhost:5000/contact",
@@ -65,37 +57,51 @@ const ContactUs = () => {
 
     return (
         <Fragment>
-            <h1>Submit your enquiries here!</h1>
 
-            <form onSubmit={handleSubmit}>
+            <div className="container-fluid  p-3">
+                <div className="card mx-auto" style={{ width: "30rem" }}>
+                    <div className="card-title text-center m-3">
+                        <h2>Submit your enquiries here!</h2>
+                    </div>
 
-                <div className="form-group" controlId="subject">
-                    <label>Subject</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="subject"
-                        value={state.subject}
-                        placeholder="Enter subject"
-                        onChange={onInputChange}
-                    />
+                    <div className="card-body">
+
+                        <form onSubmit={handleSubmit}>
+
+                            <div className="form-group" controlId="subject">
+                                <label>Subject</label>
+
+                                <select className="form-control" value={subject} onChange={e => setSubject(e.target.value)}>
+                                    <option value="Getting Started">Getting Started</option>
+                                    <option value="Account and Profile">Account and Profile</option>
+                                    <option value="Finding Sitter">Finding Sitter</option>
+                                    <option value="Bookings">Bookings</option>
+                                    <option value="Payments">Payments</option>
+                                    <option value="Safety">Safety</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+
+
+                            <div className="form-group" controlId="subject">
+                                <label>Message</label>
+                                <textarea
+                                    className="form-control"
+                                    name="message"
+                                    value={message}
+                                    rows="3"
+                                    placeholder="Enter your message"
+                                    onChange={onInputChange}
+                                />
+                            </div>
+                            <button className="btn btn-primary" variant="primary" type="submit">
+                                Submit
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                <div className="form-group" controlId="subject">
-                    <label>Message</label>
-                    <textarea
-                        className="form-control"
-                        name="message"
-                        value={state.message}
-                        rows="3"
-                        placeholder="Enter your message"
-                        onChange={onInputChange}
-                    />
-                </div>
-                <button className="btn btn-primary" variant="primary" type="submit">
-                    Submit
-                </button>
-            </form>
+            </div>
             <br></br>
             <h2>FAQ</h2>
             <table className="table mt-5">
