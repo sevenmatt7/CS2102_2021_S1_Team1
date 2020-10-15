@@ -9,7 +9,6 @@ const LandingPage = () => {
         <Fragment>
             
             <Jumbo fluid className="jumbo">
-
                 <div className="overlay"></div>
 
                 <div class="container mt-4 text-center">

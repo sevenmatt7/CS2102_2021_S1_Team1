@@ -52,7 +52,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (owner_email, pet_name)
+	PRIMARY KEY (owner_email, gender, pet_name, pet_type)
 );
 
 CREATE TABLE Offers_Services (  
