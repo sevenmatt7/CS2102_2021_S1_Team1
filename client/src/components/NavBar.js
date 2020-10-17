@@ -3,9 +3,6 @@ import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 
-//New implementation of navigation bar. To add to component, just add <Nav_bar /> under the <Fragment> of the component
-//and import Nav_bar from "./Nav_bar.js"
-
 
 export default function NavBar({isAuth, setAuth}) {
     
@@ -42,7 +39,7 @@ export default function NavBar({isAuth, setAuth}) {
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="mr-auto">
                             <Nav.Link href="/">Services</Nav.Link>
-                            <Nav.Link href="/">Sitters</Nav.Link>
+                            <Nav.Link href="/sitters">Sitters</Nav.Link>
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
                             {acc_type === "caretaker" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}

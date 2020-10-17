@@ -257,6 +257,28 @@ app.post("/acceptbid", async (req, res) => {
 //     }
 // });
 
+
+app.post("/test1", async (req, res) => {
+    try {
+        const {name} = req.body;
+        const newPet = await pool.query("INSERT INTO test (name) VALUES ($1) RETURNING *", [name]);
+        res.json(newPet);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.get("/test1/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {name} = req.body;
+        const getPet = await pool.query("SELECT * FROM test WHERE (type = $1) AND (name = $2)", [id, name]);
+        res.json(getPet.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
 app.listen(5000, () => {
     console.log('server has started at port 5000');
 });
