@@ -37,7 +37,7 @@ body, html, .App, #root, .auth-wrapper {
   background: url("./Assets/Images/LandingBg.jpg") no-repeat fixed bottom;
   background-size: cover;
   color: #efefef;
-  height: 400px;
+  height: 600px;
   margin-bottom: 0;
   position: relative;
   z-index: -2;
@@ -51,6 +51,11 @@ body, html, .App, #root, .auth-wrapper {
   bottom: 0;
   right: 0;
   z-index: -1;
+}
+.centerme {
+  position: relative;
+  top: 45%;
+  transform: translateY(-55%);
 }
 
 /* Login/Register Page */

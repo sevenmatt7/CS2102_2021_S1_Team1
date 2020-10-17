@@ -38,8 +38,8 @@ export default function NavBar({isAuth, setAuth}) {
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link href="/">Services</Nav.Link>
-                            <Nav.Link href="/sitters">Sitters</Nav.Link>
+                            <Nav.Link href="/">Dashboard</Nav.Link>
+                            {acc_type !== "caretaker" && <Nav.Link href="/sitters">Sitters</Nav.Link>}
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
                             {acc_type === "caretaker" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}

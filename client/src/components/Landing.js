@@ -1,62 +1,63 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom"
 import { Navbar, Nav, Container, Form, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
+import mag from "../Assets/Images/mag.png";
+import book from "../Assets/Images/book.png";
+import dog from "../Assets/Images/dog.png";
 
 const LandingPage = () => {
 
-    const [pet, setPet] = useState([
-        "Dog",
-        "Cat",
-        "Fish",
-        "Rabbit",
-        "Bird",
-        "Reptile"
-    ]);
-    const [name, setName] = useState("");
-    const addPet = (name) => {
-        setPet([...pet, name])
-    };
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        addPet(name)
-        setName("");
-    };
+    // const [pet, setPet] = useState([
+    //     "Dog",
+    //     "Cat",
+    //     "Fish",
+    //     "Rabbit",
+    //     "Bird",
+    //     "Reptile"
+    // ]);
+    // const [name, setName] = useState("");
+    // const addPet = (name) => {
+    //     setPet([...pet, name])
+    // };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     addPet(name)
+    //     setName("");
+    // };
 
-    const [query, setQuery] = useState([
-        { animal_type: "Dog", from: "", to: "" }
-    ]);
+    const [redirect, setRedirect] = useState(false);
 
-    const handleSubmitForm = async () => {
+    const [query, setQuery] = useState(
+        { animal_type: "", from: "", to: "" }
+    );
+
+    const onSelect = (e) => {
+        setQuery({ ...query, [e.target.id]: e.target.value });
+    }
+
+    const handleSubmitForm = async (e) => {
         try {
-            const a_type = query['animal_type'];
-            const ffrom = query['from'];
-            const tto = query['to'];
-            const res = await fetch('http://localhost:5000/caretakersh?' + new URLSearchParams({
-                animal_type: a_type,
-                from: ffrom,
-                to: tto
-            }), {
-                method: "GET"
-            });
-            const homeSelect = await res.json(); //homeSelect is the state to be sent to sitters for display
-            this.setState({ homeSelect });
-            this.props.history.push({
-                pathname: "/sitters",
-                state: homeSelect
-            });
+            e.preventDefault();
+            setRedirect(true);
         } catch (error) {
             console.log(error.message)
         }
 
     };
 
+    // if (redirect) {
+    //     return <Redirect to={{
+    //         pathname: '/sitters',
+    //         state: query
+    //       }} />;
+    // }
     return (
         <Fragment>
 
             <Jumbo fluid className="jumbo">
                 <div className="overlay"></div>
 
-                <div class="container mt-4 text-center">
+                <div class="container flex text-center centerme">
                     <h1 class="display-3 font-weight-bold">Welcome to Pet Society!</h1>
                     <hr color="white"></hr>
                     <p>Browse services offered by our trusted sitters, based on what you or your beloved pet needs.</p>
@@ -64,7 +65,7 @@ const LandingPage = () => {
 
             </Jumbo>
 
-            <div>
+            {/* <div>
                 <ul>
                     {pet.map(pet => {
                         return (
@@ -77,54 +78,89 @@ const LandingPage = () => {
                     <input type="text" value={name} required placeholder="Enter pet..." onChange={(e) => setName(e.target.value)} />
                     <input type="submit" value="Add Pet" />
                 </form>
-            </div>
+            </div> */}
 
-            <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
-                <div class="card-body">
-                    <label> Select your pet:</label>
-                    <div>
-                        <button type="button" id="btnDog" class="btn btn-outline-info">Dog</button>
-                        <button type="button" id="btnCat" class="btn btn-outline-info">Cat</button>
-                        <button type="button" id="btnFish" class="btn btn-outline-info">Fish</button>
-                        <button type="button" id="btnRabbit" class="btn btn-outline-info">Rabbit</button>
-                        <button type="button" id="btnBird" class="btn btn-outline-info">Bird</button>
-                        <button type="button" id="btnReptile" class="btn btn-outline-info">Reptile</button>
+            <div class="container mt-5">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={mag} style={{ padding: 10 }} />
+                                <h2 class="card-title">Search</h2>
+                                <p class="card-text">Read verified reviews and search for your perfect sitter.</p>
+                            </div>
+                            <a href="/sitters" class="btn btn-primary btn-sm">Begin Search</a>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={book} style={{ padding: 10 }} />
+                                <h2 class="card-title">Book</h2>
+                                <p class="card-text">Book a sitter based on your pet's requirements.</p>
+                            </div>
+                            <a href="/login" class="btn btn-primary btn-sm">Login To Book</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={dog} style={{ padding: 10 }} />
+                                <h2 class="card-title">Register</h2>
+                                <p class="card-text">Sign up as one of our trusted sitters!</p>
+                            </div>
+                            <a href="/register" class="btn btn-primary btn-sm">Register As Caretaker</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* <div class="container-fluid  p-3" style={{backgroundColor: "#ffffff"}}>
-                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select your pet:</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Cat">Cat</option>
-                                <option value="Fish">Fish</option>
-                                <option value="Rabbit">Rabbit</option>
-                                <option value="Bird">Bird</option>
-                                <option value="Repltile">Reptile</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select service type:</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option>Large select</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select (?)</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option>Large select</option>
-                            </select>
-                        </div>
-                        <div class="text-right">
-                        <button type="button" class="btn btn-success">Search!</button>
-                        </div>
+            {/* <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
+                <div class="card-body">
+                    <label> Select your pet: {query.animal_type}</label>
+                    <div class="container">
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="dog"
+                            onClick={(e) => onSelect(e)}>Dog</button>
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="cat"
+                            onClick={(e) => onSelect(e)}>Cat</button>
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="fish"
+                            onClick={(e) => onSelect(e)}>Fish</button>
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="rabbit"
+                            onClick={(e) => onSelect(e)}>Rabbit</button>
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="bird"
+                            onClick={(e) => onSelect(e)}>Bird</button>
+                        <button type="button" id="animal_type" class="btn btn-outline-info" value="reptile"
+                            onClick={(e) => onSelect(e)}>Reptile</button>
+                    </div>
+
+                    <div className="md-form mb-4 mt-4">
+                        <label data-error="wrong" data-success="right" htmlFor="startDate">Start Date: {query.from}</label>
+                        <input type="date"
+                            id="from"
+                            name="from"
+                            value={query.from}
+                            onChange={e => onSelect(e)}
+                            className="form-control validate"
+                            min="2020-01-01"
+                            max="2099-12-31"
+                            required="required" />
+                    </div>
+
+                    <div className="md-form mb-4">
+                        <label data-error="wrong" data-success="right" htmlFor="endDate">End Date: {query.to}</label>
+                        <input type="date"
+                            id="to"
+                            name="to"
+                            value={query.to}
+                            onChange={e => onSelect(e)}
+                            className="form-control validate"
+                            min="2020-01-01"
+                            max="2099-12-31"
+                            required="required" />
+                    </div>
+                    <div className="card-footer">
+                        <button type="submit" className="btn btn-primary" onClick={handleSubmitForm}>Search</button>
                     </div>
                 </div>
             </div> */}
