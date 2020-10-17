@@ -5,7 +5,7 @@ const ContactUs = () => {
     const [subject, setSubject] = useState('Getting Started')
     const [message, setMessage] = useState()
     const [date, setDate] = useState(new Date())
-
+    const [filter, setFilter] = useState('All')
     const [enquiries, setEnquiries] = useState([])
 
     const onInputChange = event => {
@@ -84,13 +84,13 @@ const ContactUs = () => {
 
 
                             <div className="form-group" controlId="subject">
-                                <label>Message</label>
+                                <label>Question</label>
                                 <textarea
                                     className="form-control"
                                     name="message"
                                     value={message}
                                     rows="3"
-                                    placeholder="Enter your message"
+                                    placeholder="Enter your question"
                                     onChange={onInputChange}
                                 />
                             </div>
@@ -103,32 +103,63 @@ const ContactUs = () => {
 
             </div>
             <br></br>
-            <h2>FAQ</h2>
-            <table className="table mt-5">
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {/* <tr>
-                        <td>John</td>
-                        <td>Doe</td>
-                        <td>john@example.com</td>
-                    </tr> */}
-                    {
-                        enquiries.map(enquiry => (
-                            <tr key={enquiry.e_id}>
-                                <td>{enquiry.enq_type}</td>
-                                <td>
-                                    {enquiry.enq_message}
-                                </td>
-                            </tr>
-                        ))
-                    }
-                </tbody>
-            </table>
+            <div className="container">
+                <h2 className="text-center mb-5">Previously Asked Questions</h2>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">Category</label>
+                    </div>
+                    <select className="form-control" value={filter} onChange={e => setFilter(e.target.value)}>
+                        <option value="All">All</option>
+                        <option value="Getting Started">Getting Started</option>
+                        <option value="Account and Profile">Account and Profile</option>
+                        <option value="Finding Sitter">Finding Sitter</option>
+                        <option value="Bookings">Bookings</option>
+                        <option value="Payments">Payments</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <table className="table mt-5 mb-5">
+                    <thead>
+                        <tr>
+                            {/* <th>Subject</th> */}
+                            <th width={'50%'}>Question</th>
+                            <th width={'50%'}>Answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {/* <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr> */}
+                        {
+
+                            (filter === 'All') ?
+                                (enquiries.map(enquiry => (
+                                    <tr key={enquiry.e_id}>
+                                        {/* <td>{enquiry.enq_type}</td> */}
+                                        <td>
+                                            {enquiry.enq_message}
+                                        </td>
+                                    </tr>
+                                )))
+                                :
+                                (enquiries.filter(enquiry => (enquiry.enq_type === filter)).map(filteredenquiry => (
+                                    <tr key={filteredenquiry.e_id}>
+                                        {/* <td>{filteredenquiry.enq_type}</td> */}
+                                        <td>
+                                            {filteredenquiry.enq_message}
+                                        </td>
+                                    </tr>
+                                )))
+
+
+                        }
+                    </tbody>
+                </table>
+            </div>
         </Fragment>
     )
 }
