@@ -15,6 +15,9 @@ app.use("/auth", require("./routes/jwtAuth"));
 //user homepage
 app.use("/home", require("./routes/homepage"));
 
+//user profiles
+app.use("/profile", require("./routes/profile"));
+
 //submit enquiry
 app.post("/contact", async (req, res) => {
     try {
