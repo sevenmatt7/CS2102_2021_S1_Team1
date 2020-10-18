@@ -32,7 +32,14 @@ app.post("/contact", async (req, res) => {
 //get enquiries
 app.get("/contact", async (req, res) => {
     try {
-        const enquiries = await pool.query("SELECT * FROM enquiries")
+        const enq_type = req.query.enq_type
+        var query = ''
+        if (enq_type === 'All') {
+            query = "SELECT * FROM enquiries"
+        } else {
+            query = `SELECT * FROM enquiries WHERE enq_type = '${enq_type}'`
+        }
+        const enquiries = await pool.query(query)
         res.json(enquiries.rows)
     } catch (err) {
         console.error(err.message)

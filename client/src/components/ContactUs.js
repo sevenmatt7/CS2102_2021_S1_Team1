@@ -40,9 +40,14 @@ const ContactUs = () => {
 
     const getEnquiries = async () => {
         try {
-            const response = await fetch("http://localhost:5000/contact")
+            const response = await fetch("http://localhost:5000/contact?" + new URLSearchParams({
+                enq_type: filter
+            }), {
+                method: "GET"
+            })
             const data = await response.json()
             setEnquiries(data)
+
         } catch (err) {
             console.error(err.message)
         }
@@ -53,7 +58,9 @@ const ContactUs = () => {
     // get enquiries on mount
     useEffect(() => {
         getEnquiries()
-    }, [])
+    }, [filter])
+
+    // get enquiries
 
     return (
         <Fragment>
@@ -135,25 +142,32 @@ const ContactUs = () => {
                             <td>john@example.com</td>
                         </tr> */}
                         {
-
-                            (filter === 'All') ?
-                                (enquiries.map(enquiry => (
-                                    <tr key={enquiry.e_id}>
-                                        {/* <td>{enquiry.enq_type}</td> */}
-                                        <td>
-                                            {enquiry.enq_message}
-                                        </td>
-                                    </tr>
-                                )))
-                                :
-                                (enquiries.filter(enquiry => (enquiry.enq_type === filter)).map(filteredenquiry => (
-                                    <tr key={filteredenquiry.e_id}>
-                                        {/* <td>{filteredenquiry.enq_type}</td> */}
-                                        <td>
-                                            {filteredenquiry.enq_message}
-                                        </td>
-                                    </tr>
-                                )))
+                            enquiries.map(enquiry => (
+                                <tr key={enquiry.e_id}>
+                                    {/* <td>{enquiry.enq_type}</td> */}
+                                    <td>
+                                        {enquiry.enq_message}
+                                    </td>
+                                </tr>
+                            ))
+                            // (filter === 'All') ?
+                            //     (enquiries.map(enquiry => (
+                            //         <tr key={enquiry.e_id}>
+                            //             {/* <td>{enquiry.enq_type}</td> */}
+                            //             <td>
+                            //                 {enquiry.enq_message}
+                            //             </td>
+                            //         </tr>
+                            //     )))
+                            //     :
+                            //     (enquiries.filter(enquiry => (enquiry.enq_type === filter)).map(filteredenquiry => (
+                            //         <tr key={filteredenquiry.e_id}>
+                            //             {/* <td>{filteredenquiry.enq_type}</td> */}
+                            //             <td>
+                            //                 {filteredenquiry.enq_message}
+                            //             </td>
+                            //         </tr>
+                            //     )))
 
 
                         }
