@@ -21,11 +21,11 @@ MARKING SCHEME
 ## 👨‍💻  Team <a name = "info"></a>
 Name | Student Number | Responsibilities
 ------------ | ------------- | -------------
-- Matthew Nathanael Sugiri | A0183805B | Integration, API development
-- Joshua Tam | A0190309H |
-- Tan Guan Yew | A0183464Y |
-- Sean Lim | A0187123H |
-- Glen Wong | A0188100N |
+Matthew Nathanael Sugiri | A0183805B | Integration, API development
+Joshua Tam | A0190309H |
+Tan Guan Yew | A0183464Y |
+Sean Lim | A0187123H |
+Glen Wong | A0188100N |
 
 ## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
 
@@ -47,6 +47,10 @@ Name | Student Number | Responsibilities
 **Show code and write description**
 
 ## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [Express](https://expressjs.com/) - Server Framework
+- [ReactJS](https://reactjs.org/) - Frontend 
+- [NodeJS](https://nodejs.org/en/) - Server Environment
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
 
