@@ -52,17 +52,18 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (owner_email, gender, pet_name, pet_type)
+	PRIMARY KEY (owner_email, pet_name)
 );
 
---Removed service_type because its redundant, dont have to be specific (just take care)
+--Added back service_type for easy analysis for PCSAdmin
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
-	service_avail VARCHAR NOT NULL, --Set by Caretaker
+	employment_type VARCHAR NOT NULL,
+	service_avail VARCHAR NOT NULL, --Set by Caretaker (date as string)
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
-	PRIMARY KEY (caretaker_email, service_type)
+	PRIMARY KEY (caretaker_email, type_pref, service_avail)
 );
 
 -- CREATE TABLE Petowner_Bids (  
@@ -79,9 +80,10 @@ CREATE TABLE Offers_Services (
 -- );
 
 --Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
+--Added status as integer (1: submitted, 2: rejected, 3: accepted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
-	tx_type VARCHAR,
+	employment_type VARCHAR,
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	owner_review VARCHAR,
@@ -90,9 +92,8 @@ CREATE TABLE Transactions_Details (
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
 	duration VARCHAR NOT NULL, --Set by PetOwner
-	is_accepted BOOLEAN DEFAULT FALSE,
+	status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
-	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
 	FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
 );
 
