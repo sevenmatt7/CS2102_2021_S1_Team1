@@ -14,12 +14,8 @@ import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
-<<<<<<< HEAD
-
-=======
 import SetAvail from "./components/SetAvail";
 import Profile from "./components/Profile";
->>>>>>> 0425d950e81201961774b8299d2578cac0411dd0
 toast.configure();
 
 function App() {
@@ -72,21 +68,8 @@ function App() {
             <Route exact path="/registerpet" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
 
-<<<<<<< HEAD
-            <Route exact path="/home/RegisterPet" render={props => isAuthenticated ?
-              (<RegisterPet {...props} setAuth={setAuth} />) : (<Login {...props} setAuth={setAuth} />)} />
-
-          </Switch>
-        {/* </div> */}
-      </Router>
-      {/* <div className="container">
-      <InputItem />
-      <ListItems />
-      </div> */}
-=======
             <Route exact path="/setavail" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
->>>>>>> 0425d950e81201961774b8299d2578cac0411dd0
 
             <Route exact path="/profile" render={props => !isAuthenticated ?
               (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
