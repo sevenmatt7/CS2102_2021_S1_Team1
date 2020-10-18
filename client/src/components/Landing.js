@@ -7,33 +7,8 @@ const LandingPage = () => {
 
     return (
         <Fragment>
-            <style>
-                {`
-                     .jumbo {
-                        background: url(${LandingBg}) no-repeat fixed bottom;
-                        background-size: cover;
-                        color: #efefef;
-                        height: 400px;
-                        margin-bottom: 0;
-                        position: relative;
-                        z-index: -2;
-                      }
-                      .overlay {
-                        background-color: #000;
-                        opacity: 0.6;
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        bottom: 0;
-                        right: 0;
-                        z-index: -1;
-                      }
-                    `}
-            </style>
-
-
+            
             <Jumbo fluid className="jumbo">
-
                 <div className="overlay"></div>
 
                 <div class="container mt-4 text-center">
