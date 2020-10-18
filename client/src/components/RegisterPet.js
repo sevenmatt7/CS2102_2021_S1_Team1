@@ -1,5 +1,5 @@
 import React, {Fragment, useState} from "react";
-import {Link} from "react-router-dom"
+import { Link, withRouter } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
@@ -21,7 +21,6 @@ const RegisterPet = ({setAuth}) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-
             const body = { pet_name, special_req, pet_type, gender }
             const response = await fetch("http://localhost:5000/auth/registerpet", {
                 method: "POST",
@@ -37,6 +36,8 @@ const RegisterPet = ({setAuth}) => {
         } catch (err) {
             console.error(err.message)
         }
+
+        //this.props.history.push('/profile')
     }
 
     
@@ -86,7 +87,8 @@ const RegisterPet = ({setAuth}) => {
                                         value={special_req}
                                         onChange={e => onChange(e)}/>
                                     </div>
-                                    <button className="btn btn-success btn-block">Submit</button>
+                                        <button className="btn btn-success btn-block">
+                                            Submit</button>
                                 </form>
                             </div>
                         </div>   
