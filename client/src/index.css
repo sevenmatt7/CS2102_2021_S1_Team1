@@ -192,3 +192,17 @@ body, html, .App, #root, .auth-wrapper {
 .card-text {
   padding-left: 0.5rem;
 }
+
+/* PCS Admin Pie Chart */
+.ct-series-a .ct-slice-pie {
+  /* fill of the pie slieces */
+  fill: #e28c9a;
+}
+
+.ct-series-b .ct-slice-pie {
+  fill: #aa5eaa;
+}
+/* .ct-label {
+  font-size: 15px;
+  color: black;
+} */

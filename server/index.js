@@ -46,6 +46,33 @@ app.get("/contact", async (req, res) => {
     }
 })
 
+// get total num of jobs for fulltimer and parttimer
+// incomplete query, need to include date condition
+app.get("/PCS", async (req, res) => {
+    try {
+        const startYearMonth = req.query.duration
+        const numJobs = await pool.query(
+            `SELECT caretakers.employment_type, COUNT(*) \
+                FROM transactions_details NATURAL JOIN caretakers \
+                WHERE transactions_details.duration LIKE '${startYearMonth}-%' \
+                GROUP BY caretakers.employment_type`
+        )
+        if (numJobs.rows.length === 0) {
+            res.json([{ employment_type: 'fulltime', count: '0' }, { employment_type: 'parttime', count: '0' }])
+        } else if (numJobs.rows.length === 1) {
+            if (numJobs.rows[0].employment_type === 'fulltime') {
+                res.json(numJobs.rows.concat([{ employment_type: 'parttime', count: '0' }]))
+            } else if (numJobs.rows[0].employment_type === 'parttime') {
+                res.json([{ employment_type: 'parttime', count: '0' }].concat(numJobs.rows))
+            }
+        } else {
+            res.json(numJobs.rows)
+        }
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
 //get all caretaker searches
 app.get("/caretakers", async (req, res) => {
     try {
@@ -143,16 +170,16 @@ app.get("/formsearch", async (req, res) => {
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const {service_avail, service_type, daily_price, pet_type} = req.body;
-        
+        const { service_avail, service_type, daily_price, pet_type } = req.body;
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email)
-        
+
         const newService = await pool.query(
-            "INSERT INTO Offers_Services (caretaker_email, service_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
-            [user_email, service_type, service_avail, pet_type, daily_price] );
+            "INSERT INTO Offers_Services (caretaker_email, service_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [user_email, service_type, service_avail, pet_type, daily_price]);
 
         res.json(newService.rows[0].service_avail);
 
@@ -167,15 +194,15 @@ app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet } = req.body;
-        
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(owner_email)
-        
+
         const newService = await pool.query(
-            "INSERT INTO Petowner_Bids (owner_email, caretaker_email, pet_type, service_request_period, offer_price, transfer_mode, selected_pet) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *" , 
-            [owner_email, caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet] );
+            "INSERT INTO Petowner_Bids (owner_email, caretaker_email, pet_type, service_request_period, offer_price, transfer_mode, selected_pet) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [owner_email, caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet]);
 
         res.json(newService.rows[0].service_request_period);
 
@@ -190,8 +217,8 @@ app.post("/acceptbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price
-            , service_request_period, transfer_mode, owner_email, emp_type} = req.body;
-        
+            , service_request_period, transfer_mode, owner_email, emp_type } = req.body;
+
         const payment_mode = 'cash';
 
         // get user_email from jwt token
@@ -199,8 +226,8 @@ app.post("/acceptbid", async (req, res) => {
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
 
         const newTxn = await pool.query(
-            "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *" , 
-            [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period] );
+            "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period]);
 
         res.json(newTxn.rows[0]);
 

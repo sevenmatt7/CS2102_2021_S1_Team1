@@ -1,12 +1,33 @@
-import React, { Fragment } from "react"
+import React, { Fragment, useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import ChartistGraph from 'react-chartist'
-import Chartist from 'chartist'
-import ChartistLegend from 'chartist-plugin-legend'
+
+
 
 
 const PCSAdmin = () => {
+  const [yearOptions, setYearOptions] = useState([])
+  const [pieState, setPieState] = useState({
+    monthDisplayed: '',
+    yearDisplayed: '',
+    data: {
+      labels: ["Full-Time", "Part-Time"],
+      series: []
+    },
+    options: {
+      // width: '100%',
+      // total: 200,
+      // donut: true,
+      // donutSolid: true,
+      chartPadding: 10,
+      labelOffset: 50,
+      labelDirection: 'explode',
+      // labelPosition: 'outside'
+    }
 
+  })
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   var data = {
     labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
@@ -14,7 +35,7 @@ const PCSAdmin = () => {
       [1, 2, 4, 8, 6, -2, -1, -4, -6, -2]
     ]
   };
-  
+
   // var options = {
   //   high: 10,
   //   low: -10,
@@ -24,13 +45,6 @@ const PCSAdmin = () => {
   //     }
   //   }
   // };
-
-  var type = 'Bar'
-
-  let dataPie = {
-    labels: ["70%", "30%"],
-    series: [70, 30]
-  }
 
   let dataSales = {
     labels: [
@@ -49,14 +63,83 @@ const PCSAdmin = () => {
       [23, 113, 67, 108, 190, 239, 307, 308]
     ]
   }
-  let options = {
-    plugins: [
-      ChartistLegend({
-        position: "bottom",
-        legendNames: ["Full-time", "Part-time"]
-      })
-    ]
+
+  const getCurrentDate = () => {
+    var dt = new Date();
+    return dt.getDate() + " " + (monthNames[dt.getMonth()]) + " " + dt.getFullYear();
   }
+
+  const setMonthDisplayed = e => {
+    const monthIndex = e.target.value
+    setPieState(prevState => {
+      return {
+        ...prevState,
+        monthDisplayed: monthIndex
+      }
+    })
+  }
+
+  const setYearDisplayed = e => {
+    const year = e.target.value
+    setPieState(prevState => {
+      return {
+        ...prevState,
+        yearDisplayed: year
+      }
+    })
+  }
+
+  const getCurrMonthYear = () => {
+    var d = new Date();
+    var years = new Array(10);
+    for (var i = 0; i < 10; i++) {
+      years[i] = d.getFullYear() - i
+    }
+    setYearOptions(years)
+    setPieState(prevState => {
+      return {
+        ...prevState,
+        monthDisplayed: d.getMonth().toString(),
+        yearDisplayed: d.getFullYear().toString()
+      };
+    });
+
+
+
+  }
+
+  const getPieData = async () => {
+    try {
+      const duration = pieState.yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
+      const response = await fetch('http://localhost:5000/PCS?' + new URLSearchParams({
+        duration: duration
+      }), {
+        method: "GET"
+      });
+      const data = await response.json()
+      setPieState(prevState => {
+        return {
+          ...prevState,
+          data: {
+            labels: ["Full-Time", "Part-Time"],
+            series: [data[0].count, data[1].count]
+          }
+        };
+      });
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+
+  // get prev month on mount
+  useEffect(() => {
+    getCurrMonthYear()
+  }, [])
+
+  // get pie data whenever monthDisplayed and yearDispalyed gets updated
+  useEffect(() => {
+    getPieData()
+  }, [pieState.monthDisplayed, pieState.yearDisplayed])
 
   return (
     <Fragment>
@@ -98,16 +181,16 @@ const PCSAdmin = () => {
             <div className="sidebar-sticky pt-3">
               <ul className="nav flex-column">
                 <li className="nav-item">
-                  <a className="nav-link active" href="#">
+                  <Link className="nav-link active" to="/PCS">
                     <span data-feather="home"></span>
                     Dashboard <span className="sr-only">(current)</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#">
+                  <Link className="nav-link" to="/home">
                     <span data-feather="file"></span>
-                    Orders
-                  </a>
+                    Enquiries
+                  </Link>
                 </li>
                 <li className="nav-item">
                   <a className="nav-link" href="#">
@@ -185,24 +268,56 @@ const PCSAdmin = () => {
               </div>
             </div>
 
-            {/* <ChartistGraph data={data} options={options} type={type} /> */}
             <div className="row">
               <div className="col-md-4">
                 <div className="card ">
                   <div className="card-header ">
-                    <h4 className="card-title">Number of jobs this month</h4>
-                    <p className="card-category">October</p>
+                    <h4 className="card-title">No. of pets taken care of</h4>
+                    <div className="card-category">
+                      {pieState.dateDisplayed}
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <label class="input-group-text" for="yearDisplayed">Year</label>
+                        </div>
+                        <select className="form-control" value={pieState.yearDisplayed} onChange={setYearDisplayed} >
+                          {
+                            yearOptions.map((year, index) => (
+                              <option key={index} value={year}>{year}</option>
+                            ))
+                          }
+                        </select>
+                      </div>
+                      <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <label class="input-group-text" for="monthDisplayed">Month</label>
+                        </div>
+                        <select
+                          className="form-control"
+                          value={pieState.monthDisplayed}
+                          onChange={setMonthDisplayed}
+                        >
+                          {
+                            monthNames.map((month, index) => (
+                              <option key={index} value={index}>{month}</option>
+                            ))
+                          }
+                        </select>
+                      </div>
+                    </div>
                   </div>
                   <div className="card-body ">
-                    <ChartistGraph data={dataPie} type="Pie" options={options} />
+                    <ChartistGraph data={pieState.data} type="Pie" options={pieState.options} />
                     <div className="legend">
                       {/* <i className="fa fa-circle text-info"></i> Open
                       <i className="fa fa-circle text-danger"></i> Bounce
                       <i className="fa fa-circle text-warning"></i> Unsubscribe */}
+                      <p>Total number of jobs: {parseInt(pieState.data.series[0]) + parseInt(pieState.data.series[1])}</p>
+                      <p>Number of Full-timer jobs: {pieState.data.series[0]}</p>
+                      <p>Number of Part-timer jobs: {pieState.data.series[1]}</p>
                     </div>
                     <hr />
                     <div className="stats">
-                      <i className="fa fa-clock-o"></i> Campaign sent 2 days ago
+                      <i className="fa fa-clock-o"></i> Today's date: {getCurrentDate()}
                     </div>
                   </div>
                 </div>
@@ -247,7 +362,6 @@ const PCSAdmin = () => {
                     <th>Salary</th>
                   </tr>
                 </thead>
-               
               </table>
             </div>
           </main>
