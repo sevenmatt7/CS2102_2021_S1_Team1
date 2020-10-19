@@ -213,31 +213,6 @@ app.post("/submitbid", async (req, res) => {
     }
 });
 
-// //caretaker to accept bid
-// app.post("/acceptbid", async (req, res) => {
-//     try {
-//         //step 1: destructure req.body to get details
-//         const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price
-//             , service_request_period, transfer_mode, owner_email, emp_type} = req.body;
-        
-//         const payment_mode = 'cash';
-
-//         // get user_email from jwt token
-//         const jwtToken = req.header("token")
-//         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-
-//         const newTxn = await pool.query(
-//             "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *" , 
-//             [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period] );
-
-//         res.json(newTxn.rows[0]);
-
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).send("A server error has been encountered");
-//     }
-// });
-
 //caretaker to accept bid for service
 app.put("/submitbid", async (req, res) => {
     try {
@@ -283,6 +258,19 @@ app.put("/submitreview", async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
+    }
+});
+
+//get all reviews of a caretaker
+app.get("/getreview", async (req, res) => {       
+    try {
+        console.log(req.query.caretaker_email);
+        const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating FROM Transactions_Details LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
+                                           WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}';`);
+        console.log(searches.rows)
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
     }
 });
 

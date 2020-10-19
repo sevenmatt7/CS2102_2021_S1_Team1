@@ -3,9 +3,11 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
+import ViewReviews from "./ViewReviews";
 
 const Homepage = ({ setAuth }) => {
   const acc_type = localStorage.acc_type;
+  const [reviews, setReviews] = useState([])
   const [name, setName] = useState("");
   const [searches, setSearches] = useState([]);
   const [form, setForm] = useState("");
@@ -146,6 +148,7 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
                   <RequestService search={search} i={i}/>
+                  <ViewReviews search={search} i={i}/>
                 </div>
               </div>
             </div>
