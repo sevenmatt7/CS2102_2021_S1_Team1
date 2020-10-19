@@ -16,6 +16,7 @@ import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
 import SetAvail from "./components/SetAvail";
 import Profile from "./components/Profile";
+import Sitters from './components/Sitters';
 toast.configure();
 
 function App() {
@@ -46,37 +47,44 @@ function App() {
 
   return (
     <Fragment>
-      <NavBar isAuth={isAuthenticated} setAuth={setAuth}/>
-      
+      <NavBar isAuth={isAuthenticated} setAuth={setAuth} />
+
       <Router>
-          <Switch>
-            <Route exact path="/" render={props => 
-              (<LandingPage {...props} setAuth={setAuth} />)} /> 
-            
-            <Route exact path="/login" render={props => !isAuthenticated ?
-              (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
-            
-            <Route exact path="/register" render={props => !isAuthenticated ?
-              (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />    
-            
-            <Route exact path="/PCS" render={(props) => !isAuthenticated ?
-              (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
+        <Switch>
+          <Route exact path="/" render={props =>
+            (<LandingPage {...props} setAuth={setAuth} />)} />
 
-            <Route exact path="/contact" render={props => !isAuthenticated ?
-              (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
+          <Route exact path="/login" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
 
-            <Route exact path="/registerpet" render={props => !isAuthenticated ?
-              (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
+          <Route exact path="/register" render={props => !isAuthenticated ?
+            (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
 
-            <Route exact path="/setavail" render={props => !isAuthenticated ?
-              (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
+          <Route exact path="/PCS" render={(props) => !isAuthenticated ?
+            (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
-            <Route exact path="/profile" render={props => !isAuthenticated ?
-              (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
+          <Route exact path="/contact" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
 
-            <Route exact path="/home" render={props => isAuthenticated ?
-              (<Homepage {...props} setAuth={setAuth} />) : (<LandingPage {...props} setAuth={setAuth} />)} />
-          </Switch>
+          <Route exact path="/registerpet" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/setavail" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/profile" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/home" render={props => isAuthenticated ?
+            (<Homepage {...props} setAuth={setAuth} />) : (<LandingPage {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/sitters" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<Sitters {...props} setAuth={setAuth} />)} />
+
+          {/* <Route exact path="/sitters" render={props =>
+            (<Sitters {...props} setAuth={setAuth} />)} /> */}
+
+        </Switch>
       </Router>
     </Fragment>
   );
