@@ -19,9 +19,11 @@ app.use("/home", require("./routes/homepage"));
 app.post("/contact", async (req, res) => {
     try {
         const { subject, message, date } = req.body
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const newEnquiry = await pool.query(
-            "INSERT INTO enquiries (enq_type, submission, enq_message) VALUES($1, $2, $3)",
-            [subject, date, message]
+            "INSERT INTO enquiries (user_email, enq_type, submission, enq_message) VALUES($1, $2, $3, $4)",
+            [user_email, subject, date, message]
         )
         res.json(newEnquiry.rows[0])
     } catch (err) {

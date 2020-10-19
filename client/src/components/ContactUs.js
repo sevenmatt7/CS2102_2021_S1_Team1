@@ -28,7 +28,10 @@ const ContactUs = () => {
                 "http://localhost:5000/contact",
                 {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        token: localStorage.token
+                    },
                     body: JSON.stringify(body)
                 }
             )
@@ -130,7 +133,7 @@ const ContactUs = () => {
                 <table className="table mt-5 mb-5">
                     <thead>
                         <tr>
-                            {/* <th>Subject</th> */}
+                            <th>Subject</th>
                             <th width={'50%'}>Question</th>
                             <th width={'50%'}>Answer</th>
                         </tr>
@@ -144,7 +147,7 @@ const ContactUs = () => {
                         {
                             enquiries.map(enquiry => (
                                 <tr key={enquiry.e_id}>
-                                    {/* <td>{enquiry.enq_type}</td> */}
+                                    <td>{enquiry.enq_type}</td>
                                     <td>
                                         {enquiry.enq_message}
                                     </td>
