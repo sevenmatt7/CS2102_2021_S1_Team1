@@ -111,7 +111,7 @@ app.get("/transactions", async (req, res) => {
                                             gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
-                                            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
+                                            LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
                                             WHERE Transactions_Details.owner_email = '${user_email}';\ 
                                             ` );
         } else if (acc_type === "caretaker") {
@@ -134,33 +134,47 @@ app.get("/transactions", async (req, res) => {
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE 1 = 1";
+        var sql = "SELECT DISTINCT full_name, user_address, \
+        avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
+        type_pref, service_avail, daily_price \
+        FROM Offers_services \
+        LEFT JOIN Users \
+        ON Offers_services.caretaker_email = Users.email \
+        LEFT JOIN Caretakers \
+        ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
+        WHERE 1 = 1";
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
-            sql += " AND employment_type = ";
+            sql += " AND Caretakers.employment_type = ";
             sql += ("'" + req.query.employment_type + "'");
         }
         if (req.query.avg_rating != undefined && req.query.avg_rating != "") {
             sql += " AND avg_rating = ";
             sql += (req.query.avg_rating);
         }
+        if (req.query.type_pref != undefined && req.query.type_pref != "") {
+            sql += " AND type_pref = ";
+            sql += ("'" + req.query.type_pref + "'");
+        }
+        if (req.query.start_date != undefined && req.query.start_date != "") {
+            sql += " AND split_part(service_avail, ',', 1) <=";
+            sql += ("'" + req.query.start_date + "'");
+            sql += " AND split_part(service_avail, ',', 2) >=";
+            sql += ("'" + req.query.start_date + "'");
+        }
+        if (req.query.end_date != undefined && req.query.end_date != "") {
+            sql += " AND split_part(service_avail, ',', 1) <=";
+            sql += ("'" + req.query.end_date + "'");
+            sql += " AND split_part(service_avail, ',', 2) >=";
+            sql += ("'" + req.query.end_date + "'");
+        }       
+        if (req.query.form != undefined && req.query.form != "") {
+            sql += " AND LOWER(full_name) LIKE LOWER(";
+            sql += "'%" + req.query.form + "%')";
+        }
 
         const filteredSearches = await pool.query(sql);
         if (filteredSearches !== undefined) res.json(filteredSearches.rows);
-    } catch (error) {
-        console.log(error.message);
-    }
-});
-
-//get by name
-app.get("/formsearch", async (req, res) => {
-    try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE LOWER(full_name) LIKE LOWER(";
-        sql += "'%" + req.query.form + "%')";
-        const filteredSearches = await pool.query(sql);
-        res.json(filteredSearches.rows);
     } catch (error) {
         console.log(error.message);
     }
@@ -305,6 +319,7 @@ app.get("/getreview", async (req, res) => {
 //         console.log(err.message);
 //     }
 // });
+
 
 app.listen(5000, () => {
     console.log('server has started at port 5000');

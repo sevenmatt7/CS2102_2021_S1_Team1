@@ -98,7 +98,7 @@ const SetAvail = ({setAuth}) => {
                                         onChange={e => onChange(e)}/>
                                     </div>
                                     <div className="form-group">
-                                        <label>Service Type</label>
+                                        <label>Employment Type</label>
                                         <input type="text" 
                                         name="employment_type" 
                                         readOnly

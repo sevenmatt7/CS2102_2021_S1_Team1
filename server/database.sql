@@ -55,7 +55,6 @@ CREATE TABLE Categories (
 INSERT INTO Categories (pet_type)
 VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
 
---Removed pet_id, changed primary key to (owner_email, pet_name)
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
 	ON DELETE cascade,
@@ -66,7 +65,6 @@ CREATE TABLE Owns_Pets (
 	PRIMARY KEY (owner_email, pet_name)
 );
 
---Added back service_type for easy analysis for PCSAdmin
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
@@ -78,7 +76,7 @@ CREATE TABLE Offers_Services (
 );
 
 --Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
---Added status as integer (1: submitted, 2: rejected, 3: accepted)
+--Added status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
@@ -95,8 +93,6 @@ CREATE TABLE Transactions_Details (
 	FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
 );
 
---Combined Enquires and Enquiries table, removed e_id, primary key changed to (user_email, enq_message)
---Removed Answers Table, added into Answer and Admin_email into Enquires table
 CREATE TABLE Enquiries (
 	user_email VARCHAR REFERENCES Users(email),
 	enq_type VARCHAR,

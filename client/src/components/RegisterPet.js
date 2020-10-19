@@ -1,5 +1,5 @@
 import React, {Fragment, useState} from "react";
-import { Link, withRouter } from "react-router-dom"
+import { Link, withRouter, Redirect } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
@@ -13,6 +13,7 @@ const RegisterPet = ({setAuth}) => {
     const [gender, setGender] = useState("M");
     const [pet_type, setPetType] = useState("dog");
     const {pet_name, special_req} = inputs;
+    const [redirect, setRedirect] = useState(false);
 
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
@@ -32,18 +33,20 @@ const RegisterPet = ({setAuth}) => {
             const parseResponse = await response.json();
             const successMessage = 'Your pet ' + parseResponse + ' has been succesfully registered!'
             toast.success(successMessage);
+            setRedirect(true); 
             
         } catch (err) {
             console.error(err.message)
         }
 
-        //this.props.history.push('/profile')
     }
 
-    
+    if (redirect) {
+        return <Redirect to="/profile" /> //Go to profile page after pet is registered
+    }
     return (
         <Fragment>
-            <div className="container">
+            <div class="container">
                 <div class="row">
                     
                     <div class="col-sm">

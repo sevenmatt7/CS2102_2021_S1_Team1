@@ -67,11 +67,11 @@ const Profile = ({ setAuth }) => {
 
       const parseResponse = await response.json();
 
-      if (status_update == 3) {
+      if (status_update == 3) { //when the caretaker accepts the bid
         toast.success(`You have accepted the offer from ${search.full_name}!`);
-      } else if (status_update == 2) {
+      } else if (status_update == 2) {  //when the caretaker rejects the bid
         toast.error(`You have rejected the offer from ${search.full_name}!`)
-      } else if (status_update == 4) {
+      } else if (status_update == 4) { //when the job is marked as complete
         toast.success(`🎉 You have completed the job from ${search.full_name}!`)
       }
      
@@ -267,7 +267,7 @@ const Profile = ({ setAuth }) => {
                     <div className="col-md-8">
                       <div className="card-body">
                         <h5 className="card-title">My pet is with {search.full_name}</h5>
-                        <p className="card-text" >Address: {search.user_address}</p>
+                        <p className="card-text" >Caretaker's Address: {search.user_address}</p>
                         <p className="card-text">Pet Name: {search.pet_name}</p>
                         <p className="card-text">Gender: {search.gender}</p>
                         <p className="card-text">Type: {search.pet_type}</p>
@@ -305,7 +305,7 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Pet Name: {search.pet_name}</p>
                         <p className="card-text">Gender: {search.gender}</p>
                         <p className="card-text">Type: {search.pet_type}</p>
-                        <p className="card-text">Special requirments: {search.special_req}</p>
+                        <p className="card-text">Special requirements: {search.special_req}</p>
                         <p className="card-text"> Offered price/day: {search.cost}</p>
                         <p className="card-text">Requested period: {search.duration}</p>
                         <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
