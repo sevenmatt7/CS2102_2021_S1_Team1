@@ -28,6 +28,23 @@ const Profile = ({ setAuth }) => {
         break
     }
   }
+
+  const getTransferMode = (mode) => {
+    switch (mode) {
+      case 1:
+        return ""
+        break;
+      case 2:
+        return "Delivery by Pet Owner"
+        break
+      case 3:
+        return "Pickup by Caretaker"
+        break
+      case 4:
+        return "Transfer at HQ"
+        break
+    }
+  }
   // const {service_avail_from, service_avail_to, service_type, daily_price} = inputs;
 
   // const onChange = (e) => {
@@ -259,7 +276,7 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Special requirments: {search.special_req}</p>
                         <p className="card-text"> Offered price/day: {search.cost}</p>
                         <p className="card-text">Requested period: {search.duration}</p>
-                        <p className="card-text">Transfer mode: {search.mode_of_transfer}</p>
+                        <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                         <p className="card-text">Status: {getTransactionStatus(search.t_status)}</p>
                         {search.t_status === 4 && <OwnerReview search={search} i={i}/>}
                       </div>
@@ -293,7 +310,7 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Special requirments: {search.special_req}</p>
                         <p className="card-text"> Offered price/day: {search.cost}</p>
                         <p className="card-text">Requested period: {search.duration}</p>
-                        <p className="card-text">Transfer mode: {search.mode_of_transfer}</p>
+                        <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                         <div className="row">
                           <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 3)} >Accept</button>
                           <div className="col-md-1 col-sm-1 col-12" />
