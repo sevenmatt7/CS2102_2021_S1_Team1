@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS Users CASCADE;
+DROP TABLE IF EXISTS PetOwners CASCADE;
+DROP TABLE IF EXISTS Caretakers CASCADE;
+DROP TABLE IF EXISTS PCSAdmins CASCADE;
+DROP TABLE IF EXISTS Manages CASCADE;
+DROP TABLE IF EXISTS Categories CASCADE;
+DROP TABLE IF EXISTS Owns_Pets CASCADE;
+DROP TABLE IF EXISTS Offers_Services CASCADE;
+DROP TABLE IF EXISTS Transactions_Details CASCADE;
+DROP TABLE IF EXISTS Enquiries CASCADE;
+
 CREATE TABLE Users (
 	email VARCHAR,
 	full_name VARCHAR NOT NULL,
@@ -65,19 +76,6 @@ CREATE TABLE Offers_Services (
 	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_email, type_pref, service_avail)
 );
-
--- CREATE TABLE Petowner_Bids (  
--- 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
--- 	ON DELETE cascade,
--- 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
--- 	ON DELETE cascade,
--- 	selected_pet VARCHAR NOT NULL,
--- 	pet_type VARCHAR NOT NULL,
--- 	service_request_period VARCHAR NOT NULL,
--- 	offer_price NUMERIC NOT NULL,
--- 	transfer_mode INTEGER NOT NULL, 
--- 	PRIMARY KEY (owner_email, caretaker_email, selected_pet, service_request_period)
--- );
 
 --Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
 --Added status as integer (1: submitted, 2: rejected, 3: accepted)
