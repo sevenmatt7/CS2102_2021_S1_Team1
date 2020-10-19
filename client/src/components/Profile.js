@@ -56,7 +56,7 @@ const Profile = ({ setAuth }) => {
       const { owner_email, pet_name, duration } = search;
 
       const body = { owner_email, pet_name, duration, status_update }
-      const response = await fetch("http://localhost:5000/submitbid", {
+      const response = await fetch("http://localhost:5000/changebid", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -69,8 +69,10 @@ const Profile = ({ setAuth }) => {
 
       if (status_update == 3) {
         toast.success(`You have accepted the offer from ${search.full_name}!`);
-      } else {
-        toast.warning(`You have rejected the offer from ${search.full_name}!`)
+      } else if (status_update == 2) {
+        toast.error(`You have rejected the offer from ${search.full_name}!`)
+      } else if (status_update == 4) {
+        toast.success(`🎉 You have completed the job from ${search.full_name}!`)
       }
      
     } catch (err) {
@@ -307,11 +309,18 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text"> Offered price/day: {search.cost}</p>
                         <p className="card-text">Requested period: {search.duration}</p>
                         <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
-                        <div className="row">
+                        {search.t_status == 1 && <div className="row">
                           <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 3)} >Accept</button>
                           <div className="col-md-1 col-sm-1 col-12" />
                           <button className="btn btn-danger  col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 2)} >Reject</button>
-                        </div>
+                        </div>}
+                        {search.t_status == 2 && <button className="btn btn-warning btn-block">Rejected</button>}
+                        {search.t_status == 3 && <div className="row">
+                          <button className="btn btn-primary disabled col-md-5 col-sm-5 col-12" >Accepted</button>
+                          <div className="col-md-1 col-sm-1 col-12" />
+                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 4)} >Complete job</button>
+                        </div>}
+                        {search.t_status == 4 && <button className="btn btn-success btn-block">Completed</button>}
                       </div>
                     </div>
                   </div>

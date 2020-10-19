@@ -213,8 +213,8 @@ app.post("/submitbid", async (req, res) => {
     }
 });
 
-//caretaker to accept bid for service
-app.put("/submitbid", async (req, res) => {
+//caretaker to change bid status to ACCEPTED, REJECTED OR COMPLETED
+app.put("/changebid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { owner_email, pet_name, duration, status_update} = req.body;

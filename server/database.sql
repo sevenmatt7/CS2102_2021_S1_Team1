@@ -85,7 +85,7 @@ CREATE TABLE Transactions_Details (
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	owner_review VARCHAR,
-	owner_rating VARCHAR,
+	owner_rating INTEGER,
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
@@ -121,3 +121,24 @@ CREATE TABLE Enquiries (
 -- 	breed_name VARCHAR,
 -- 	PRIMARY KEY (pet_id)
 -- );
+
+--- Trigger to update caretaker avg_rating after every review is submitted by the owner
+CREATE OR REPLACE FUNCTION update_caretaker_rating()
+RETURNS TRIGGER AS $$ 
+	BEGIN
+	UPDATE Caretakers 
+	SET avg_rating = (SELECT AVG(owner_rating) 
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email),
+	no_of_reviews = (SELECT COUNT(owner_rating) 
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email)
+    WHERE (caretaker_email = NEW.caretaker_email);
+	RETURN NULL;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_caretaker_rating
+	AFTER UPDATE ON Transactions_Details
+	FOR EACH ROW
+	EXECUTE PROCEDURE update_caretaker_rating();
