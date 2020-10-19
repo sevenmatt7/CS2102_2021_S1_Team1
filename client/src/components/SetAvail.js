@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const SetAvail = ({setAuth}) => {
 
-    const service_type = localStorage.emp_type;
+    const employment_type = localStorage.emp_type;
 
     const [inputs, setInputs] = useState({
         service_avail_from: "",
@@ -24,7 +24,7 @@ const SetAvail = ({setAuth}) => {
         e.preventDefault();
         try {
             const service_avail = service_avail_from + ',' + service_avail_to;
-            const body = {service_avail, service_type, daily_price, pet_type}
+            const body = {service_avail, employment_type, daily_price, pet_type}
             const response = await fetch("http://localhost:5000/setavail", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -100,10 +100,10 @@ const SetAvail = ({setAuth}) => {
                                     <div className="form-group">
                                         <label>Service Type</label>
                                         <input type="text" 
-                                        name="service_type" 
+                                        name="employment_type" 
                                         readOnly
                                         className="form-control"
-                                        value={service_type === "parttime" ? "Part-time" : "Full-time"}
+                                        value={employment_type === "parttime" ? "Part-time" : "Full-time"}
                                         />
                                     </div>
                                     <button className="btn btn-success btn-block">Submit</button>

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 const RequestService = ({ search, i }) => {
     const pet_type = search.type_pref
     const caretaker_email = search.caretaker_email
+    const employment_type = search.employment_type
     const[petList, setPets] = useState([]);
 
     const getPetList = async () => {
@@ -25,7 +26,7 @@ const RequestService = ({ search, i }) => {
         try {
             const service_request_period = service_request_from + ',' + service_request_to;
            
-            const body = { caretaker_email, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet}
+            const body = { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet}
             const response = await fetch("http://localhost:5000/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
