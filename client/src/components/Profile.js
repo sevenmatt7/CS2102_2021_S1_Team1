@@ -3,11 +3,12 @@ import { Link } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 import imposter from "../Assets/Images/imposter.jpg";
-
+import OwnerReview from "./OwnerReview"
 const Profile = ({ setAuth }) => {
 
   const [name, setName] = useState("");
   const [searches, setSearches] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const acc_type = localStorage.acc_type;
 
   // const {service_avail_from, service_avail_to, service_type, daily_price} = inputs;
@@ -87,9 +88,23 @@ const Profile = ({ setAuth }) => {
     }
   };
 
+  const getTransactions = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/transactions", {
+        method: "GET",
+        headers: { token: localStorage.token, acc_type: acc_type }
+      });
+      const jsonData = await res.json();
+      setTransactions(jsonData);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     getProfile();
     getSearches();
+    getTransactions();
   }, [])
 
 
@@ -190,7 +205,9 @@ const Profile = ({ setAuth }) => {
       {/* If is Pet Owner, List their pets */}
       <div class="container">
         <div class="row">
-          {acc_type === "petowner" && <div class="card-deck">
+          {acc_type === "petowner" && 
+          <div class="card-deck">
+            <h1>My Pets</h1>
             {searches.map((search, i) => (
               <div class="col-md-6 mb-4">
                 <div key={i} className="card mb-3">
@@ -204,6 +221,40 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Gender: {search.gender}</p>
                         <p className="card-text">Pet Type: {search.pet_type}</p>
                         <p className="card-text">Special Requirement: {search.special_req}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>}
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          {acc_type === "petowner" && <div className="card-deck">
+            <h1>My transactions</h1>
+            {transactions.map((search, i) => (
+              <div class="col-md-6 mb-4">
+                <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
+                  <div className="row no-gutters">
+                    <div className="col-md-4">
+                      <img src={imposter} alt="" class="card-img" />
+                    </div>
+                    <div className="col-md-8">
+                      <div className="card-body">
+                        <h5 className="card-title">My pet is with {search.full_name}</h5>
+                        <p className="card-text" >Address: {search.user_address}</p>
+                        <p className="card-text">Pet Name: {search.pet_name}</p>
+                        <p className="card-text">Gender: {search.gender}</p>
+                        <p className="card-text">Type: {search.pet_type}</p>
+                        <p className="card-text">Special requirments: {search.special_req}</p>
+                        <p className="card-text"> Offered price/day: {search.cost}</p>
+                        <p className="card-text">Requested period: {search.duration}</p>
+                        <p className="card-text">Transfer mode: {search.mode_of_transfer}</p>
+                        <p className="card-text">Status: {search.t_status}</p>
+                        <OwnerReview search={search} i={i}/>
                       </div>
                     </div>
                   </div>

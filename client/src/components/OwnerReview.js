@@ -1,34 +1,20 @@
 import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
-const RequestService = ({ search, i }) => {
-    const pet_type = search.type_pref
+const OwnerReview = ({ search, i }) => {
+    const pet_name = search.pet_name
     const caretaker_email = search.caretaker_email
     const employment_type = search.employment_type
-    const[petList, setPets] = useState([]);
+    const duration = search.duration
 
-    const getPetList = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/pets", {
-                                        method: "GET",
-                                        headers: {token: localStorage.token}
-                                        });
-            const jsonData = await response.json();
-            setPets(jsonData);
-          
-        } catch (error) {
-          console.log(error.message)
-        }
-      };
-
-    const submitBid = async (e) => {
+    const submitReview= async (e) => {
         e.preventDefault();
         try {
-            const service_request_period = service_request_from + ',' + service_request_to;
+            // const service_request_period = service_request_from + ',' + service_request_to;
            
-            const body = { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet}
-            const response = await fetch("http://localhost:5000/submitbid", {
-                method: "POST",
+            const body = { caretaker_email, employment_type, pet_name, duration, rating, review }
+            const response = await fetch("http://localhost:5000/submitreview", {
+                method: "PUT",
                 headers: { "Content-Type": "application/json",
                             token: localStorage.token },
                 body: JSON.stringify(body)
@@ -36,8 +22,8 @@ const RequestService = ({ search, i }) => {
             
             const parseResponse = await response.json();
             let dateArr = parseResponse.split(',')
-            const successMessage = 'You have submitted your offer for ' + dateArr[0] + ' to ' +
-                                    dateArr[1] + '!';
+            const successMessage = 'Your review for ' + dateArr[0] + ' to ' +
+                                    dateArr[1] + ' has been submitted!';
             toast.success(successMessage);
         } catch (err) {
             console.error(err.message)
@@ -45,48 +31,58 @@ const RequestService = ({ search, i }) => {
     }
 
     const [inputs, setInputs] = useState({
-        service_request_from: "",
-        service_request_to: "",
-        bidding_offer: 0,
+        rating: 0,
+        review: ""
     });
 
-    const {service_request_from, service_request_to, bidding_offer } = inputs;
+    const {rating, review} = inputs;
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
     }
 
-    const [transfer_mode, setTransferMode] = useState(1);
-
-    const [selected_pet, selectPet] = useState('');
-
     return (
         <Fragment>
-            <button className="btn btn-success" data-toggle="modal" data-target={`#id${i}`}
-              onClick={e => getPetList(e)}>Request service!</button>
+            <button className="btn btn-success" data-toggle="modal" data-target={`#id${i}review`}
+              >Submit Review</button>
               
-            <div className="modal fade" id={`id${i}`} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id={`id${i}review`} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
 
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Request Service from {search.full_name}!</h5>
+                            <h5 className="modal-title" id="exampleModalLabel">Submit review for {search.full_name}!</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
 
                         <div className="modal-body mx-3">
-                        <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Which pet?</label>
-                        
-                            <select className="custom-select mt-2 mb-4 mr-sm-2" value={selected_pet} 
-                            onChange={e => selectPet(e.target.value)} required="required">
-                                <option selected >Choose...</option>
-                                {petList.map((pet, i) => (
-                                    <option value={pet.pet_name}>{pet.pet_name}</option>
-                                ))}
-                            </select>
+                            
+                            <div className="md-form mb-4">
+                                <label data-error="wrong" data-success="right">Rating (out of 10)</label>
+                                <input type="number" 
+                                pattern="[0-9]+" 
+                                maxLength="2" 
+                                name="rating"
+                                value={rating}
+                                onChange={e => onChange(e)}
+                                id={`bid${search.full_name}`} 
+                                className="form-control validate" 
+                                required="required" />
+                            </div>
 
                             <div className="md-form mb-4">
+                                <label data-error="wrong" data-success="right">Any comments?</label>
+                                <input type="text"
+                                name="review"
+                                value={review}
+                                onChange={e => onChange(e)}
+                                id={`bid${search.full_name}`} 
+                                className="form-control validate" 
+                                />
+                            </div>
+
+                            {/* <div className="md-form mb-4">
                                 <label data-error="wrong" data-success="right">Bidding Offer ($ per hr)</label>
                                 <input type="number" 
                                 pattern="[0-9]+" 
@@ -97,18 +93,18 @@ const RequestService = ({ search, i }) => {
                                 id={`bid${search.full_name}`} 
                                 className="form-control validate" 
                                 required="required" />
-                            </div>
+                            </div> */}
 
-                            <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Mode of Pet Transfer</label>
+                            {/* <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Mode of Pet Transfer</label>
                             <select className="custom-select mt-2 mb-4 mr-sm-2" id="modeOfPetXfer" value={transfer_mode} 
                             onChange={e => setTransferMode(e.target.value)} required="required">
                                 <option selected disabled>Choose...</option>
                                 <option value="1">Pet Owner deliver</option>
                                 <option value="2">Care Taker pickup</option>
                                 <option value="3">Transfer via building at PCS</option>
-                            </select>
+                            </select> */}
 
-                            <div className="md-form mb-4">
+                            {/* <div className="md-form mb-4">
                                 <label data-error="wrong" data-success="right" htmlFor="startDate">Start Date</label>
                                 <input type="datetime-local" 
                                 id="startDate" 
@@ -119,9 +115,9 @@ const RequestService = ({ search, i }) => {
                                 min="2020-01-01T23:59" 
                                 max="2099-12-31T23:59" 
                                 required="required" />
-                            </div>
+                            </div> */}
 
-                            <div className="md-form mb-4">
+                            {/* <div className="md-form mb-4">
                                 <label data-error="wrong" data-success="right" htmlFor="endDate">End Date</label>
                                 <input type="datetime-local" 
                                 id="endDate" 
@@ -132,12 +128,12 @@ const RequestService = ({ search, i }) => {
                                 min="2020-01-01T23:59" 
                                 max="2099-12-31T23:59" 
                                 required="required" />
-                            </div>
+                            </div> */}
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" className="btn btn-primary" data-dismiss="modal" 
-                             onClick={e => submitBid(e)}>Submit Bidding</button>
+                             onClick={e => submitReview(e)}>Submit Review</button>
                         </div>
                     </div>
                 </div>
@@ -146,4 +142,4 @@ const RequestService = ({ search, i }) => {
     );
 };
 
-export default RequestService;
+export default OwnerReview;

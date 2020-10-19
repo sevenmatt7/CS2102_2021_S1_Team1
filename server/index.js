@@ -98,6 +98,26 @@ app.get("/bids", async (req, res) => {
     }
 });
 
+//get all transactions for caretaker or petowner
+app.get("/transactions", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const acc_type = req.header("acc_type")
+        console.log(user_email)
+        const searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
+                                            FROM Transactions_Details LEFT JOIN Owns_pets  \
+                                            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
+                                            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
+                                            WHERE Transactions_Details.owner_email = '${user_email}';\ 
+                                            ` );
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
 
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
@@ -206,28 +226,30 @@ app.post("/acceptbid", async (req, res) => {
     }
 });
 
+//petowner to submit review for service
+app.put("/submitreview", async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const { caretaker_email, employment_type, pet_name, duration, rating, review } = req.body;
+        
+        // get user_email from jwt token
+        const jwtToken = req.header("token")
+        const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(owner_email)
+        
+        const txn = await pool.query(
+            "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2 \
+            WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration = $6) RETURNING *" , 
+            [rating, review, owner_email, caretaker_email, pet_name, duration] );
 
-// //get all items
-// app.get("/items", async (req, res) => {
-//     try {
-//         const allItems = await pool.query("SELECT * FROM sample")
-//         res.json(allItems.rows);
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
+        res.json(txn.rows[0].service_request_period);
 
-// //get an item
-// app.get("/items/:id", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const item = await pool.query("SELECT * FROM sample WHERE id = $1", [id])
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
 
-//         res.json(item.rows[0]);
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
 
 // //update an item
 // app.put("/items/:id", async (req, res) => {
