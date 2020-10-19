@@ -263,7 +263,7 @@ app.put("/submitreview", async (req, res) => {
         console.log(owner_email)
         
         const txn = await pool.query(
-            "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2 \
+            "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2, t_status = 5\
             WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration = $6) RETURNING *" , 
             [rating, review, owner_email, caretaker_email, pet_name, duration] );
 

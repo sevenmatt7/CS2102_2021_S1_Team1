@@ -1,5 +1,5 @@
 import React, {Fragment, useState} from "react";
-import { Link, withRouter, Redirect } from "react-router-dom"
+import { Redirect } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
@@ -99,7 +99,7 @@ const RegisterPet = ({setAuth}) => {
 
                     <div class="col-sm">
                         <div class="card" id="register-pet-banner">
-                            <img class="img-wrapper" src={RegisterPage} />
+                            <img class="img-wrapper" src={RegisterPage} alt="Happy people with their pets" />
                             <div class="card-body">
                                 <h5 class="card-title">Join us!</h5>
                                 <p class="card-text">We are a loving community of Pet Owners and Care Takers, we're sure you'll find a home with us!</p>

@@ -1,6 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 import ViewReviews from "./ViewReviews";

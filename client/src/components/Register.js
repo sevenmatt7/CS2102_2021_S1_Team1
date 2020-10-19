@@ -102,12 +102,6 @@ const Register = ({setAuth}) => {
                                         value={name}
                                         onChange={e => onChange(e)}/>
                                     </div>
-                                    {/* <input type="text" 
-                                    name="profile_pic" 
-                                    placeholder="Profile Pic"
-                                    className="form-control my-3"
-                                    value={profile_pic}
-                                    onChange={e => onChange(e)}/> */}
                                     <div className="form-group">
                                         <label>Address</label>
                                         <input type="text" 
@@ -128,7 +122,7 @@ const Register = ({setAuth}) => {
 
                     <div class="col-sm">
                         <div class="card" id="register-banner">
-                            <img class="img-wrapper" src={RegisterPage} />
+                            <img class="img-wrapper" src={RegisterPage} alt="Happy people with their pets" />
                             <div class="card-body">
                                 <h5 class="card-title">Join Us!</h5>
                                 <p class="card-text">We are a loving community of Pet Owners and Care Takers, we're sure you'll find a home with us!</p>

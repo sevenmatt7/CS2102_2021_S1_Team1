@@ -1,11 +1,8 @@
 import React, { Fragment, useState } from "react";
-import { toast } from "react-toastify";
 
 const ViewReviews = ({ search, i }) => {
-    const pet_name = search.pet_name
     const caretaker_email = search.caretaker_email
     const employment_type = search.employment_type
-    const duration = search.duration
     const [reviews, setReviews] = useState([]);
 
     const getReviews= async () => {
@@ -22,16 +19,6 @@ const ViewReviews = ({ search, i }) => {
         } catch (err) {
             console.error(err.message)
         }
-    }
-
-    const [inputs, setInputs] = useState({
-        rating: 0,
-        review: ""
-    });
-
-    const {rating, review} = inputs;
-    const onChange = (e) => {
-        setInputs({...inputs, [e.target.name]: e.target.value})
     }
 
     return (

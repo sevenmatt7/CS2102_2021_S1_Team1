@@ -76,7 +76,7 @@ CREATE TABLE Offers_Services (
 );
 
 --Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
---Added status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed)
+--Added status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
