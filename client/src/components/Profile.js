@@ -269,7 +269,7 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Pet Name: {search.pet_name}</p>
                         <p className="card-text">Gender: {search.gender}</p>
                         <p className="card-text">Type: {search.pet_type}</p>
-                        <p className="card-text">Special requirments: {search.special_req}</p>
+                        <p className="card-text">Special requirements: {search.special_req}</p>
                         <p className="card-text"> Offered price/day: {search.cost}</p>
                         <p className="card-text">Requested period: {search.duration}</p>
                         <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
