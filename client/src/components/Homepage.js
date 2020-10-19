@@ -95,15 +95,12 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
-      <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
+      {/* <div style={{ background: "transparent" }} className="jumbotron jumbotron-fluid">
         <div className="container">
           <h1 className="display-4">Welcome back {name}!</h1>
           <hr className="my-4"></hr>
         </div>
       </div>
-      {/* <Link to="/PCS">
-        <button className="btn btn-secondary btn-block mt-3">PCSAdmin</button>
-      </Link> */}
       <div className="input-group mb-3 mt-3">
         <div className="input-group-prepend">
           <label className="input-group-text" htmlFor="inputGroupSelect01">Employment Type</label>
@@ -145,14 +142,14 @@ const Homepage = ({ setAuth }) => {
                   <p className="card-text">Available: {search.service_avail}</p>
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
-                  <RequestService search={search} i={i}/>
+                  <RequestService search={search} i={i} />
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>}
-
+ */}
 
     </Fragment>
 

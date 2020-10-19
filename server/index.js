@@ -43,7 +43,7 @@ app.get("/contact", async (req, res) => {
 app.get("/caretakers", async (req, res) => {
     try {
         const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
-                                            avg_rating, Caretakers.caretaker_email, employment_type, \
+                                            avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
                                             type_pref, service_avail, daily_price \
                                             FROM Offers_services \
                                             LEFT JOIN Users \
@@ -99,33 +99,47 @@ app.get("/bids", async (req, res) => {
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE 1 = 1";
+        var sql = "SELECT DISTINCT full_name, user_address, \
+        avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
+        type_pref, service_avail, daily_price \
+        FROM Offers_services \
+        LEFT JOIN Users \
+        ON Offers_services.caretaker_email = Users.email \
+        LEFT JOIN Caretakers \
+        ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
+        WHERE 1 = 1";
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
-            sql += " AND employment_type = ";
+            sql += " AND Caretakers.employment_type = ";
             sql += ("'" + req.query.employment_type + "'");
         }
         if (req.query.avg_rating != undefined && req.query.avg_rating != "") {
             sql += " AND avg_rating = ";
             sql += (req.query.avg_rating);
         }
+        if (req.query.type_pref != undefined && req.query.type_pref != "") {
+            sql += " AND type_pref = ";
+            sql += ("'" + req.query.type_pref + "'");
+        }
+        if (req.query.start_date != undefined && req.query.start_date != "") {
+            sql += " AND split_part(service_avail, ',', 1) <=";
+            sql += ("'" + req.query.start_date + "'");
+            sql += " AND split_part(service_avail, ',', 2) >=";
+            sql += ("'" + req.query.start_date + "'");
+        }
+        if (req.query.end_date != undefined && req.query.end_date != "") {
+            sql += " AND split_part(service_avail, ',', 1) <=";
+            sql += ("'" + req.query.end_date + "'");
+            sql += " AND split_part(service_avail, ',', 2) >=";
+            sql += ("'" + req.query.end_date + "'");
+        }       
+        if (req.query.form != undefined && req.query.form != "") {
+            sql += " AND LOWER(full_name) LIKE LOWER(";
+            sql += "'%" + req.query.form + "%')";
+        }
 
         const filteredSearches = await pool.query(sql);
         if (filteredSearches !== undefined) res.json(filteredSearches.rows);
-    } catch (error) {
-        console.log(error.message);
-    }
-});
-
-//get by name
-app.get("/formsearch", async (req, res) => {
-    try {
-        var sql = "SELECT DISTINCT full_name, user_address, avg_rating, caretaker_email, \
-        employment_type FROM Caretakers JOIN Users ON Caretakers.caretaker_email=Users.email WHERE LOWER(full_name) LIKE LOWER(";
-        sql += "'%" + req.query.form + "%')";
-        const filteredSearches = await pool.query(sql);
-        res.json(filteredSearches.rows);
     } catch (error) {
         console.log(error.message);
     }
@@ -136,7 +150,7 @@ app.get("/formsearch", async (req, res) => {
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const {service_avail, service_type, daily_price, pet_type} = req.body;
+        const {service_avail, employment_type, daily_price, pet_type} = req.body;
         
         // get user_email from jwt token
         const jwtToken = req.header("token")
@@ -144,8 +158,8 @@ app.post("/setavail", async (req, res) => {
         console.log(user_email)
         
         const newService = await pool.query(
-            "INSERT INTO Offers_Services (caretaker_email, service_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
-            [user_email, service_type, service_avail, pet_type, daily_price] );
+            "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
+            [user_email, employment_type, service_avail, pet_type, daily_price] );
 
         res.json(newService.rows[0].service_avail);
 
