@@ -31,16 +31,13 @@ const Profile = ({ setAuth }) => {
 
   const getTransferMode = (mode) => {
     switch (mode) {
-      case 1:
-        return ""
-        break;
-      case 2:
+      case '1':
         return "Delivery by Pet Owner"
         break
-      case 3:
+      case '2':
         return "Pickup by Caretaker"
         break
-      case 4:
+      case '3':
         return "Transfer at HQ"
         break
     }
@@ -226,11 +223,10 @@ const Profile = ({ setAuth }) => {
       </div>
 
       {/* If is Pet Owner, List their pets */}
-      <div class="container">
+      {acc_type === "petowner" && <div class="container">
+        <h2 className="mb-3">My pets</h2>
         <div class="row">
-          {acc_type === "petowner" && 
           <div class="card-deck">
-            <h1>My Pets</h1>
             {searches.map((search, i) => (
               <div class="col-md-6 mb-4">
                 <div key={i} className="card mb-3">
@@ -250,15 +246,15 @@ const Profile = ({ setAuth }) => {
                 </div>
               </div>
             ))}
-          </div>}
+          </div>
         </div>
-      </div>
+      </div>}
       
       {/* If is Pet Owner, List their transactions*/}
-      <div class="container">
+      {acc_type === "petowner" && <div class="container">
+      <h2 className="mb-3">My transactions</h2>
         <div class="row">
-          {acc_type === "petowner" && <div className="card-deck">
-            <h1>My transactions</h1>
+           <div className="card-deck">
             {transactions.map((search, i) => (
               <div class="col-md-6 mb-4">
                 <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
@@ -285,9 +281,9 @@ const Profile = ({ setAuth }) => {
                 </div>
               </div>
             ))}
-          </div>}
+          </div>
         </div>
-      </div>
+      </div>}
 
       {/* If is Care Taker, List their job offers */}
       <div class="container">
