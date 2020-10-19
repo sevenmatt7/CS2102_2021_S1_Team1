@@ -105,13 +105,25 @@ app.get("/transactions", async (req, res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const acc_type = req.header("acc_type")
         console.log(user_email)
-        const searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+        let searches;
+        if (acc_type === "petowner") {
+            searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
                                             gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.owner_email
                                             WHERE Transactions_Details.owner_email = '${user_email}';\ 
                                             ` );
+        } else if (acc_type === "caretaker") {
+            searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
+                                            FROM Transactions_Details LEFT JOIN Owns_pets  \
+                                            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
+                                            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
+                                            WHERE Transactions_Details.caretaker_email = '${user_email}';\ 
+                                            ` );
+        }
+        
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -201,24 +213,48 @@ app.post("/submitbid", async (req, res) => {
     }
 });
 
-//caretaker to accept bid
-app.post("/acceptbid", async (req, res) => {
+// //caretaker to accept bid
+// app.post("/acceptbid", async (req, res) => {
+//     try {
+//         //step 1: destructure req.body to get details
+//         const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price
+//             , service_request_period, transfer_mode, owner_email, emp_type} = req.body;
+        
+//         const payment_mode = 'cash';
+
+//         // get user_email from jwt token
+//         const jwtToken = req.header("token")
+//         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+//         const newTxn = await pool.query(
+//             "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *" , 
+//             [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period] );
+
+//         res.json(newTxn.rows[0]);
+
+//     } catch (err) {
+//         console.error(err.message);
+//         res.status(500).send("A server error has been encountered");
+//     }
+// });
+
+//caretaker to accept bid for service
+app.put("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { full_name, user_address, selected_pet, gender, pet_type, special_req, offer_price
-            , service_request_period, transfer_mode, owner_email, emp_type} = req.body;
+        const { owner_email, pet_name, duration, status_update} = req.body;
         
-        const payment_mode = 'cash';
-
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(caretaker_email)
+        
+        const txn = await pool.query(
+            "UPDATE Transactions_Details SET t_status = $1 \
+            WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 AND duration = $5) RETURNING *" , 
+            [status_update, owner_email, caretaker_email, pet_name, duration] );
 
-        const newTxn = await pool.query(
-            "INSERT INTO transactions_details (owner_email, caretaker_email, pet_name, tx_type, cost, payment_mode, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *" , 
-            [owner_email, caretaker_email, selected_pet, emp_type, offer_price, payment_mode, transfer_mode, service_request_period] );
-
-        res.json(newTxn.rows[0]);
+        res.json(txn.rows[0].duration);
 
     } catch (err) {
         console.error(err.message);
@@ -242,7 +278,7 @@ app.put("/submitreview", async (req, res) => {
             WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration = $6) RETURNING *" , 
             [rating, review, owner_email, caretaker_email, pet_name, duration] );
 
-        res.json(txn.rows[0].service_request_period);
+        res.json(txn.rows[0].duration);
 
     } catch (err) {
         console.error(err.message);
