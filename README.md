@@ -7,9 +7,9 @@
 - [Built Using](#built_using)
 - [Acknowledgments](#acknowledgement)
 <!-- - [Deployment](#deployment)
-- [Usage](#usage)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md) -->
+-   [Usage](#usage)
+-   [TODO](../TODO.md)
+-   [Contributing](../CONTRIBUTING.md) -->
 
 ## 👨‍💻  Team <a name = "info"></a>
 - Matthew Nathanael Sugiri *A0183805B*
