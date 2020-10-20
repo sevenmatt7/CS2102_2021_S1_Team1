@@ -42,6 +42,8 @@ export default function NavBar({isAuth, setAuth}) {
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
                             {acc_type === "caretaker" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}
+                            {/* {acc_type === "pcsadmin" && <Nav.Link href="PCSEnquiries">Enquiries</Nav.Link>} */}
+                            {<Nav.Link href="/pcsenquiries">Enquiries</Nav.Link>}
                         </Nav>
                         <Nav>
                             {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}

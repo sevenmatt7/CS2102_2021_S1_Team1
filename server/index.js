@@ -49,7 +49,6 @@ app.get("/contact", async (req, res) => {
 })
 
 // get total num of jobs for fulltimer and parttimer
-// incomplete query, need to include date condition
 app.get("/PCS", async (req, res) => {
     try {
         const startYearMonth = req.query.duration
@@ -70,6 +69,50 @@ app.get("/PCS", async (req, res) => {
         } else {
             res.json(numJobs.rows)
         }
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get all enquiries to be answered by PCSadmin
+app.get("/pcsenquiries", async (req, res) => {
+    try {
+        const filter = req.query.filter
+        let query;
+        if (filter === 'Pending') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NULL \
+                        AND enquiries.admin_email IS NULL"
+        } else if (filter === 'Replied') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NOT NULL \
+                        AND enquiries.admin_email IS NOT NULL"
+        } else {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries"
+        }
+
+        const enquiries = await pool.query(query)
+        res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// submit answer to enquiry
+app.put("/pcsanswer", async (req, res) => {
+    try {
+        const { user_email, enq_message, answer } = req.body
+        const jwtToken = req.header("token")
+        const admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const response = await pool.query(`UPDATE enquiries 
+                                            SET answer = '${answer}', 
+                                                admin_email = '${admin_email}' 
+                                            WHERE user_email = '${user_email}' 
+                                            AND enq_message = '${enq_message}'`)
+        res.json(response.rows[0])
     } catch (err) {
         console.error(err.message)
     }
