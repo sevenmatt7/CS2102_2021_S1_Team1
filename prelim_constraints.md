@@ -33,7 +33,7 @@ and a petowner)
 
 # Comments from Prof Adi
 - [ ] try not to cross the line if possible **need to change in ER diagram**
-- [ ] why are some lines in red?  is it for relationship? **need to change in ER diagram**
+- [X] why are some lines in red?  is it for relationship? **need to change in ER diagram**
 
 - [X] Each user is identified by his/her user_id. Their full name, email, password and address must be recorded.
 ==> so "email" is not unique? **Already changed the primary keys to email instead of uuid**

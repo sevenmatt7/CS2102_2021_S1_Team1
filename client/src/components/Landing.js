@@ -1,17 +1,18 @@
-import React, { Fragment, useState, Component } from "react";
-import { Link } from "react-router-dom"
-import { Navbar, Nav, Container, Form, Row, Col, Jumbotron as Jumbo } from 'react-bootstrap';
-import LandingBg from '../Assets/Images/LandingBg.jpg';
+import React, { Fragment } from "react";
+import { Jumbotron as Jumbo } from 'react-bootstrap';
+import mag from "../Assets/Images/mag.png";
+import book from "../Assets/Images/book.png";
+import dog from "../Assets/Images/dog.png";
 
 const LandingPage = () => {
 
     return (
         <Fragment>
-            
+
             <Jumbo fluid className="jumbo">
                 <div className="overlay"></div>
 
-                <div class="container mt-4 text-center">
+                <div class="container flex text-center centerme">
                     <h1 class="display-3 font-weight-bold">Welcome to Pet Society!</h1>
                     <hr color="white"></hr>
                     <p>Browse services offered by our trusted sitters, based on what you or your beloved pet needs.</p>
@@ -19,38 +20,43 @@ const LandingPage = () => {
 
             </Jumbo>
 
-            <div class="container-fluid  p-3" style={{backgroundColor: "#ffffff"}}>
-                <div class="card mx-auto" style={{ width: "30rem", backgroundColor: "#eaddf7" }}>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select your pet:</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option>Dog</option>
-                                <option>Cat</option>
-                            </select>
+            <div class="container mt-5">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={mag} style={{ padding: 10 }} />
+                                <h2 class="card-title">Search</h2>
+                                <p class="card-text">Read verified reviews and search for your perfect sitter.</p>
+                            </div>
+                            <a href="/sitters" class="btn btn-primary btn-sm">Begin Search</a>
+
                         </div>
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select service type:</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option>Large select</option>
-                            </select>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={book} style={{ padding: 10 }} />
+                                <h2 class="card-title">Book</h2>
+                                <p class="card-text">Book a sitter based on your pet's requirements.</p>
+                            </div>
+                            <a href="/login" class="btn btn-primary btn-sm">Login To Book</a>
                         </div>
-                        <div class="form-group">
-                            <label for="formGroupExampleInput">Select (?)</label>
-                            <select class="form-control form-control-lg">
-                                <option value="">-NIL-</option>
-                                <option>Large select</option>
-                            </select>
-                        </div>
-                        <div class="text-right">
-                        <button type="button" class="btn btn-success">Search!</button>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <img src={dog} style={{ padding: 10 }} />
+                                <h2 class="card-title">Register</h2>
+                                <p class="card-text">Sign up as one of our trusted sitters!</p>
+                            </div>
+                            <a href="/register" class="btn btn-primary btn-sm">Register As Caretaker</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </Fragment>
+
+        </Fragment >
     );
 
 };

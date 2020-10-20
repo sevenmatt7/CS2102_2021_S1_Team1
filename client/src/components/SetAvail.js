@@ -1,11 +1,10 @@
 import React, {Fragment, useState} from "react";
-import {Link} from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
 const SetAvail = ({setAuth}) => {
 
-    const service_type = localStorage.emp_type;
+    const employment_type = localStorage.emp_type;
 
     const [inputs, setInputs] = useState({
         service_avail_from: "",
@@ -24,7 +23,7 @@ const SetAvail = ({setAuth}) => {
         e.preventDefault();
         try {
             const service_avail = service_avail_from + ',' + service_avail_to;
-            const body = {service_avail, service_type, daily_price, pet_type}
+            const body = {service_avail, employment_type, daily_price, pet_type}
             const response = await fetch("http://localhost:5000/setavail", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -98,12 +97,12 @@ const SetAvail = ({setAuth}) => {
                                         onChange={e => onChange(e)}/>
                                     </div>
                                     <div className="form-group">
-                                        <label>Service Type</label>
+                                        <label>Employment Type</label>
                                         <input type="text" 
-                                        name="service_type" 
+                                        name="employment_type" 
                                         readOnly
                                         className="form-control"
-                                        value={service_type === "parttime" ? "Part-time" : "Full-time"}
+                                        value={employment_type === "parttime" ? "Part-time" : "Full-time"}
                                         />
                                     </div>
                                     <button className="btn btn-success btn-block">Submit</button>
@@ -114,7 +113,7 @@ const SetAvail = ({setAuth}) => {
 
                     <div class="col-sm">
                         <div class="card" >
-                            <img class="img-wrapper" src={RegisterPage} />
+                            <img class="img-wrapper" src={RegisterPage} alt="Happy people with their pets"/>
                             <div class="card-body">
                                 <h5 class="card-title">Get offers from pet owners as soon as possible!</h5>
                                 <p class="card-text">By indicating your availability, we will advertise your services to the pet owners on our site!</p>
