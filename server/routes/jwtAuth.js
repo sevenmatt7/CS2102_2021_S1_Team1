@@ -36,6 +36,17 @@ router.post("/register", validInfo, async (req, res) => {
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)" , [email, emp_type])
         }
+
+        //insert into offers_services table if is a full-time caretaker (default entire year period)
+        const today = new Date();
+        const yyyy = today.getFullYear(); //in yyyy format
+        const year = yyyy.toString();
+        const default_period = year + "-01-01," + year + "-12-31";
+        if (emp_type === "fulltime") {
+            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5)", [email, emp_type, default_period, "all", "50"])
+        }   
+        
         //step 5: generate jwt token
         const jwtToken = jwtGenerator(newUser.rows[0].email, acc_type);
         res.json({jwtToken, acc_type, emp_type});

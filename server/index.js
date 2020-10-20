@@ -181,7 +181,7 @@ app.get("/caretakersq", async (req, res) => {
 });
 
 
-//indicate availabilities for care takers
+//indicate availabilities for parttime care takers
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
@@ -197,6 +197,48 @@ app.post("/setavail", async (req, res) => {
             [user_email, employment_type, service_avail, pet_type, daily_price] );
 
         res.json(newService.rows[0].service_avail);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
+
+//check working days for fulltime care takers
+app.get("/checkleave", async (req,res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const checkLeaves = await pool.query(`SELECT service_avail FROM Offers_services\
+                   WHERE caretaker_email = '${user_email}';` );
+            res.json(checkLeaves.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+//take leave for fulltime care takers
+app.post("/takeleave", async (req, res) => {
+    try {
+        //step 1: destructure req.body to get details
+        const {service_avail, employment_type} = req.body;
+
+        // get user_email from jwt token
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+        const split_date = service_avail.split(',');
+        const start_date = split_date[0];
+        const end_date = split_date[1];
+        // update offers_service table with the new available dates of full-time caretaker
+        const updateService = await pool.query(
+            
+        );
+        // const newService = await pool.query(
+        //     "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
+        //     [user_email, employment_type, service_avail, pet_type, daily_price] );
+
+        // res.json(newService.rows[0].service_avail);
 
     } catch (err) {
         console.error(err.message);
