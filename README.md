@@ -5,9 +5,9 @@
 - [About](#about)
 - [Getting Started](#getting_started)
 <!-- - [Deployment](#deployment)
-- [Usage](#usage)
+- [Usage](#usage) -->
 - [Built Using](#built_using)
-- [TODO](../TODO.md)
+<!-- - [TODO](../TODO.md) -->
 <!-- - [Contributing](../CONTRIBUTING.md) -->
 - [Acknowledgments](#acknowledgement)
 
