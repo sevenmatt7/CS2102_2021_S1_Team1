@@ -35,7 +35,7 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)" , [email])
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)" , [email, emp_type])
-        } else if (acc_type === "pcsadmin") {
+        } else if (acc_type === "admin") {
             pool.query("INSERT INTO PCSAdmins (admin_email) VALUES ($1)" , [email])
         }
         //step 5: generate jwt token
