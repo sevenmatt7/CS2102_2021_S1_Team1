@@ -260,7 +260,7 @@ app.put("/submitreview", async (req, res) => {
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(owner_email)
+        // console.log(owner_email)
         
         const txn = await pool.query(
             "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2, t_status = 5\
@@ -282,7 +282,7 @@ app.get("/getreview", async (req, res) => {
         const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating, t_status FROM Transactions_Details \
                                            LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
                                            WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}' AND  t_status = 5;`);
-        console.log(searches.rows)
+        // console.log(searches.rows)
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
