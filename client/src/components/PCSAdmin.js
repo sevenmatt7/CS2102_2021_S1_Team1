@@ -1,92 +1,87 @@
 import React, { Fragment, useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import ChartistGraph from 'react-chartist'
-
-
+import Chartist from 'chartist';
+import MyLegend from 'chartist-plugin-legend';
 
 
 const PCSAdmin = () => {
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const [yearOptions, setYearOptions] = useState([])
+  const [yearDisplayed, setYearDisplayed] = useState([])
   const [pieState, setPieState] = useState({
     monthDisplayed: '',
-    yearDisplayed: '',
     data: {
       labels: ["Full-Time", "Part-Time"],
       series: []
     },
     options: {
-      // width: '100%',
-      // total: 200,
-      // donut: true,
-      // donutSolid: true,
       chartPadding: 10,
       labelOffset: 50,
       labelDirection: 'explode',
-      // labelPosition: 'outside'
     }
-
   })
 
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [lineState, setLineState] = useState({
+    data: {
+      labels: monthNames,
+      series: []
+    },
+    options: {
+      plugins: [
+        Chartist.plugins.legend({
+          legendNames: ['Full-Time', 'Part-Time', 'Total']
+        })
+      ]
+    }
+  })
 
-  var data = {
-    labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
-    series: [
-      [1, 2, 4, 8, 6, -2, -1, -4, -6, -2]
-    ]
-  };
-
-  // var options = {
-  //   high: 10,
-  //   low: -10,
-  //   axisX: {
-  //     labelInterpolationFnc: function (value, index) {
-  //       return index % 2 === 0 ? value : null;
-  //     }
-  //   }
-  // };
-
-  let dataSales = {
-    labels: [
-      "9:00AM",
-      "12:00AM",
-      "3:00PM",
-      "6:00PM",
-      "9:00PM",
-      "12:00PM",
-      "3:00AM",
-      "6:00AM"
-    ],
-    series: [
-      [287, 385, 490, 492, 554, 586, 698, 695],
-      [67, 152, 143, 240, 287, 335, 435, 437],
-      [23, 113, 67, 108, 190, 239, 307, 308]
-    ]
-  }
-
-  const getCurrentDate = () => {
-    var dt = new Date();
-    return dt.getDate() + " " + (monthNames[dt.getMonth()]) + " " + dt.getFullYear();
-  }
-
-  const setMonthDisplayed = e => {
-    const monthIndex = e.target.value
-    setPieState(prevState => {
-      return {
-        ...prevState,
-        monthDisplayed: monthIndex
+  // get number of full-time & part-time jobs for each month of the year
+  const getLineData = async () => {
+    try {
+      console.log("enter getLineData")
+      const year = yearDisplayed.toString()
+      const response = await fetch('http://localhost:5000/PCSline?' + new URLSearchParams({
+        year: year
+      }), {
+        method: "GET"
+      });
+      const data = await response.json()
+      let numFulltime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      let numParttime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      let numTotal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      data.map(datum => {
+        let month = datum.startyearmonth.substring(5)
+        if (month.includes('-')) {
+          month = month.substring(0, 1)
+        }
+        if (datum.employment_type === 'fulltime') {
+          numFulltime[parseInt(month) - 1] = parseInt(datum.count)
+        } else if (datum.employment_type === 'parttime') {
+          numParttime[parseInt(month) - 1] = parseInt(datum.count)
+        }
+      })
+      for (let i = 0; i < numTotal.length; i++) {
+        console.log(numFulltime[i])
+        numTotal[i] = numFulltime[i] + numParttime[i]
       }
-    })
-  }
+      setLineState(prevState => {
+        return {
+          ...prevState,
+          data: {
+            labels: monthNames,
+            series: [
+              numFulltime,
+              numParttime,
+              numTotal
+            ]
+          }
+        };
+      });
 
-  const setYearDisplayed = e => {
-    const year = e.target.value
-    setPieState(prevState => {
-      return {
-        ...prevState,
-        yearDisplayed: year
-      }
-    })
+    } catch (err) {
+      console.error(err.message)
+    }
   }
 
   const getCurrMonthYear = () => {
@@ -100,18 +95,30 @@ const PCSAdmin = () => {
       return {
         ...prevState,
         monthDisplayed: d.getMonth().toString(),
-        yearDisplayed: d.getFullYear().toString()
       };
     });
+    setYearDisplayed(d.getFullYear().toString())
+  }
 
+  const setMonthDisplayed = e => {
+    const monthIndex = e.target.value
+    setPieState(prevState => {
+      return {
+        ...prevState,
+        monthDisplayed: monthIndex
+      }
+    })
+  }
 
-
+  const getCurrentDate = () => {
+    var dt = new Date();
+    return dt.getDate() + " " + (monthNames[dt.getMonth()]) + " " + dt.getFullYear();
   }
 
   const getPieData = async () => {
     try {
-      const duration = pieState.yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
-      const response = await fetch('http://localhost:5000/PCS?' + new URLSearchParams({
+      const duration = yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
+      const response = await fetch('http://localhost:5000/PCSpie?' + new URLSearchParams({
         duration: duration
       }), {
         method: "GET"
@@ -130,7 +137,6 @@ const PCSAdmin = () => {
       console.error(err.message)
     }
   }
-
   // get prev month on mount
   useEffect(() => {
     getCurrMonthYear()
@@ -138,46 +144,19 @@ const PCSAdmin = () => {
 
   // get pie data whenever monthDisplayed and yearDispalyed gets updated
   useEffect(() => {
+    getLineData()
     getPieData()
-  }, [pieState.monthDisplayed, pieState.yearDisplayed])
+  }, [yearDisplayed])
+
+  useEffect(() => {
+    getPieData()
+  }, [pieState.monthDisplayed])
 
   return (
     <Fragment>
-
-      {/* <NavBar /> */}
-      {/* <div className="wrapper">
-
-        <Sidebar />
-        <div className="main-panel">
-          <NavBar />
-          <Switch>
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/profile" component={UserProfile} />
-            <Redirect from='*' to='/dashboard' />
-          </Switch>
-          <Footer />
-        </div>
-      </div> */}
-
-
-      {/* <nav className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <Link className="navbar-brand col-md-3 col-lg-2 mr-0 px-3" to="/home">Pet Society</Link>
-
-        <button className="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <input className="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search" />
-        <ul className="navbar-nav px-3">
-          <li className="nav-item text-nowrap">
-            <a className="nav-link" href="#">Sign out</a>
-          </li>
-        </ul>
-      </nav> */}
-
-
       <div className="container-fluid">
         <div className="row">
-          <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+          {/* <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div className="sidebar-sticky pt-3">
               <ul className="nav flex-column">
                 <li className="nav-item">
@@ -251,9 +230,9 @@ const PCSAdmin = () => {
                 </li>
               </ul>
             </div>
-          </nav>
+          </nav> */}
 
-          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+          <main role="main" className="col-md-12 ml-sm-auto col-lg-12 px-md-4">
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
               <h1 className="h2">Dashboard</h1>
               <div className="btn-toolbar mb-2 mb-md-0">
@@ -267,26 +246,25 @@ const PCSAdmin = () => {
                 </button>
               </div>
             </div>
-
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="yearDisplayed">Year</label>
+              </div>
+              <select className="form-control" value={yearDisplayed} onChange={e => setYearDisplayed(e.target.value)} >
+                {
+                  yearOptions.map((year, index) => (
+                    <option key={index} value={year}>{year}</option>
+                  ))
+                }
+              </select>
+            </div>
             <div className="row">
               <div className="col-md-4">
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">No. of pets taken care of</h4>
                     <div className="card-category">
-                      {pieState.dateDisplayed}
-                      <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                          <label class="input-group-text" for="yearDisplayed">Year</label>
-                        </div>
-                        <select className="form-control" value={pieState.yearDisplayed} onChange={setYearDisplayed} >
-                          {
-                            yearOptions.map((year, index) => (
-                              <option key={index} value={year}>{year}</option>
-                            ))
-                          }
-                        </select>
-                      </div>
+
                       <div class="input-group mb-3">
                         <div class="input-group-prepend">
                           <label class="input-group-text" for="monthDisplayed">Month</label>
@@ -330,7 +308,7 @@ const PCSAdmin = () => {
                     <p className="card-category">2020</p>
                   </div>
                   <div className="card-body ">
-                    <ChartistGraph data={dataSales} type="Line" />
+                    <ChartistGraph data={lineState.data} type="Line" options={lineState.options} />
                   </div>
                   <div className="card-footer ">
                     <div className="legend">
@@ -340,7 +318,7 @@ const PCSAdmin = () => {
                     </div>
                     <hr />
                     <div className="stats">
-                      <i className="fa fa-history"></i> Updated 3 minutes ago
+                      <i className="fa fa-history"></i> Updated {getCurrentDate()}
                     </div>
                   </div>
                 </div>

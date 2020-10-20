@@ -51,15 +51,32 @@ app.get("/contact", async (req, res) => {
     }
 })
 
-// get total num of jobs for fulltimer and parttimer
-app.get("/PCS", async (req, res) => {
+// get total num of jobs for each month in a year
+app.get("/PCSline", async (req, res) => {
+    try {
+        const year = req.query.year
+        const numJobsPerMonth = await pool.query(
+            `SELECT employment_type, substring(duration, 1, 7) startYearMonth, COUNT(*)
+                FROM transactions_details
+                WHERE duration LIKE '${year}-%'
+                GROUP BY (employment_type, startYearMonth)`
+        )
+        res.json(numJobsPerMonth.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get total num of jobs for fulltimer and parttimer in a month
+app.get("/PCSpie", async (req, res) => {
     try {
         const startYearMonth = req.query.duration
         const numJobs = await pool.query(
-            `SELECT caretakers.employment_type, COUNT(*) \
-                FROM transactions_details NATURAL JOIN caretakers \
-                WHERE transactions_details.duration LIKE '${startYearMonth}-%' \
-                GROUP BY caretakers.employment_type`
+            `SELECT employment_type, COUNT(*)
+                FROM transactions_details 
+                WHERE duration LIKE '${startYearMonth}-%'
+                AND t_status = 3
+                GROUP BY employment_type`
         )
         if (numJobs.rows.length === 0) {
             res.json([{ employment_type: 'fulltime', count: '0' }, { employment_type: 'parttime', count: '0' }])
