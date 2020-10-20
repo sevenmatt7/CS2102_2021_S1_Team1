@@ -41,6 +41,12 @@ const ContactUs = () => {
         }
     }
 
+    const getDate = enquiry => {
+        let dateString = enquiry.submission
+        const index = dateString.indexOf('T')
+        return dateString.substring(0, index)
+    }
+
     const getEnquiries = async () => {
         try {
             const response = await fetch("http://localhost:5000/contact?" + new URLSearchParams({
@@ -134,6 +140,7 @@ const ContactUs = () => {
                     <thead>
                         <tr>
                             <th>Subject</th>
+                            <th>Date</th>
                             <th width={'50%'}>Question</th>
                             <th width={'50%'}>Answer</th>
                         </tr>
@@ -145,12 +152,12 @@ const ContactUs = () => {
                             <td>john@example.com</td>
                         </tr> */}
                         {
-                            enquiries.map(enquiry => (
-                                <tr key={enquiry.e_id}>
+                            enquiries.map((enquiry, index) => (
+                                <tr key={index}>
                                     <td>{enquiry.enq_type}</td>
-                                    <td>
-                                        {enquiry.enq_message}
-                                    </td>
+                                    <td>{getDate(enquiry)}</td>
+                                    <td>{enquiry.enq_message}</td>
+                                    <td>{enquiry.answer}</td>
                                 </tr>
                             ))
                             // (filter === 'All') ?
