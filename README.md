@@ -4,12 +4,12 @@
 - [Team](#info)
 - [About](#about)
 - [Getting Started](#getting_started)
-<!-- - [Deployment](#deployment)
-- [Usage](#usage) -->
 - [Built Using](#built_using)
-<!-- - [TODO](../TODO.md) -->
-<!-- - [Contributing](../CONTRIBUTING.md) -->
 - [Acknowledgments](#acknowledgement)
+<!-- - [Deployment](#deployment)
+- [Usage](#usage)
+- [TODO](../TODO.md)
+- [Contributing](../CONTRIBUTING.md) -->
 
 ## 👨‍💻  Team <a name = "info"></a>
 - Matthew Nathanael Sugiri *A0183805B*

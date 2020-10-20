@@ -1,13 +1,13 @@
 import React, { Fragment, useState } from "react";
 
 const ViewReviews = ({ search, i }) => {
-    const caretaker_email = search.caretaker_email
-    const employment_type = search.employment_type
+    const caretaker_email = search.caretaker_email;
+    const employment_type = search.employment_type;
     const [reviews, setReviews] = useState([]);
 
     const getReviews= async () => {
         try {
-            const response = await fetch('http://localhost:5000/getreview?' + new URLSearchParams({
+            const response = await fetch("http://localhost:5000/getreview?" + new URLSearchParams({
                 caretaker_email: caretaker_email,
                 employment_type: employment_type,
             }), {
@@ -17,12 +17,11 @@ const ViewReviews = ({ search, i }) => {
             const jsonData = await response.json();
             setReviews(jsonData);
         } catch (err) {
-            console.error(err.message)
+            // console.error(err.message)
         }
-    }
+    };
 
     return (
-        
         <Fragment>
             <button className="btn btn-success" data-toggle="modal" data-target={`#id${i}review`}
               onClick={e => getReviews(e)}>View reviews</button>

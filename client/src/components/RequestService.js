@@ -2,10 +2,27 @@ import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
 const RequestService = ({ search, i }) => {
-    const pet_type = search.type_pref
-    const caretaker_email = search.caretaker_email
-    const employment_type = search.employment_type
+    const pet_type = search.type_pref;
+    const caretaker_email = search.caretaker_email;
+    const employment_type = search.employment_type;
+    
     const[petList, setPets] = useState([]);
+    
+    const [inputs, setInputs] = useState({
+        service_request_from: "",
+        service_request_to: "",
+        bidding_offer: 0,
+    });
+
+    const {service_request_from, service_request_to, bidding_offer } = inputs;
+    
+    const onChange = (e) => {
+        setInputs({...inputs, [e.target.name]: e.target.value})
+    }
+
+    const [transfer_mode, setTransferMode] = useState(1);
+
+    const [selected_pet, selectPet] = useState('');
 
     const getPetList = async () => {
         try {
@@ -26,7 +43,7 @@ const RequestService = ({ search, i }) => {
         try {
             const service_request_period = service_request_from + ',' + service_request_to;
            
-            const body = { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet}
+            const body = { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet};
             const response = await fetch("http://localhost:5000/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -43,21 +60,6 @@ const RequestService = ({ search, i }) => {
             console.error(err.message)
         }
     }
-
-    const [inputs, setInputs] = useState({
-        service_request_from: "",
-        service_request_to: "",
-        bidding_offer: 0,
-    });
-
-    const {service_request_from, service_request_to, bidding_offer } = inputs;
-    const onChange = (e) => {
-        setInputs({...inputs, [e.target.name]: e.target.value})
-    }
-
-    const [transfer_mode, setTransferMode] = useState(1);
-
-    const [selected_pet, selectPet] = useState('');
 
     return (
         <Fragment>

@@ -34,13 +34,13 @@ const Profile = ({ setAuth }) => {
 
   const getTransferMode = (mode) => {
     switch (mode) {
-      case '1':
+      case "1":
         return "Delivery by Pet Owner";
         break;
-      case '2':
+      case "2":
         return "Pickup by Caretaker";
         break;
-      case '3':
+      case "3":
         return "Transfer at HQ";
         break;
       default:
@@ -61,7 +61,7 @@ const Profile = ({ setAuth }) => {
     try {
       const { owner_email, pet_name, duration } = search;
 
-      const body = { owner_email, pet_name, duration, status_update }
+      const body = { owner_email, pet_name, duration, status_update };
       const response = await fetch("http://localhost:5000/changebid", {
         method: "PUT",
         headers: {
@@ -317,15 +317,15 @@ const Profile = ({ setAuth }) => {
                         <p className="card-text">Requested period: {search.duration}</p>
                         <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                         {search.t_status === 1 && <div className="row">
-                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 3)} >Accept</button>
+                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 3)} >Accept</button>
                           <div className="col-md-1 col-sm-1 col-12" />
-                          <button className="btn btn-danger  col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 2)} >Reject</button>
+                          <button className="btn btn-danger  col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 2)} >Reject</button>
                         </div>}
                         {search.t_status === 2 && <button className="btn btn-warning btn-block">Rejected</button>}
                         {search.t_status === 3 && <div className="row">
                           <button className="btn btn-primary disabled col-md-5 col-sm-5 col-12" >Accepted</button>
                           <div className="col-md-1 col-sm-1 col-12" />
-                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={e => acceptBid(e, search, 4)} >Complete job</button>
+                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 4)} >Complete job</button>
                         </div>}
                         {search.t_status === 4 && <button className="btn btn-success btn-block">Completed</button>}
                       </div>
