@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
-const Register = ({ setAuth, setRole }) => {
+const Register = ({ setAuth }) => {
 
     const [inputs, setInputs] = useState({
         email: "",
@@ -37,7 +37,6 @@ const Register = ({ setAuth, setRole }) => {
                 localStorage.setItem("token", parseResponse.jwtToken);
                 localStorage.setItem("acc_type", parseResponse.acc_type);
                 localStorage.setItem("emp_type", parseResponse.emp_type);
-                setRole(acc_type);
                 setAuth(true);
                 toast.success("Register Successfully");
             } else {
@@ -65,7 +64,7 @@ const Register = ({ setAuth, setRole }) => {
                                         <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
                                             <option value="petowner">Pet Owner</option>
                                             <option value="caretaker">Caretaker</option>
-                                            <option value="pcsadmin">PCSAdmin</option>
+                                            {/* <option value="pcsadmin">PCSAdmin</option> */}
                                         </select>
                                     </div>
                                     {acc_type === "caretaker" &&

@@ -22,28 +22,28 @@ function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // const setAuth = (boolean) => {
-  //   setIsAuthenticated(boolean);
-  // }
-  // const checkAuthenticated = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:5000/auth/verify", {
-  //       method: "POST",
-  //       headers: { token: localStorage.token }
-  //     });
+  const setAuth = (boolean) => {
+    setIsAuthenticated(boolean);
+  }
+  const checkAuthenticated = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/auth/verify", {
+        method: "POST",
+        headers: { token: localStorage.token }
+      });
 
-  //     const parseResponse = await response.json();
-  //     parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
-  //     console.log(isAuthenticated)
-  //   } catch (err) {
-  //     // console.error(err.message);
-  //   }
-  // };
+      const parseResponse = await response.json();
+      parseResponse === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+      console.log(isAuthenticated)
+    } catch (err) {
+      // console.error(err.message);
+    }
+  };
 
 
-  // useEffect(() => {
-  //   checkAuthenticated()
-  // });
+  useEffect(() => {
+    checkAuthenticated()
+  });
 
   return (
     <Fragment>
@@ -61,7 +61,7 @@ function App() {
             (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
 
           <Route exact path="/PCS" render={(props) => !isAuthenticated ?
-            (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
+            (<Login {...props} setAuth={setAuth} />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
           <Route exact path="/contact" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
