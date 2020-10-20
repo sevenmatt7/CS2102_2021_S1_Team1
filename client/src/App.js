@@ -61,9 +61,6 @@ function App() {
           <Route exact path="/register" render={props => !isAuthenticated ?
             (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
 
-          <Route exact path="/PCS" render={(props) => !isAuthenticated ?
-            (<Login {...props} setAuth={setAuth} />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
-
           <Route exact path="/pcsenquiries" render={(props) => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<PCSEnquiries {...props} setAuth={setAuth} />)} />
 

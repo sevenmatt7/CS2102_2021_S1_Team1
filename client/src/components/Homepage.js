@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import PCSAdmin from "./PCSAdmin";
 
 const Homepage = ({ setAuth }) => {
   const acc_type = localStorage.acc_type;
@@ -94,7 +95,7 @@ const Homepage = ({ setAuth }) => {
   return (
     //This homepage can be the new dashboard for pcsadmin, caretaker and petowner information
     <Fragment>
-      
+      {acc_type === "admin" && <PCSAdmin />}
     </Fragment>
 
   );
