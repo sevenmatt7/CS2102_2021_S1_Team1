@@ -44,6 +44,7 @@ const ViewReviews = ({ search, i }) => {
                             <h5>Review from: {review.full_name}</h5>
                             <p>Comments: {review.owner_review}</p>
                             <p>Rating: {review.owner_rating}</p>
+                            {/* <h5 className="text-info">{}&#9733; &#9733; &#9733; &#9733; &#9733;</h5> */}
                             </div>))}
                         
                         
