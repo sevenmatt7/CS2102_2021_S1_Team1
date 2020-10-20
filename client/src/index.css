@@ -218,10 +218,10 @@ body, html, .App, #root, .auth-wrapper {
 }
 
 /* PCS Admin Pie Chart */
-.ct-series-a .ct-slice-pie {
-  /* fill of the pie slieces */
-  /* fill: #e28c9a; */
-}
+/* fill of the pie slieces */
+/* .ct-series-a .ct-slice-pie {
+  fill: #e28c9a;
+} */
 
 /* .ct-series-b .ct-slice-pie {
   fill: #aa5eaa;
