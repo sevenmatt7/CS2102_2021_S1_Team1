@@ -41,7 +41,7 @@ const PCSAdmin = () => {
     try {
       console.log("enter getLineData")
       const year = yearDisplayed.toString()
-      const response = await fetch('http://localhost:5000/PCSline?' + new URLSearchParams({
+      const response = await fetch('http://localhost:5000/pcsline?' + new URLSearchParams({
         year: year
       }), {
         method: "GET"
@@ -118,7 +118,7 @@ const PCSAdmin = () => {
   const getPieData = async () => {
     try {
       const duration = yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
-      const response = await fetch('http://localhost:5000/PCSpie?' + new URLSearchParams({
+      const response = await fetch('http://localhost:5000/pcspie?' + new URLSearchParams({
         duration: duration
       }), {
         method: "GET"
@@ -142,7 +142,6 @@ const PCSAdmin = () => {
     getCurrMonthYear()
   }, [])
 
-  // get pie data whenever monthDisplayed and yearDispalyed gets updated
   useEffect(() => {
     getLineData()
     getPieData()

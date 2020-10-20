@@ -19,7 +19,7 @@ app.use("/home", require("./routes/homepage"));
 app.use("/profile", require("./routes/profile"));
 
 //submit enquiry
-app.post("/contact", async (req, res) => {
+app.post("/submitenquiry", async (req, res) => {
     try {
         const { subject, message, date } = req.body
         const jwtToken = req.header("token")
@@ -52,7 +52,7 @@ app.get("/contact", async (req, res) => {
 })
 
 // get total num of jobs for each month in a year
-app.get("/PCSline", async (req, res) => {
+app.get("/pcsline", async (req, res) => {
     try {
         const year = req.query.year
         const numJobsPerMonth = await pool.query(
@@ -68,7 +68,7 @@ app.get("/PCSline", async (req, res) => {
 })
 
 // get total num of jobs for fulltimer and parttimer in a month
-app.get("/PCSpie", async (req, res) => {
+app.get("/pcspie", async (req, res) => {
     try {
         const startYearMonth = req.query.duration
         const numJobs = await pool.query(

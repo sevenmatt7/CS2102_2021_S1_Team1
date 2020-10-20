@@ -25,7 +25,7 @@ const ContactUs = () => {
             const body = { subject: subject, message: message, date: date }
             // console.log(body)
             const response = await fetch(
-                "http://localhost:5000/contact",
+                "http://localhost:5000/submitenquiry",
                 {
                     method: "POST",
                     headers: {
