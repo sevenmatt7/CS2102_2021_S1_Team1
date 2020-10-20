@@ -8,24 +8,24 @@ MARKING SCHEME
 - User interface design
 -->
 ## 📝 Table of Contents
-- [Team](#info)
-- [Application's data requirements and functionalities](#application_description)
-- [Entity Relationship Model](#er_diagram)
-- [Database schema](#schema)
-- [Normalization](#normalization)
-- [Interesting triggers](#triggers)
-- [Tools and frameworks used](#tools_used)
-- [Screenshots of app](#screenshots)
-- [Conclusion](#conclusion)
+-  [Team](#info)
+-  [Application's data requirements and functionalities](#application_description)
+-  [Entity Relationship Model](#er_diagram)
+-  [Database schema](#schema)
+-  [Normalization](#normalization)
+-  [Interesting triggers](#triggers)
+-  [Tools and frameworks used](#tools_used)
+-  [Screenshots of app](#screenshots)
+-  [Conclusion](#conclusion)
 
 ## 👨‍💻  Team <a name = "info"></a>
-Name | Student Number | Responsibilities
------------- | ------------- | -------------
-Matthew Nathanael Sugiri | A0183805B | Integration, API development
-Joshua Tam | A0190309H |
-Tan Guan Yew | A0183464Y |
-Sean Lim | A0187123H |
-Glen Wong | A0188100N |
+| Name | Student Number | Responsibilities
+|------------ | ------------- | -------------
+| Matthew Nathanael Sugiri | A0183805B | Integration, API development
+| Joshua Tam | A0190309H |
+| Tan Guan Yew | A0183464Y |
+| Sean Lim | A0187123H |
+| Glen Wong | A0188100N |
 
 ## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
 

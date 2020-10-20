@@ -101,9 +101,9 @@ app.get("/bids", async (req, res) => {
 //get all transactions for caretaker or petowner
 app.get("/transactions", async (req, res) => {
     try {
-        const jwtToken = req.header("token")
+        const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        const acc_type = req.header("acc_type")
+        const acc_type = req.header("acc_type");
         console.log(user_email)
         let searches;
         if (acc_type === "petowner") {

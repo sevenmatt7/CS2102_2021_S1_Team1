@@ -2,17 +2,24 @@ import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
 const OwnerReview = ({ search, i }) => {
-    const pet_name = search.pet_name
-    const caretaker_email = search.caretaker_email
-    const employment_type = search.employment_type
-    const duration = search.duration
+    const pet_name = search.pet_name;
+    const caretaker_email = search.caretaker_email;
+    const employment_type = search.employment_type;
+    const duration = search.duration;
+
+    const [inputs, setInputs] = useState({
+        rating: 0,
+        review: ""
+    });
+
+    const {rating, review} = inputs;
 
     const submitReview= async (e) => {
         e.preventDefault();
         try {
             // const service_request_period = service_request_from + ',' + service_request_to;
            
-            const body = { caretaker_email, employment_type, pet_name, duration, rating, review }
+            const body = { caretaker_email, employment_type, pet_name, duration, rating, review };
             const response = await fetch("http://localhost:5000/submitreview", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json",
@@ -22,20 +29,15 @@ const OwnerReview = ({ search, i }) => {
             
             const parseResponse = await response.json();
             let dateArr = parseResponse.split(',')
-            const successMessage = 'Your review for ' + dateArr[0] + ' to ' +
-                                    dateArr[1] + ' has been submitted!';
+            const successMessage = "Your review for " + dateArr[0] + " to " +
+                                    dateArr[1] + " has been submitted!";
             toast.success(successMessage);
         } catch (err) {
             console.error(err.message)
         }
     }
 
-    const [inputs, setInputs] = useState({
-        rating: 0,
-        review: ""
-    });
-
-    const {rating, review} = inputs;
+    
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
     }
@@ -65,7 +67,7 @@ const OwnerReview = ({ search, i }) => {
                                 maxLength="2" 
                                 name="rating"
                                 value={rating}
-                                onChange={e => onChange(e)}
+                                onChange={(e) => onChange(e)}
                                 id={`bid${search.full_name}`} 
                                 className="form-control validate" 
                                 required="required" />
@@ -133,7 +135,7 @@ const OwnerReview = ({ search, i }) => {
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" className="btn btn-primary" data-dismiss="modal" 
-                             onClick={e => submitReview(e)}>Submit Review</button>
+                             onClick={(e) => submitReview(e)}>Submit Review</button>
                         </div>
                     </div>
                 </div>

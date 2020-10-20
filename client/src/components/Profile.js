@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 import imposter from "../Assets/Images/imposter.jpg";
-import OwnerReview from "./OwnerReview"
+import OwnerReview from "./OwnerReview";
 
 const Profile = ({ setAuth }) => {
 
@@ -15,19 +15,19 @@ const Profile = ({ setAuth }) => {
   const getTransactionStatus = (status) => {
     switch (status) {
       case 1:
-        return "Submitted"
+        return "Submitted";
         break;
       case 2:
-        return "Rejected"
-        break
+        return "Rejected";
+        break;
       case 3:
-        return "Accepted"
-        break
+        return "Accepted";
+        break;
       case 4:
-        return "Completed"
-        break
+        return "Completed";
+        break;
       default:
-        return ""
+        return "";
         break;
     }
   }
@@ -35,16 +35,16 @@ const Profile = ({ setAuth }) => {
   const getTransferMode = (mode) => {
     switch (mode) {
       case '1':
-        return "Delivery by Pet Owner"
+        return "Delivery by Pet Owner";
         break;
       case '2':
-        return "Pickup by Caretaker"
+        return "Pickup by Caretaker";
         break;
       case '3':
-        return "Transfer at HQ"
+        return "Transfer at HQ";
         break;
       default:
-        return ""
+        return "";
         break;
     }
   }
@@ -76,13 +76,13 @@ const Profile = ({ setAuth }) => {
       if (status_update === 3) { //when the caretaker accepts the bid
         toast.success(`You have accepted the offer from ${search.full_name}!`);
       } else if (status_update === 2) {  //when the caretaker rejects the bid
-        toast.error(`You have rejected the offer from ${search.full_name}!`)
+        toast.error(`You have rejected the offer from ${search.full_name}!`);
       } else if (status_update === 4) { //when the job is marked as complete
-        toast.success(`🎉 You have completed the job from ${search.full_name}!`)
+        toast.success(`🎉 You have completed the job from ${search.full_name}!`);
       }
      
     } catch (err) {
-      console.error(err.message)
+      console.error(err.message);
     }
   }
 
