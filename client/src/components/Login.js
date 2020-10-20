@@ -53,7 +53,7 @@ const Login = ({ setAuth }) => {
 
                     <div class="col-sm" >
                         <div class="card" id="login-banner">
-                            <img class="img-wrapper" src={LoginPage} />
+                            <img class="img-wrapper" src={LoginPage} alt="Happy pet owner with his dog" />
                             <div class="card-body">
                                 <h5 class="card-title">Welcome Home!</h5>
                                 <p class="card-text">Here at Pet Society, we offer quality service to ensure you and your pet get the best experience!</p>

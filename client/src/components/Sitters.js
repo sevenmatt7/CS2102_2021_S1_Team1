@@ -1,8 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
+import ViewReviews from "./ViewReviews";
 
 const Sitters = ({ setAuth }) => {
 
@@ -164,33 +163,33 @@ const Sitters = ({ setAuth }) => {
         </div>
       </div>
 
-
-
-      { acc_type === "petowner" &&
-        <div className="card-columns">
-          {searches.map((search, i) => (
-            <div key={i} className="card mb-3" >
-              <div className="row no-gutters">
-                <div className="col-md-4">
-                  <img src={imposter} className="card-img responsive" alt="..." />
-                </div>
-                <div className="col-md-8">
-                  <div className="card-body">
-                    <h5 className="card-title ml-2">{search.full_name}</h5>
-                    <p className="card-text" >Address: {search.user_address}</p>
-                    <p className="card-text">Employment Type: {search.employment_type}</p>
-                    <p className="card-text">Available: {search.service_avail}</p>
-                    <p className="card-text" >Price/day: {search.daily_price}</p>
-                    <p className="card-text">Pet type: {search.type_pref}</p>
-                    <p className="card-text">Rating: {search.avg_rating}</p>
-                    <RequestService search={search} i={i} />
-                  </div>
+      {acc_type === "petowner" && <div className="card-deck">
+        {searches.map((search, i) => (
+          <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
+            <div className="row no-gutters">
+              <div className="col-md-4">
+                <img src={imposter} className="card-img" alt="..." />
+              </div>
+              <div className="col-md-8">
+                <div className="card-body">
+                  <h5 className="card-title">{search.full_name}</h5>
+                  <p className="card-text" >Address: {search.user_address}</p>
+                  <p className="card-text">Employment Type: {search.employment_type}</p>
+                  <p className="card-text">Available: {search.service_avail}</p>
+                  <p className="card-text" >Price/day: {search.daily_price}</p>
+                  <p className="card-text">Pet type: {search.type_pref}</p>
+                  <p className="card-text">Average Rating: {parseFloat(search.avg_rating).toFixed(2)}</p>
+                  <div className="row">
+                    <div className="col-md-5 col-sm-5 col-12"><RequestService search={search} i={i}/></div>
+                    <div className="col-md-1 col-sm-1 col-12" />
+                    <div className="col-md-5 col-sm-5 col-12"><ViewReviews search={search} i={i}/></div>
+                  </div>                  
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      }
+          </div>
+        ))}
+      </div>}
 
 
     </Fragment >

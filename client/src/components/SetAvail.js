@@ -1,5 +1,4 @@
 import React, {Fragment, useState} from "react";
-import {Link} from "react-router-dom"
 import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
@@ -114,7 +113,7 @@ const SetAvail = ({setAuth}) => {
 
                     <div class="col-sm">
                         <div class="card" >
-                            <img class="img-wrapper" src={RegisterPage} />
+                            <img class="img-wrapper" src={RegisterPage} alt="Happy people with their pets"/>
                             <div class="card-body">
                                 <h5 class="card-title">Get offers from pet owners as soon as possible!</h5>
                                 <p class="card-text">By indicating your availability, we will advertise your services to the pet owners on our site!</p>
