@@ -3,7 +3,7 @@ import {Link} from "react-router-dom"
 import { toast } from "react-toastify";
 import LoginPage from '../Assets/Images/LoginPage.jpg';
 
-const Login = ({ setAuth }) => {
+const Login = ({ setAuth, setRole }) => {
 
     const [inputs, setInputs] = useState({
         email: "",
@@ -34,6 +34,7 @@ const Login = ({ setAuth }) => {
                 if (parseResponse.emp_type) {
                     localStorage.setItem("emp_type", parseResponse.emp_type)
                 }
+                // setRole(parseResponse.acc_type);
                 setAuth(true);
                 toast.success("Logged in Successfully");
               } else {
