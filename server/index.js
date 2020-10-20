@@ -279,8 +279,9 @@ app.put("/submitreview", async (req, res) => {
 app.get("/getreview", async (req, res) => {       
     try {
         console.log(req.query.caretaker_email);
-        const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating FROM Transactions_Details LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
-                                           WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}';`);
+        const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating, t_status FROM Transactions_Details \
+                                           LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
+                                           WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}' AND  t_status = 5;`);
         console.log(searches.rows)
         res.json(searches.rows);
     } catch (error) {
