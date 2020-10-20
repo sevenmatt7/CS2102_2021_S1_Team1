@@ -59,7 +59,7 @@ const OwnerReview = ({ search, i }) => {
                         <div className="modal-body mx-3">
                             
                             <div className="md-form mb-4">
-                                <label data-error="wrong" data-success="right">Rating (out of 10)</label>
+                                <label data-error="wrong" data-success="right">Rating (out of 5)</label>
                                 <input type="number" 
                                 pattern="[0-9]+" 
                                 maxLength="2" 
