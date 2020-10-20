@@ -4,12 +4,12 @@
 - [Team](#info)
 - [About](#about)
 - [Getting Started](#getting_started)
-<!-- - [Deployment](#deployment)
-- [Usage](#usage) -->
 - [Built Using](#built_using)
-- [TODO](../TODO.md)
-<!-- - [Contributing](../CONTRIBUTING.md) -->
 - [Acknowledgments](#acknowledgement)
+<!-- - [Deployment](#deployment)
+-   [Usage](#usage)
+-   [TODO](../TODO.md)
+-   [Contributing](../CONTRIBUTING.md) -->
 
 ## 👨‍💻  Team <a name = "info"></a>
 - Matthew Nathanael Sugiri *A0183805B*
@@ -19,7 +19,7 @@
 - Glen Wong *A0188100N*
 
 ## 🧐 About <a name = "about"></a>
-Essentially the best project of CS2102 AY20/21, please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
+Please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
 
  ## 🏁 Getting Started <a name = "getting_started"></a>
 The instructions below will help to get you set up to develop the project on your local machine.
