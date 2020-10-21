@@ -7,6 +7,8 @@ const TakeLeave = ({ setAuth }) => {
     const employment_type = localStorage.emp_type;
     let service_avail_dates = "";
     const [leaves, checkLeaves] = useState([]);
+    const [daysOfLeaves, setDaysOfLeaves] = useState(65)
+
     const [inputs, setInputs] = useState({
         apply_leave_from: "",
         apply_leave_to: ""
@@ -26,7 +28,7 @@ const TakeLeave = ({ setAuth }) => {
             // For each service_avail date range, append to service_avail
             service_avail += service_avail_dates;
             console.log(service_avail);
-
+            console.log(service_avail_dates)
             const body = { service_avail, employment_type }
             const response = await fetch("http://localhost:5000/takeleave", {
                 method: "POST",
@@ -37,12 +39,22 @@ const TakeLeave = ({ setAuth }) => {
                 body: JSON.stringify(body)
             });
 
-            // Show success message on front end
-            const parseResponseUpdate = await response.json();
-            const successMessage = 'You have indicated your leave from ' + apply_leave_from + ' to ' +
-                apply_leave_to + '!';
-            toast.success(successMessage);
+            // Else show error message on front end
+            const parseResponse = await response.json();
+            console.log(parseResponse);
 
+            if (parseResponse == "You cannot take leave during this period") {
+                toast.error(parseResponse);
+            } else {
+                // Show success message on front end
+                const successMessage = 'You have indicated your leave from ' + apply_leave_from + ' to ' +
+                    apply_leave_to + '!';
+                toast.success(successMessage);
+                const timer = setTimeout(() => {
+                    window.location.reload(false);
+                }, 1500);
+                return () => clearTimeout(timer);
+            }
         } catch (err) {
             console.error(err.message)
         }
@@ -94,13 +106,13 @@ const TakeLeave = ({ setAuth }) => {
                                 <h1 className="text-center mt-3 mb-3">When would you like to take leave?</h1>
                                 <p className="text-center">
                                     As a full-time caretaker, you have up to 65 days of leave a year
-                                    which can be taken after working periods of 150 days.
+                                    which can be taken between working periods of 150 days.
                                 </p>
                                 <div>
                                     <p className="text-center"><u>Here are your current working periods:</u></p>
                                     {leaves.map((leave, i) => (
                                         <div key={i} >
-                                            <p className="text-center">{(leave.service_avail).replace(",", " to ")}</p>
+                                            <p className="text-center">{(leave.service_avail).replace(",", " to ") + " --- [" + date_diff_indays(leave.service_avail.split(',')[0], leave.service_avail.split(',')[1]) + " Days]"}</p>
                                         </div>
                                     ))}
                                     <p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p>
