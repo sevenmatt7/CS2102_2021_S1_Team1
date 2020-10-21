@@ -16,6 +16,7 @@ import RegisterPet from "./components/RegisterPet";
 import SetAvail from "./components/SetAvail";
 import Profile from "./components/Profile";
 import Sitters from './components/Sitters';
+import TakeLeave from "./components/TakeLeave";
 toast.configure();
 
 function App() {
@@ -68,6 +69,9 @@ function App() {
 
           <Route exact path="/registerpet" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/takeleave" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<TakeLeave {...props} setAuth={setAuth} />)} />
 
           <Route exact path="/setavail" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
