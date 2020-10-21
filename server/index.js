@@ -211,7 +211,7 @@ app.get("/checkleave", async (req,res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const checkLeaves = await pool.query(`SELECT service_avail FROM Offers_services\
                    WHERE caretaker_email = '${user_email}';` );
-            res.json(checkLeaves.rows);
+        res.json(checkLeaves.rows);
     } catch (err) {
         console.error(err.message);
     }
@@ -226,25 +226,45 @@ app.post("/takeleave", async (req, res) => {
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email);
 
-        const split_date = service_avail.split(',');
-        const start_date = split_date[0];
-        const end_date = split_date[1];
-        // update offers_service table with the new available dates of full-time caretaker
-        const updateService = await pool.query(
-            
-        );
-        // const newService = await pool.query(
-        //     "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *" , 
-        //     [user_email, employment_type, service_avail, pet_type, daily_price] );
+        //step 2: destructure the service_avail string to get the date components 
+        const split_dates = service_avail.split('/');
+        const applied_leave_date = split_dates[0];
+        let leave_start_date = new Date(applied_leave_date.split(',')[0]);
+        let leave_end_date = new Date(applied_leave_date.split(',')[1]);
+        var i;
+        for (i = 1; i < split_dates.length; i++) {
+            const curr_working_date = split_dates[i];
+            let curr_start_date = new Date(curr_working_date.split(',')[0]);
+            let curr_end_date = new Date(curr_working_date.split(',')[1]);
 
-        // res.json(newService.rows[0].service_avail);
-
+            //step 3: if we find a service_avail period that has full containment of the leave period
+            //insert 2 new service_avail periods
+            if (curr_start_date <= leave_start_date && curr_end_date >= leave_end_date) {
+                //full containment satisfied
+                //leave_start_date becomes new end_date of new entry 1
+                //leave_end_date becomes new start_date of new entry 2
+                let service_avail_new_before = curr_start_date.toISOString().slice(0,10) + ',' + leave_start_date.toISOString().slice(0,10);
+                let service_avail_new_after = leave_end_date.toISOString().slice(0,10) + ',' + curr_end_date.toISOString().slice(0,10);
+                console.log(service_avail_new_before);
+                const updateServices = await pool.query(
+                    "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5), ($6, $7, $8, $9, $10) RETURNING *" ,
+                    [user_email, employment_type, service_avail_new_before, "all", "50", user_email, employment_type, service_avail_new_after, "all", "50"]);
+                //step 4: remove the entry corresponding to that service_avail period 
+                // const delete_old_service = await pool.query(
+                //     `DELETE FROM Offers_Services WHERE caretaker_email = '${user_email}' AND service_avail = '${curr_working_date}';`
+                // );
+                res.json(updateServices.rows[0].service_avail);
+                break;
+            }
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
     }
 });
+
 
 //petowner to submit bid for service
 app.post("/submitbid", async (req, res) => {

@@ -5,13 +5,14 @@ import { toast } from "react-toastify";
 const TakeLeave = ({ setAuth }) => {
 
     const employment_type = localStorage.emp_type;
+    let service_avail_dates = "";
     const [leaves, checkLeaves] = useState([]);
     const [inputs, setInputs] = useState({
-        service_avail_from: "",
-        service_avail_to: ""
+        apply_leave_from: "",
+        apply_leave_to: ""
     });
 
-    const { service_avail_from, service_avail_to } = inputs;
+    const { apply_leave_from, apply_leave_to } = inputs;
 
     const onChange = (e) => {
         setInputs({ ...inputs, [e.target.name]: e.target.value })
@@ -20,7 +21,12 @@ const TakeLeave = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-            const service_avail = service_avail_from + ',' + service_avail_to;
+            let service_avail = apply_leave_from + ',' + apply_leave_to;
+            // Return back to backend the current service_avail dates too
+            // For each service_avail date range, append to service_avail
+            service_avail += service_avail_dates;
+            console.log(service_avail);
+
             const body = { service_avail, employment_type }
             const response = await fetch("http://localhost:5000/takeleave", {
                 method: "POST",
@@ -31,16 +37,18 @@ const TakeLeave = ({ setAuth }) => {
                 body: JSON.stringify(body)
             });
 
-            const parseResponse = await response.json();
-            let dateArr = parseResponse.split(',')
-            const successMessage = 'You have indicated your leave from ' + dateArr[0] + ' to ' +
-                dateArr[1] + '!';
+            // Show success message on front end
+            const parseResponseUpdate = await response.json();
+            const successMessage = 'You have indicated your leave from ' + apply_leave_from + ' to ' +
+                apply_leave_to + '!';
             toast.success(successMessage);
+
         } catch (err) {
             console.error(err.message)
         }
     }
 
+    // Get the current working period from Database
     const getLeaves = async () => {
         try {
             const response = await fetch("http://localhost:5000/checkleave", {
@@ -54,18 +62,23 @@ const TakeLeave = ({ setAuth }) => {
         }
     };
 
-    var date_diff_indays = function(date1, date2) {
+    // Get updates of current leave quota to display to caretaker
+    var date_diff_indays = function (date1, date2) {
         let dt1 = new Date(date1);
         let dt2 = new Date(date2);
-        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
-        }
+        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
+    }
 
     let daysInAYear = 365;
     leaves.map(data => {
+        service_avail_dates += '/';
+        service_avail_dates += data.service_avail;
         const splitDate = data.service_avail.split(',');
         const differenceInDays = date_diff_indays(splitDate[0], splitDate[1]);
-        daysInAYear -= differenceInDays;  
-        })
+        daysInAYear -= differenceInDays;
+    })
+    let daysRemaining = 65;
+    daysRemaining -= daysInAYear;
 
     useEffect(() => {
         getLeaves();
@@ -90,26 +103,26 @@ const TakeLeave = ({ setAuth }) => {
                                             <p className="text-center">{(leave.service_avail).replace(",", " to ")}</p>
                                         </div>
                                     ))}
-                                    <p className="text-center">You have {daysInAYear} days of leaves remaining.</p>
+                                    <p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p>
                                 </div>
                                 <form onSubmit={onSubmitForm}>
                                     <div className="row">
                                         <div className="col form-group">
                                             <label>Start date</label>
                                             <input type="date"
-                                                name="service_avail_from"
+                                                name="apply_leave_from"
                                                 placeholder="YYYY-MM-DD"
                                                 className="form-control"
-                                                value={service_avail_from}
+                                                value={apply_leave_from}
                                                 onChange={e => onChange(e)} />
                                         </div>
                                         <div className="col form-group">
                                             <label>End date</label>
                                             <input type="date"
-                                                name="service_avail_to"
+                                                name="apply_leave_to"
                                                 placeholder="YYYY-MM-DD"
                                                 className="form-control"
-                                                value={service_avail_to}
+                                                value={apply_leave_to}
                                                 onChange={e => onChange(e)} />
                                         </div>
                                         <div className="form-group">
