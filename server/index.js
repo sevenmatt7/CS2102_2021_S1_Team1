@@ -251,7 +251,7 @@ app.post("/takeleave", async (req, res) => {
             if (date_diff_indays(curr_start_date, curr_end_date) >= 150) {
                 count_2_150_days += 1;
             }
-        } else if (curr_start_date <= leave_start_date && curr_end_date >= leave_end_date) {
+        } else if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
             let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
             let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
 
@@ -263,7 +263,6 @@ app.post("/takeleave", async (req, res) => {
             }
         }
     }
-
     //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
     if (count_2_150_days >= 2) {
         for (let i = 1; i < split_dates.length; i++) {
@@ -282,9 +281,11 @@ app.post("/takeleave", async (req, res) => {
             //         ^                      ^
             //     leaveStart              leaveEnd
             
-            if (curr_start_date <= leave_start_date && curr_end_date >= leave_end_date) {
+            if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
                 //leave_start_date becomes new end_date of new entry 1
                 //leave_end_date becomes new start_date of new entry 2
+                leave_start_date.setDate(leave_start_date.getDate() - 1);
+                leave_end_date.setDate(leave_end_date.getDate() + 1 );
                 let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
                 let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
                 console.log(service_avail_new_before);
