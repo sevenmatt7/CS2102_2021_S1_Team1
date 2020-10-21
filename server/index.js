@@ -272,6 +272,16 @@ app.post("/takeleave", async (req, res) => {
             let curr_end_date = new Date(curr_working_date.split(',')[1]);
 
             //Check if full containment condition is satisfied
+            // Illustration:
+            //
+            // startdate                          enddate
+            // v                                        v
+            // #----------------------------------------#
+            //
+            //         #----------------------#
+            //         ^                      ^
+            //     leaveStart              leaveEnd
+            
             if (curr_start_date <= leave_start_date && curr_end_date >= leave_end_date) {
                 //leave_start_date becomes new end_date of new entry 1
                 //leave_end_date becomes new start_date of new entry 2
