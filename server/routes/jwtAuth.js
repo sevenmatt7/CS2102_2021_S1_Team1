@@ -36,6 +36,9 @@ router.post("/register", validInfo, async (req, res) => {
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)" , [email, emp_type])
         }
+        // } else if (acc_type === "admin") {
+        //     pool.query("INSERT INTO PCSAdmins (admin_email) VALUES ($1)" , [email])
+        // }
         //step 5: generate jwt token
         const jwtToken = jwtGenerator(newUser.rows[0].email, acc_type);
         res.json({jwtToken, acc_type, emp_type});
@@ -114,4 +117,5 @@ router.post("/verify", authorize, async (req, res) => {
         res.status(500).send("A server error has been encountered");
     }
 })
+
 module.exports = router;

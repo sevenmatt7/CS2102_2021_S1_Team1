@@ -216,3 +216,9 @@ body, html, .App, #root, .auth-wrapper {
 .card-text {
   padding-left: 0.5rem;
 }
+
+.scrollable-menu {
+  height: auto;
+  max-height: 150px;
+  overflow-x: hidden;
+}

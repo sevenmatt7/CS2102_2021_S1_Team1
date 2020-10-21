@@ -49,21 +49,21 @@ const Login = ({ setAuth }) => {
             
             {/* Container for Login components */}
             <div className="container">
-                <div class="row">
+                <div className="row">
 
-                    <div class="col-sm" >
-                        <div class="card" id="login-banner">
-                            <img class="img-wrapper" src={LoginPage} alt="Happy pet owner with his dog" />
-                            <div class="card-body">
-                                <h5 class="card-title">Welcome Home!</h5>
-                                <p class="card-text">Here at Pet Society, we offer quality service to ensure you and your pet get the best experience!</p>
+                    <div className="col-sm" >
+                        <div className="card" id="login-banner">
+                            <img className="img-wrapper" src={LoginPage} alt="Happy pet owner with his dog" />
+                            <div className="card-body">
+                                <h5 className="card-title">Welcome Home!</h5>
+                                <p className="card-text">Here at Pet Society, we offer quality service to ensure you and your pet get the best experience!</p>
                     
                             </div>
                         </div>
                     </div>
                     
                 
-                    <div class="col-sm">
+                    <div className="col-sm">
                         <div className="auth-wrapper"> 
                             <div className="auth-inner">
                                 <h1 className="text-center my-5">Login</h1>
