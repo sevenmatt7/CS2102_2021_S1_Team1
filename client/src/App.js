@@ -10,7 +10,6 @@ import NavBar from "./components/NavBar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
@@ -18,6 +17,7 @@ import SetAvail from "./components/SetAvail";
 import Profile from "./components/Profile";
 import Sitters from './components/Sitters';
 import PCSEnquiries from './components/PCSEnquiries';
+import TakeLeave from "./components/TakeLeave";
 toast.configure();
 
 function App() {
@@ -41,6 +41,7 @@ function App() {
       // console.error(err.message);
     }
   };
+
 
   useEffect(() => {
     checkAuthenticated()
@@ -69,6 +70,9 @@ function App() {
 
           <Route exact path="/registerpet" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
+
+          <Route exact path="/takeleave" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<TakeLeave {...props} setAuth={setAuth} />)} />
 
           <Route exact path="/setavail" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />

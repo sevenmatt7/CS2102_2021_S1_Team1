@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import ChartistGraph from 'react-chartist'
 import Chartist from 'chartist';
 import MyLegend from 'chartist-plugin-legend';
+import PCSTable from "./PCSTable"
 
 
 const PCSAdmin = () => {
@@ -323,24 +324,7 @@ const PCSAdmin = () => {
                 </div>
               </div>
             </div>
-
-
-
-            <h2>Overview</h2>
-            <div className="table-responsive">
-              <table className="table table-striped table-sm">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>C_id</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Number of jobs taken</th>
-                    <th>Salary</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
+            <PCSTable />
           </main>
         </div>
       </div>

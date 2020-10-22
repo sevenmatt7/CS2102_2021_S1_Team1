@@ -286,3 +286,8 @@ body, html, .App, #root, .auth-wrapper {
   border-color: #453d3f;
 }
 
+.scrollable-menu {
+  height: auto;
+  max-height: 150px;
+  overflow-x: hidden;
+}

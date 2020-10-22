@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const jwt = require("jsonwebtoken");
+const { response } = require("express");
 
 app.use(cors());
 app.use(express.json());
@@ -156,6 +157,18 @@ app.get("/caretakers", async (req, res) => {
     }
 });
 
+//get all caretaker searches
+app.get("/caretakersadmin", async (req, res) => {
+    try {
+        const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, td.duration \
+                                        FROM (Transactions_Details AS td JOIN Caretakers AS c ON td.caretaker_email=c.caretaker_email) \
+                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status=3");
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
 //get all pets owned by petowner
 app.get("/pets", async (req, res) => {
     try {
@@ -277,7 +290,7 @@ app.get("/caretakersq", async (req, res) => {
 });
 
 
-//indicate availabilities for care takers
+//indicate availabilities for parttime care takers
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
@@ -297,6 +310,124 @@ app.post("/setavail", async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
+    }
+});
+
+//check working days for fulltime care takers
+app.get("/checkleave", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const checkLeaves = await pool.query(`SELECT service_avail FROM Offers_services\
+                   WHERE caretaker_email = '${user_email}';`);
+        res.json(checkLeaves.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+//take leave for fulltime care takers
+app.post("/takeleave", async (req, res) => {
+    //step 1: destructure req.body to get details
+    const { service_avail, employment_type } = req.body;
+
+    // get user_email from jwt token
+    const jwtToken = req.header("token")
+    const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+    console.log(user_email);
+
+    //step 2: destructure the service_avail string to get the date components 
+    const split_dates = service_avail.split('/');
+    const applied_leave_date = split_dates[0];
+    let leave_start_date = new Date(applied_leave_date.split(',')[0]);
+    let leave_end_date = new Date(applied_leave_date.split(',')[1]);
+
+    // Define a function to calculate the difference between two dates in date format
+    var date_diff_indays = function (date1, date2) {
+        let dt1 = new Date(date1);
+        let dt2 = new Date(date2);
+        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
+    }
+
+    let count_2_150_days = 0;
+
+    for (let i = 1; i < split_dates.length; i++) {
+        const curr_working_date = split_dates[i];
+        let curr_start_date = new Date(curr_working_date.split(',')[0]);
+        let curr_end_date = new Date(curr_working_date.split(',')[1]);
+        if (curr_end_date <= leave_start_date || curr_start_date >= leave_end_date) {
+            if (date_diff_indays(curr_start_date, curr_end_date) >= 150) {
+                count_2_150_days += 1;
+            }
+        } else if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
+            let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
+            let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
+
+            if (date_diff_indays(service_avail_new_before.split(',')[0], service_avail_new_before.split(',')[1]) >= 150) {
+                count_2_150_days += 1;
+            }
+            if (date_diff_indays(service_avail_new_after.split(',')[0], service_avail_new_after.split(',')[1]) >= 150) {
+                count_2_150_days += 1;
+            }
+        }
+    }
+    //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
+    if (count_2_150_days >= 2) {
+        for (let i = 1; i < split_dates.length; i++) {
+            const curr_working_date = split_dates[i];
+            let curr_start_date = new Date(curr_working_date.split(',')[0]);
+            let curr_end_date = new Date(curr_working_date.split(',')[1]);
+
+            //Check if full containment condition is satisfied
+            // Illustration:
+            //
+            // startdate                          enddate
+            // v                                        v
+            // #----------------------------------------#
+            //
+            //         #----------------------#
+            //         ^                      ^
+            //     leaveStart              leaveEnd
+            
+            if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
+                //leave_start_date becomes new end_date of new entry 1
+                //leave_end_date becomes new start_date of new entry 2
+                leave_start_date.setDate(leave_start_date.getDate() - 1);
+                leave_end_date.setDate(leave_end_date.getDate() + 1 );
+                let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
+                let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
+                console.log(service_avail_new_before);
+
+                //execute both SQL queries using a SQL Transaction
+                try {
+                    await pool.query("BEGIN");
+                    //step 3: if we find a service_avail period that has full containment of the leave period insert 2 new service_avail periods
+                    await pool.query(
+                        "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5), ($6, $7, $8, $9, $10) RETURNING *",
+                        [user_email, employment_type, service_avail_new_before, "all", "50", user_email, employment_type, service_avail_new_after, "all", "50"]);
+                    //step 4: remove the entry corresponding to that service_avail period 
+                    await pool.query(
+                        `DELETE FROM Offers_Services WHERE caretaker_email = '${user_email}' AND service_avail = '${curr_working_date}';`);
+                    console.log("Done executing queries");
+                    await pool.query("COMMIT");
+                    res.status(200).json({ status: "success", message: "Updated Leave." });
+                } catch (error) {
+                    try {
+                        await pool.query("ROLLBACK");
+                    } catch (rollbackError) {
+                        console.log("A rollback error occured: ", rollbackError);
+                    }
+                    console.log("An error occured: ", error);
+                    res.status(400).json({ error: "You cannot apply for this leave" });
+                    return error;
+                } finally {
+                    break;
+                }
+            }
+        }
+    } else {
+        res.json("You cannot take leave during this period");
+        //res.status(400).send("You cannot take leave during this period");
     }
 });
 

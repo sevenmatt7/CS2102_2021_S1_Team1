@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 export default function NavBar({ isAuth, setAuth }) {
 
     const acc_type = localStorage.acc_type;
+    const emp_type = localStorage.emp_type;
     const logout = async e => {
         e.preventDefault();
         try {
@@ -40,7 +41,8 @@ export default function NavBar({ isAuth, setAuth }) {
                         <Nav className="mr-auto">
                             {acc_type !== "caretaker" && <Nav.Link href="/sitters">Sitters</Nav.Link>}
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
-                            {acc_type === "caretaker" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
+                            {acc_type === "caretaker" && emp_type === "parttime" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
+                            {acc_type === "caretaker" && emp_type === "fulltime" && <Nav.Link href="/takeleave">Take Leave</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}
                             {acc_type === "admin" && <Nav.Link href="PCSEnquiries">Enquiries</Nav.Link>}
                         </Nav>
