@@ -5,6 +5,7 @@ import OwnerReview from "./OwnerReview";
 const PetOwner = () => {
 
     const [searches, setSearches] = useState([]);
+    const [button, setButton] = useState({ t_status: "" });
     const [transactions, setTransactions] = useState([]);
     const acc_type = localStorage.acc_type;
 
@@ -25,12 +26,16 @@ const PetOwner = () => {
 
     const getTransactions = async () => {
         try {
-            const res = await fetch("http://localhost:5000/transactions", {
+            const t_value = button['t_status'];
+            const res = await fetch("http://localhost:5000/transactions?" + new URLSearchParams({
+                t_status: t_value
+            }), {
                 method: "GET",
                 headers: { token: localStorage.token, acc_type: acc_type }
             });
             const jsonData = await res.json();
             setTransactions(jsonData);
+            console.log(jsonData);
         } catch (err) {
             console.error(err.message);
         }
@@ -48,6 +53,9 @@ const PetOwner = () => {
                 return "Accepted";
                 break;
             case 4:
+                return "Completed";
+                break;
+            case 5:
                 return "Completed";
                 break;
             default:
@@ -73,10 +81,18 @@ const PetOwner = () => {
         }
     }
 
+    const changeButton = (num) => {
+        setButton({ t_status: num });
+    }
+
     useEffect(() => {
         getPets();
         getTransactions();
     }, [])
+
+    useEffect(() => {
+        getTransactions();
+    }, [button])
 
     return (
         <Fragment>
@@ -94,14 +110,31 @@ const PetOwner = () => {
                         </li>
                     </ul>
                 </div>
+
+
                 {/* Tab contents */}
                 <div class="tab-content" id="PetOwnerTabContent">
                     <div class="tab-pane fade show active" id="transactions" role="tabpanel" aria-labelledby="transactions-tab">
                         {acc_type === "petowner" && <div className="container">
+
+                            <div class="btn-group mb-3" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-secondary" value=""
+                                    onClick={(e) => changeButton(e.target.value)}>All</button>
+                                <button type="button" class="btn btn-secondary" value="4"
+                                    onClick={(e) => changeButton(e.target.value)}>Completed</button>
+                                <button type="button" class="btn btn-secondary" value="3"
+                                    onClick={(e) => changeButton(e.target.value)}>Accepted</button>
+                                <button type="button" class="btn btn-secondary" value="1"
+                                    onClick={(e) => changeButton(e.target.value)}>Submitted</button>
+                                <button type="button" class="btn btn-secondary" value="2"
+                                    onClick={(e) => changeButton(e.target.value)}>Rejected</button>
+                                <button type="button" class="btn btn-secondary">{button.t_status}</button>
+                            </div>
+
                             <div className="row">
                                 <div className="card-deck">
-                                    {transactions.map((search, i) => (
-                                        <div className="col-md-6 mb-4">
+                                    <div className="col-md-6 mb-4">
+                                        {transactions.map((search, i) => (
                                             <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
                                                 <div className="row no-gutters">
                                                     <div className="col-md-4">
@@ -125,17 +158,20 @@ const PetOwner = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
+
                         </div>}
                     </div>
-                    <div class="tab-pane fade mt-4" id="pets" role="tabpanel" aria-labelledby="pets-tab">
+                    <div class="tab-pane fade" id="pets" role="tabpanel" aria-labelledby="pets-tab">
                         <div className="row">
                             <div className="card-deck">
-                                {searches.map((search, i) => (
-                                    <div className="col-md-6 mb-4">
+                                <div className="col-md-6 mb-4">
+                                    {searches.map((search, i) => (
+
                                         <div key={i} className="card mb-3">
                                             <div className="row no-gutters">
                                                 <div className="col-md-4">
@@ -151,8 +187,9 @@ const PetOwner = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -164,7 +164,7 @@ body, html, .App, #root, .auth-wrapper {
 }
 
 .profile-head .nav-tabs{
-  margin-bottom:5%;
+  margin-bottom:3%;
   border-bottom:1px solid #1a1a1a21;
 }
 .profile-head .nav-tabs .nav-link{
