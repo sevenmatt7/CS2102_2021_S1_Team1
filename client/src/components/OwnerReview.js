@@ -32,6 +32,7 @@ const OwnerReview = ({ search, i }) => {
             const successMessage = "Your review for " + dateArr[0] + " to " +
                                     dateArr[1] + " has been submitted!";
             toast.success(successMessage);
+            window.location.reload();
         } catch (err) {
             console.error(err.message)
         }
