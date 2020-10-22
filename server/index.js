@@ -80,9 +80,7 @@ app.get("/pets", async (req, res) => {
         console.log(user_email)
         const searches = await pool.query(`SELECT DISTINCT pet_name, \
                                             gender, special_req, pet_type \
-                                            FROM Owns_Pets, \
-                                             Users \
-                                             \
+                                            FROM Owns_Pets, Users \
                                             WHERE owner_email = '${user_email}'; \ 
                                             ` );
         res.json(searches.rows);
@@ -120,7 +118,7 @@ app.get("/transactions", async (req, res) => {
         let searches;
         if (acc_type === "petowner") {
             searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
+                                            gender, special_req, pet_type, duration, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
