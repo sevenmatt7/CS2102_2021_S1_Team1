@@ -1,12 +1,10 @@
 import React, { Fragment } from "react"
-import { Link } from "react-router-dom"
 import ChartistGraph from 'react-chartist'
-import Chartist from 'chartist'
 import ChartistLegend from 'chartist-plugin-legend'
+import PCSTable from "./PCSTable"
 
 
 const PCSAdmin = () => {
-
 
   var data = {
     labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10'],
@@ -14,7 +12,7 @@ const PCSAdmin = () => {
       [1, 2, 4, 8, 6, -2, -1, -4, -6, -2]
     ]
   };
-  
+
   // var options = {
   //   high: 10,
   //   low: -10,
@@ -231,25 +229,7 @@ const PCSAdmin = () => {
                 </div>
               </div>
             </div>
-
-
-
-            <h2>Overview</h2>
-            <div className="table-responsive">
-              <table className="table table-striped table-sm">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>C_id</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Number of jobs taken</th>
-                    <th>Salary</th>
-                  </tr>
-                </thead>
-               
-              </table>
-            </div>
+            <PCSTable/>
           </main>
         </div>
       </div>

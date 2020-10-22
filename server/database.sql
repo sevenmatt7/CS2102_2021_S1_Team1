@@ -52,8 +52,7 @@ CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
 
-INSERT INTO Categories (pet_type)
-VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
+INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
 
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)

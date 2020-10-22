@@ -10,7 +10,6 @@ import NavBar from "./components/NavBar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import PetOwner from "./components/PetOwner";
 import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
@@ -41,6 +40,7 @@ function App() {
     }
   };
 
+
   useEffect(() => {
     checkAuthenticated()
   });
@@ -61,7 +61,7 @@ function App() {
             (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
 
           <Route exact path="/PCS" render={(props) => !isAuthenticated ?
-            (<Redirect to="/login" />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
+            (<Login {...props} setAuth={setAuth} />) : (<PCSAdmin {...props} setAuth={setAuth} />)} />
 
           <Route exact path="/contact" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />

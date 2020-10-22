@@ -139,87 +139,87 @@ const Profile = ({ setAuth }) => {
   return (
     <Fragment>
 
-      <div class="container emp-profile">
+      <div className="container emp-profile">
         <form method="post">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="profile-img">
+          <div className="row">
+            <div className="col-md-4">
+              <div className="profile-img">
                 <img src={imposter} alt="" />
-                <div class="file btn btn-lg btn-primary">
+                <div className="file btn btn-lg btn-primary">
                   Change Photo
                                 <input type="file" name="file" />
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="profile-head">
+            <div className="col-md-6">
+              <div className="profile-head">
                 <h5>
                   {name}
                 </h5>
                 <h6>
                   {acc_type}
                 </h6>
-                <p class="proile-rating">RATINGS : <span>8/10</span></p>
+                <p className="proile-rating">RATINGS : <span>8/10</span></p>
               </div>
             </div>
-            <div class="col-md-2">
-              <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
+            <div className="col-md-2">
+              <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
             </div>
           </div>
-          <div class="profile-head">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
+          <div className="profile-head">
+            <ul className="nav nav-tabs" id="myTab" role="tablist">
+              <li className="nav-item">
+                <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">
+              <li className="nav-item">
+                <a className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">
                   {acc_type === "petowner" ? "Other Info" : "Other Info"}
                 </a>
               </li>
             </ul>
-            <div class="row">
+            <div className="row">
             </div>
-            <div class="col-md-8">
-              <div class="tab-content profile-tab" id="myTabContent">
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                  <div class="row">
-                    <div class="col-md-6">
+            <div className="col-md-8">
+              <div className="tab-content profile-tab" id="myTabContent">
+                <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                  <div className="row">
+                    <div className="col-md-6">
                       <label>Name</label>
                     </div>
-                    <div class="col-md-6">
+                    <div className="col-md-6">
                       <p>{name}</p>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-md-6">
+                  <div className="row">
+                    <div className="col-md-6">
                       <label>Profession</label>
                     </div>
-                    <div class="col-md-6">
+                    <div className="col-md-6">
                       <p>{localStorage.acc_type}</p>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-md-6">
+                  <div className="row">
+                    <div className="col-md-6">
                       <label>Email</label>
                     </div>
-                    <div class="col-md-6">
+                    <div className="col-md-6">
                       <p></p>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-md-12">
+                  <div className="row">
+                    <div className="col-md-12">
                       <label>Your Bio</label><br />
                       <p>Insert details here/ Other info</p>
                     </div>
                   </div>
                 </div>
 
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="row">
-                    <div class="col-md-6">
+                <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div className="row">
+                    <div className="col-md-6">
 
                     </div>
-                    <div class="col-md-6">
+                    <div className="col-md-6">
                       <p><label>Can add other details here (Enquiries for Pet Owners/ Transaction history for CareTakers)</label></p>
                     </div>
                   </div>
@@ -231,16 +231,16 @@ const Profile = ({ setAuth }) => {
       </div>
 
       {/* If is Pet Owner, List their pets */}
-      {acc_type === "petowner" && <div class="container">
+      {acc_type === "petowner" && <div className="container">
         <h2 className="mb-3">My pets</h2>
-        <div class="row">
-          <div class="card-deck">
+        <div className="row">
+          <div className="card-deck">
             {searches.map((search, i) => (
-              <div class="col-md-6 mb-4">
+              <div className="col-md-6 mb-4">
                 <div key={i} className="card mb-3">
                   <div className="row no-gutters">
                     <div className="col-md-4">
-                      <img src={imposter} alt="" class="card-img" />
+                      <img src={imposter} alt="" className="card-img" />
                     </div>
                     <div className="card-text col-md-8">
                       <div className="card-body">
@@ -259,16 +259,16 @@ const Profile = ({ setAuth }) => {
       </div>}
       
       {/* If is Pet Owner, List their transactions*/}
-      {acc_type === "petowner" && <div class="container">
+      {acc_type === "petowner" && <div className="container">
       <h2 className="mb-3">My transactions</h2>
-        <div class="row">
+        <div className="row">
            <div className="card-deck">
             {transactions.map((search, i) => (
-              <div class="col-md-6 mb-4">
+              <div className="col-md-6 mb-4">
                 <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
                   <div className="row no-gutters">
                     <div className="col-md-4">
-                      <img src={imposter} alt="" class="card-img" />
+                      <img src={imposter} alt="" className="card-img" />
                     </div>
                     <div className="col-md-8">
                       <div className="card-body">
@@ -295,15 +295,15 @@ const Profile = ({ setAuth }) => {
       </div>}
 
       {/* If is Care Taker, List their job offers */}
-      <div class="container">
-        <div class="row">
+      <div className="container">
+        <div className="row">
           {acc_type === "caretaker" && <div className="card-deck">
             {transactions.map((search, i) => (
-              <div class="col-md-6 mb-4">
+              <div className="col-md-6 mb-4">
                 <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
                   <div className="row no-gutters">
                     <div className="col-md-4">
-                      <img src={imposter} alt="" class="card-img" />
+                      <img src={imposter} alt="" className="card-img" />
                     </div>
                     <div className="col-md-8">
                       <div className="card-body">
