@@ -192,6 +192,7 @@ const Profile = ({ setAuth }) => {
         </form>
       </div>
 
+
       {/* If is Care Taker, List their job offers */}
       <div className="container">
         <div className="row">
