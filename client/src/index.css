@@ -97,7 +97,14 @@ body, html, .App, #root, .auth-wrapper {
   color: #167bff;
 }
 
-
+/* PetOwner Page */
+.petowner-home{
+  padding: 3%;
+  margin-top: 3%;
+  margin-bottom: 3%;
+  border-radius: 0.5rem; 
+  background: #f3ccef;
+}
 
 /* Profile Page */
 .emp-profile{
@@ -158,6 +165,7 @@ body, html, .App, #root, .auth-wrapper {
 
 .profile-head .nav-tabs{
   margin-bottom:5%;
+  border-bottom:1px solid #1a1a1a21;
 }
 .profile-head .nav-tabs .nav-link{
   font-weight:600;

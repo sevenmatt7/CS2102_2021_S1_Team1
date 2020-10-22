@@ -1,110 +1,76 @@
 import React, { Fragment, useState, useEffect } from "react";
 import imposter from "../Assets/Images/imposter.jpg";
 
-//Is this used?
-
 const PetOwner = () => {
 
     const [searches, setSearches] = useState([]);
-    const [filters, setFilters] = useState({
-        employment_type: "",
-        avg_rating: ""
-    });
+    const acc_type = localStorage.acc_type;
+    useEffect(() => {
+        getPets();
+    }, [])
 
-    const getSearches = async () => {
+    const getPets = async () => {
         try {
-            const response = await fetch("http://localhost:5000/caretakers");
-            const jsonData = await response.json();
-            console.log(jsonData);
-            setSearches(jsonData);
+            if (acc_type === "petowner") {
+                const response = await fetch("http://localhost:5000/pets", {
+                    method: "GET",
+                    headers: { token: localStorage.token }
+                });
+                const jsonData = await response.json();
+                setSearches(jsonData);
+            }
         } catch (error) {
             console.log(error.message)
         }
     };
 
-    const getFiltered = async () => {
-        const e_type = filters["employment_type"];
-        const r_type = filters["avg_rating"];
-        try {
-            const response = await fetch('http://localhost:5000/caretakersq?' + new URLSearchParams({
-                employment_type: e_type,
-                avg_rating: r_type,
-            }), {
-                method: "GET"
-            });
-            const jsonData = await response.json()
-            setSearches(jsonData);
-        } catch (error) {
-            console.log(error.message)
-        }
-    }
-
-    const onSelect = (e) => {
-        setFilters({...filters, [e.target.name]: e.target.value })       
-    }
-
-    useEffect(() => {
-        getSearches();
-    }, [])
-
-    useEffect(() => {
-        getFiltered();
-    }, [filters])
-
-
     return (
         <Fragment>
-            <h1 className="text-center my-3">
-                PetOwner Homepage
-            </h1>
-
-            <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                    <label className="input-group-text" htmlFor="inputGroupSelect01">Employment Type</label>
+            <div className="container petowner-home">
+                <div className="profile-head">
+                    <ul class="nav nav-tabs" id="PetOwnerTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="transactions-tab" data-toggle="tab" href="#transactions" role="tab"
+                                aria-controls="transactions" aria-selected="true">Transactions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pets-tab" data-toggle="tab" href="#pets" role="tab"
+                                aria-controls="pets" aria-selected="false">Pets</a>
+                        </li>
+                    </ul>
                 </div>
-                <select value={filters.employment_type} name="employment_type" className="custom-select" id="inputGroupSelect01" onChange={(e) => onSelect(e)}>
-                    <option value="" disabled>Choose...</option>
-                    <option value="full-time">Full-Time</option>
-                    <option value="part-time">Part-Time</option>
-                </select>
-                <div className="input-group-prepend">
-                    <label className="input-group-text" htmlFor="inputGroupSelect02">Rating</label>
-                </div>
-                <select value={filters.avg_rating} name="avg_rating" className="custom-select" id="inputGroupSelect02" onChange={(e) => onSelect(e)}>
-                    <option value="" disabled>Choose...</option>
-                    <option value="5">5</option>
-                    <option value="4">4</option>
-                    <option value="3">3</option>
-                    <option value="2">2</option>
-                    <option value="1">1</option>
-                </select>
-            </div>
-            <div className="input-group mb-3">
-
-            </div>
-
-            <div className="card-deck">
-                {searches.map((search, i) => (
-                    <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
-                        <div className="row no-gutters">
-                            <div className="col-md-4">
-                                <img src={imposter} className="card-img" alt="..." />
-                            </div>
-                            <div className="col-md-8">
-                                <div className="card-body">
-                                    <h5 className="card-title" style={{ fontFamily: 'verdana', fontSize: 20 }}>{search.full_name}</h5>
-                                    <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 15 }}>Address: {search.user_address}</p>
-                                    <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Employment Type: {search.employment_type}</p>
-                                    <p className="card-text" style={{ fontFamily: 'Arial', fontSize: 13 }}>Rating: {search.avg_rating}</p>
-                                    <a href="#" className="btn btn-success">Request service!</a>
-                                </div>
+                <div class="tab-content" id="PetOwnerTabContent">
+                    <div class="tab-pane fade show active" id="transactions" role="tabpanel" aria-labelledby="transactions-tab">Transactions test</div>
+                    <div class="tab-pane fade mt-4" id="pets" role="tabpanel" aria-labelledby="pets-tab">
+                        {/* <h2 className="mb-3">My Pets</h2> */}
+                        <div className="row">
+                            <div className="card-deck">
+                                {searches.map((search, i) => (
+                                    <div className="col-md-6 mb-4">
+                                        <div key={i} className="card mb-3">
+                                            <div className="row no-gutters">
+                                                <div className="col-md-4">
+                                                    <img src={imposter} alt="" className="card-img" />
+                                                </div>
+                                                <div className="card-text col-md-8">
+                                                    <div className="card-body">
+                                                        <h5 className="card-title"> {search.pet_name}</h5>
+                                                        <p className="card-text">Gender: {search.gender}</p>
+                                                        <p className="card-text">Pet Type: {search.pet_type}</p>
+                                                        <p className="card-text">Special Requirement: {search.special_req}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-
-
-                ))}
+                </div>
             </div>
+
+
         </Fragment>
     )
 

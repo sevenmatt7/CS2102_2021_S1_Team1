@@ -8,7 +8,6 @@ import OwnerReview from "./OwnerReview";
 const Profile = ({ setAuth }) => {
 
   const [name, setName] = useState("");
-  const [searches, setSearches] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const acc_type = localStorage.acc_type;
 
@@ -101,21 +100,6 @@ const Profile = ({ setAuth }) => {
   };
 
 
-  const getPets = async () => {
-    try {
-      if (acc_type === "petowner") {
-        const response = await fetch("http://localhost:5000/pets", {
-          method: "GET",
-          headers: { token: localStorage.token }
-        });
-        const jsonData = await response.json();
-        setSearches(jsonData);
-      }
-    } catch (error) {
-      console.log(error.message)
-    }
-  };
-
   const getTransactions = async () => {
     try {
       const res = await fetch("http://localhost:5000/transactions", {
@@ -131,7 +115,6 @@ const Profile = ({ setAuth }) => {
 
   useEffect(() => {
     getProfile();
-    getPets();
     getTransactions();
   }, [])
 
@@ -159,7 +142,7 @@ const Profile = ({ setAuth }) => {
                 <h6>
                   {acc_type}
                 </h6>
-                <p className="proile-rating">RATINGS : <span>8/10</span></p>
+                <p className="profile-rating">RATINGS : <span>8/10</span></p>
               </div>
             </div>
             <div className="col-md-2">
@@ -229,35 +212,7 @@ const Profile = ({ setAuth }) => {
           </div>
         </form>
       </div>
-
-      {/* If is Pet Owner, List their pets */}
-      {acc_type === "petowner" && <div className="container">
-        <h2 className="mb-3">My pets</h2>
-        <div className="row">
-          <div className="card-deck">
-            {searches.map((search, i) => (
-              <div className="col-md-6 mb-4">
-                <div key={i} className="card mb-3">
-                  <div className="row no-gutters">
-                    <div className="col-md-4">
-                      <img src={imposter} alt="" className="card-img" />
-                    </div>
-                    <div className="card-text col-md-8">
-                      <div className="card-body">
-                        <h5 className="card-title"> {search.pet_name}</h5>
-                        <p className="card-text">Gender: {search.gender}</p>
-                        <p className="card-text">Pet Type: {search.pet_type}</p>
-                        <p className="card-text">Special Requirement: {search.special_req}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>}
-      
+  
       {/* If is Pet Owner, List their transactions*/}
       {acc_type === "petowner" && <div className="container">
       <h2 className="mb-3">My transactions</h2>
