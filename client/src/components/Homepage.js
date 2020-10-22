@@ -8,8 +8,11 @@ const Homepage = ({ setAuth }) => {
 
 
   return (
-    //This homepage can be the new dashboard for pcsadmin, caretaker and petowner information
-    <PetOwner/>
+    <Fragment>
+      {acc_type == "petowner" && <PetOwner/>}
+
+    </Fragment>
+
 
   );
 };
