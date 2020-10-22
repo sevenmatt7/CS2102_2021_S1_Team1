@@ -8,7 +8,7 @@ const OwnerReview = ({ search, i }) => {
     const duration = search.duration;
 
     const [inputs, setInputs] = useState({
-        rating: 0,
+        rating: 5,
         review: ""
     });
 
@@ -65,6 +65,8 @@ const OwnerReview = ({ search, i }) => {
                                 <input type="number" 
                                 pattern="[0-9]+" 
                                 maxLength="2" 
+                                min = "0"
+                                max = "5"
                                 name="rating"
                                 value={rating}
                                 onChange={(e) => onChange(e)}
