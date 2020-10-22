@@ -52,8 +52,8 @@ const SetAvail = ({setAuth}) => {
                             <div className="auth-inner">
                                 <h1 className="text-center mt-3 mb-3">When are you available?</h1>
                                 <p className="text-center">
-                                    If you are a full-time caretaker, you need
-                                    to indicate your availability in periods of 150 days.
+                                    As a part-time caretaker, you need to indicate your 
+                                    availability, pet preference & daily price in order to receive bids.
                                 </p>
                                 <form onSubmit={onSubmitForm}> 
                                     <div className="row">
