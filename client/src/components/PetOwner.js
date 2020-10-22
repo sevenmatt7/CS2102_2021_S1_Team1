@@ -128,7 +128,6 @@ const PetOwner = () => {
                                     onClick={(e) => changeButton(e.target.value)}>Submitted</button>
                                 <button type="button" class="btn btn-secondary" value="2"
                                     onClick={(e) => changeButton(e.target.value)}>Rejected</button>
-                                <button type="button" class="btn btn-secondary">{button.t_status}</button>
                             </div>
 
                             <div className="row">
@@ -142,7 +141,7 @@ const PetOwner = () => {
                                                     </div>
                                                     <div className="col-md-8">
                                                         <div className="card-body">
-                                                            <h5 className="card-title ml-2">{search.pet_name} is with {search.full_name}</h5>
+                                                            <h5 className="card-title ml-2">{search.pet_name} with {search.full_name}</h5>
                                                             <p className="card-text" >Caretaker's Address: {search.user_address}</p>
                                                             <p className="card-text">Pet Name: {search.pet_name}</p>
                                                             <p className="card-text">Gender: {search.gender}</p>

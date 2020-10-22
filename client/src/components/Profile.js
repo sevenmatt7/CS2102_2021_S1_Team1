@@ -72,6 +72,8 @@ const Profile = ({ setAuth }) => {
       } else if (status_update === 4) { //when the job is marked as complete
         toast.success(`🎉 You have completed the job from ${search.full_name}!`);
       }
+
+      window.location.reload();
      
     } catch (err) {
       console.error(err.message);
