@@ -97,7 +97,7 @@ const PetOwner = () => {
     return (
         <Fragment>
             {/* Tabs at the top*/}
-            <div className="container petowner-home">
+            <div className="container-fluid petowner-home">
                 <div className="profile-head">
                     <ul class="nav nav-tabs" id="PetOwnerTab" role="tablist">
                         <li class="nav-item">
@@ -115,7 +115,7 @@ const PetOwner = () => {
                 {/* Tab contents */}
                 <div class="tab-content" id="PetOwnerTabContent">
                     <div class="tab-pane fade show active" id="transactions" role="tabpanel" aria-labelledby="transactions-tab">
-                        {acc_type === "petowner" && <div className="container">
+                        {acc_type === "petowner" && <div className="container-fluid">
 
                             <div class="btn-group mb-3" role="group" aria-label="Basic example">
                                 <button type="button" class="btn btn-secondary" value=""
@@ -132,11 +132,11 @@ const PetOwner = () => {
 
                             <div className="row">
                                 <div className="card-deck">
-                                    <div className="col-md-6 mb-4">
-                                        {transactions.map((search, i) => (
-                                            <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
-                                                <div className="row no-gutters">
-                                                    <div className="col-md-4">
+                                    {transactions.map((search, i) => (
+                                         <div className="col-md-6 mb-4">
+                                         <div key={i} className="card mb-3">
+                                             <div className="row no-gutters">
+                                                 <div className="col-md-4">
                                                         <img src={imposter} alt="" className="card-img" />
                                                     </div>
                                                     <div className="col-md-8">
@@ -157,9 +157,8 @@ const PetOwner = () => {
                                                     </div>
                                                 </div>
                                             </div>
-
-                                        ))}
-                                    </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
@@ -168,9 +167,8 @@ const PetOwner = () => {
                     <div class="tab-pane fade" id="pets" role="tabpanel" aria-labelledby="pets-tab">
                         <div className="row">
                             <div className="card-deck">
-                                <div className="col-md-6 mb-4">
-                                    {searches.map((search, i) => (
-
+                                {searches.map((search, i) => (
+                                    <div className="col-md-6 mb-4">
                                         <div key={i} className="card mb-3">
                                             <div className="row no-gutters">
                                                 <div className="col-md-4">
@@ -186,10 +184,10 @@ const PetOwner = () => {
                                                 </div>
                                             </div>
                                         </div>
-
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -197,7 +195,7 @@ const PetOwner = () => {
 
 
 
-        </Fragment>
+        </Fragment >
     )
 
 };
