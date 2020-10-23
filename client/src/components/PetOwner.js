@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Jumbotron as Jumbo } from 'react-bootstrap';
 import imposter from "../Assets/Images/imposter.jpg";
+import EditPet from "./EditPet";
 import OwnerReview from "./OwnerReview";
 
 const PetOwner = () => {
@@ -206,13 +207,9 @@ const PetOwner = () => {
                                                         <p className="card-text">Gender: {search.gender}</p>
                                                         <p className="card-text">Pet Type: {search.pet_type}</p>
                                                         <p className="card-text">Special Requirement: {search.special_req}</p>
-                                                        <div className="row">
-                                                            <button className="btn btn-warning col-md-5 col-sm-5 col-12"
-                                                                onClick={() => editPet()}>Edit</button>
-                                                            <div className="col-md-1 col-sm-1 col-12" />
-                                                            <button className="btn btn-danger  col-md-5 col-sm-5 col-12"
-                                                                onClick={() => deletePet(search.pet_name)}>Delete</button>
-                                                        </div>
+                                                        <EditPet search={search} i={i}/>
+                                                        <button className="btn btn-danger"
+                                                            onClick={() => deletePet(search.pet_name)}>Delete</button>
                                                     </div>
                                                 </div>
                                             </div>

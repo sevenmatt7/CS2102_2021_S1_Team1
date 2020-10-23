@@ -212,6 +212,32 @@ app.delete("/deletepet/:id", async (req, res) => {
     }
 });
 
+//edit selected pet
+app.put("/editpet", async (req, res) => {
+    try {
+        const { old_pet_name, new_pet_name, special_req, pet_type, gender } = req.body;
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email);
+
+        const editPet = await pool.query(
+            "UPDATE Owns_Pets SET (pet_name, special_req, pet_type, gender) = ($3, $4, $5, $6) \
+            WHERE owner_email = $1 and pet_name = $2 \
+            AND \
+            (SELECT 1 FROM Transactions_Details \
+            WHERE owner_email = $1 \
+            AND pet_name = $2 \
+            AND (t_status = 1 \
+            OR t_status = 3)) IS NULL \
+            RETURNING *" ,
+            [user_email, old_pet_name, new_pet_name, special_req, pet_type, gender]);
+
+        res.json(editPet.rows);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
 //get all bids from petowner for caretaker
 app.get("/bids", async (req, res) => {
     try {
@@ -425,12 +451,12 @@ app.post("/takeleave", async (req, res) => {
             //         #----------------------#
             //         ^                      ^
             //     leaveStart              leaveEnd
-            
+
             if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
                 //leave_start_date becomes new end_date of new entry 1
                 //leave_end_date becomes new start_date of new entry 2
                 leave_start_date.setDate(leave_start_date.getDate() - 1);
-                leave_end_date.setDate(leave_end_date.getDate() + 1 );
+                leave_end_date.setDate(leave_end_date.getDate() + 1);
                 let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
                 let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
                 console.log(service_avail_new_before);
