@@ -44,14 +44,14 @@ const PetOwner = () => {
 
     const deletePet = async (pet_name) => {
         try {
-            const res = await fetch("http://localhost:5000/deletepet/" + pet_name, 
-            {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    token: localStorage.token
-                  },
-            });
+            const res = await fetch("http://localhost:5000/deletepet/" + pet_name,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        token: localStorage.token
+                    },
+                });
             const jsonData = await res.json();
             console.log(jsonData);
             getPets();
@@ -168,9 +168,9 @@ const PetOwner = () => {
                                                             <h5 className="card-title ml-2">{search.pet_name} with {search.full_name}</h5>
                                                             <p className="card-text" >Caretaker's Address: {search.user_address}</p>
                                                             <p className="card-text">Pet Name: {search.pet_name}</p>
-                                                            <p className="card-text">Gender: {search.gender}</p>
-                                                            <p className="card-text">Pet type: {search.pet_type}</p>
-                                                            <p className="card-text">Special requirements: {search.special_req}</p>
+                                                            {search.gender !== null && <p className="card-text">Gender: {search.gender}</p>}
+                                                            {search.pet_type !== null && <p className="card-text">Pet type: {search.pet_type}</p>}
+                                                            {search.special_req !== null && <p className="card-text">Special requirements: {search.special_req}</p>}
                                                             <p className="card-text"> Offered price/day: {search.cost}</p>
                                                             <p className="card-text">Requested period: {search.duration}</p>
                                                             <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
