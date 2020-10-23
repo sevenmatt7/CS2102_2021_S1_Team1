@@ -81,7 +81,7 @@ CREATE TABLE Transactions_Details (
 	is_accepted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
 	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
-	FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
+	-- FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
 );
 
 --Combined Enquires and Enquiries table, removed e_id, primary key changed to (user_email, enq_message)

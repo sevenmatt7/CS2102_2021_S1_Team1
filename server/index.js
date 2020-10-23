@@ -293,8 +293,10 @@ app.get("/caretakersq", async (req, res) => {
             sql += ("'" + req.query.employment_type + "'");
         }
         if (req.query.avg_rating != undefined && req.query.avg_rating != "") {
-            sql += " AND avg_rating = ";
+            sql += " AND avg_rating >= ";
             sql += (req.query.avg_rating);
+            sql += " AND avg_rating < ";
+            sql += (req.query.avg_rating + 1);
         }
         if (req.query.type_pref != undefined && req.query.type_pref != "") {
             sql += " AND type_pref = ";
