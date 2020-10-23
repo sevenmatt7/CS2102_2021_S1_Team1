@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import PCSAdmin from "./PCSAdmin";
 import PetOwner from "./PetOwner";
 
 const Homepage = ({ setAuth }) => {
@@ -9,8 +10,8 @@ const Homepage = ({ setAuth }) => {
 
   return (
     <Fragment>
+      {acc_type === "admin" && <PCSAdmin />}
       {acc_type == "petowner" && <PetOwner/>}
-
     </Fragment>
 
 

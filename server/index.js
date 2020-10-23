@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const jwt = require("jsonwebtoken");
+const { response } = require("express");
 
 app.use(cors());
 app.use(express.json());
@@ -19,12 +20,14 @@ app.use("/home", require("./routes/homepage"));
 app.use("/profile", require("./routes/profile"));
 
 //submit enquiry
-app.post("/contact", async (req, res) => {
+app.post("/submitenquiry", async (req, res) => {
     try {
         const { subject, message, date } = req.body
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const newEnquiry = await pool.query(
-            "INSERT INTO enquiries (enq_type, submission, enq_message) VALUES($1, $2, $3)",
-            [subject, date, message]
+            "INSERT INTO enquiries (user_email, enq_type, submission, enq_message) VALUES($1, $2, $3, $4)",
+            [user_email, subject, date, message]
         )
         res.json(newEnquiry.rows[0])
     } catch (err) {
@@ -35,8 +38,102 @@ app.post("/contact", async (req, res) => {
 //get enquiries
 app.get("/contact", async (req, res) => {
     try {
-        const enquiries = await pool.query("SELECT * FROM enquiries")
+        const enq_type = req.query.enq_type
+        var query = ''
+        if (enq_type === 'All') {
+            query = "SELECT * FROM enquiries"
+        } else {
+            query = `SELECT * FROM enquiries WHERE enq_type = '${enq_type}'`
+        }
+        const enquiries = await pool.query(query)
         res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get total num of jobs for each month in a year
+app.get("/pcsline", async (req, res) => {
+    try {
+        const year = req.query.year
+        const numJobsPerMonth = await pool.query(
+            `SELECT employment_type, substring(duration, 1, 7) startYearMonth, COUNT(*)
+                FROM transactions_details
+                WHERE duration LIKE '${year}-%'
+                GROUP BY (employment_type, startYearMonth)`
+        )
+        res.json(numJobsPerMonth.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get total num of jobs for fulltimer and parttimer in a month
+app.get("/pcspie", async (req, res) => {
+    try {
+        const startYearMonth = req.query.duration
+        const numJobs = await pool.query(
+            `SELECT employment_type, COUNT(*)
+                FROM transactions_details 
+                WHERE duration LIKE '${startYearMonth}-%'
+                AND t_status = 3
+                GROUP BY employment_type`
+        )
+        if (numJobs.rows.length === 0) {
+            res.json([{ employment_type: 'fulltime', count: '0' }, { employment_type: 'parttime', count: '0' }])
+        } else if (numJobs.rows.length === 1) {
+            if (numJobs.rows[0].employment_type === 'fulltime') {
+                res.json(numJobs.rows.concat([{ employment_type: 'parttime', count: '0' }]))
+            } else if (numJobs.rows[0].employment_type === 'parttime') {
+                res.json([{ employment_type: 'parttime', count: '0' }].concat(numJobs.rows))
+            }
+        } else {
+            res.json(numJobs.rows)
+        }
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get all enquiries to be answered by PCSadmin
+app.get("/pcsenquiries", async (req, res) => {
+    try {
+        const filter = req.query.filter
+        let query;
+        if (filter === 'Pending') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NULL \
+                        AND enquiries.admin_email IS NULL"
+        } else if (filter === 'Replied') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NOT NULL \
+                        AND enquiries.admin_email IS NOT NULL"
+        } else {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries"
+        }
+
+        const enquiries = await pool.query(query)
+        res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// submit answer to enquiry
+app.put("/pcsanswer", async (req, res) => {
+    try {
+        const { user_email, enq_message, answer } = req.body
+        const jwtToken = req.header("token")
+        const admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const response = await pool.query(`UPDATE enquiries 
+                                            SET answer = '${answer}', 
+                                                admin_email = '${admin_email}' 
+                                            WHERE user_email = '${user_email}' 
+                                            AND enq_message = '${enq_message}'`)
+        res.json(response.rows[0])
     } catch (err) {
         console.error(err.message)
     }
@@ -228,7 +325,7 @@ app.get("/caretakersq", async (req, res) => {
 });
 
 
-//indicate availabilities for care takers
+//indicate availabilities for parttime care takers
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
@@ -248,6 +345,124 @@ app.post("/setavail", async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
+    }
+});
+
+//check working days for fulltime care takers
+app.get("/checkleave", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const checkLeaves = await pool.query(`SELECT service_avail FROM Offers_services\
+                   WHERE caretaker_email = '${user_email}';`);
+        res.json(checkLeaves.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+//take leave for fulltime care takers
+app.post("/takeleave", async (req, res) => {
+    //step 1: destructure req.body to get details
+    const { service_avail, employment_type } = req.body;
+
+    // get user_email from jwt token
+    const jwtToken = req.header("token")
+    const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+    console.log(user_email);
+
+    //step 2: destructure the service_avail string to get the date components 
+    const split_dates = service_avail.split('/');
+    const applied_leave_date = split_dates[0];
+    let leave_start_date = new Date(applied_leave_date.split(',')[0]);
+    let leave_end_date = new Date(applied_leave_date.split(',')[1]);
+
+    // Define a function to calculate the difference between two dates in date format
+    var date_diff_indays = function (date1, date2) {
+        let dt1 = new Date(date1);
+        let dt2 = new Date(date2);
+        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
+    }
+
+    let count_2_150_days = 0;
+
+    for (let i = 1; i < split_dates.length; i++) {
+        const curr_working_date = split_dates[i];
+        let curr_start_date = new Date(curr_working_date.split(',')[0]);
+        let curr_end_date = new Date(curr_working_date.split(',')[1]);
+        if (curr_end_date <= leave_start_date || curr_start_date >= leave_end_date) {
+            if (date_diff_indays(curr_start_date, curr_end_date) >= 150) {
+                count_2_150_days += 1;
+            }
+        } else if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
+            let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
+            let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
+
+            if (date_diff_indays(service_avail_new_before.split(',')[0], service_avail_new_before.split(',')[1]) >= 150) {
+                count_2_150_days += 1;
+            }
+            if (date_diff_indays(service_avail_new_after.split(',')[0], service_avail_new_after.split(',')[1]) >= 150) {
+                count_2_150_days += 1;
+            }
+        }
+    }
+    //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
+    if (count_2_150_days >= 2) {
+        for (let i = 1; i < split_dates.length; i++) {
+            const curr_working_date = split_dates[i];
+            let curr_start_date = new Date(curr_working_date.split(',')[0]);
+            let curr_end_date = new Date(curr_working_date.split(',')[1]);
+
+            //Check if full containment condition is satisfied
+            // Illustration:
+            //
+            // startdate                          enddate
+            // v                                        v
+            // #----------------------------------------#
+            //
+            //         #----------------------#
+            //         ^                      ^
+            //     leaveStart              leaveEnd
+            
+            if (curr_start_date < leave_start_date && curr_end_date > leave_end_date) {
+                //leave_start_date becomes new end_date of new entry 1
+                //leave_end_date becomes new start_date of new entry 2
+                leave_start_date.setDate(leave_start_date.getDate() - 1);
+                leave_end_date.setDate(leave_end_date.getDate() + 1 );
+                let service_avail_new_before = curr_start_date.toISOString().slice(0, 10) + ',' + leave_start_date.toISOString().slice(0, 10);
+                let service_avail_new_after = leave_end_date.toISOString().slice(0, 10) + ',' + curr_end_date.toISOString().slice(0, 10);
+                console.log(service_avail_new_before);
+
+                //execute both SQL queries using a SQL Transaction
+                try {
+                    await pool.query("BEGIN");
+                    //step 3: if we find a service_avail period that has full containment of the leave period insert 2 new service_avail periods
+                    await pool.query(
+                        "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5), ($6, $7, $8, $9, $10) RETURNING *",
+                        [user_email, employment_type, service_avail_new_before, "all", "50", user_email, employment_type, service_avail_new_after, "all", "50"]);
+                    //step 4: remove the entry corresponding to that service_avail period 
+                    await pool.query(
+                        `DELETE FROM Offers_Services WHERE caretaker_email = '${user_email}' AND service_avail = '${curr_working_date}';`);
+                    console.log("Done executing queries");
+                    await pool.query("COMMIT");
+                    res.status(200).json({ status: "success", message: "Updated Leave." });
+                } catch (error) {
+                    try {
+                        await pool.query("ROLLBACK");
+                    } catch (rollbackError) {
+                        console.log("A rollback error occured: ", rollbackError);
+                    }
+                    console.log("An error occured: ", error);
+                    res.status(400).json({ error: "You cannot apply for this leave" });
+                    return error;
+                } finally {
+                    break;
+                }
+            }
+        }
+    } else {
+        res.json("You cannot take leave during this period");
+        //res.status(400).send("You cannot take leave during this period");
     }
 });
 
