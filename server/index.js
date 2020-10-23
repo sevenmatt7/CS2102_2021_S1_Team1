@@ -20,12 +20,14 @@ app.use("/home", require("./routes/homepage"));
 app.use("/profile", require("./routes/profile"));
 
 //submit enquiry
-app.post("/contact", async (req, res) => {
+app.post("/submitenquiry", async (req, res) => {
     try {
         const { subject, message, date } = req.body
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const newEnquiry = await pool.query(
-            "INSERT INTO enquiries (enq_type, submission, enq_message) VALUES($1, $2, $3)",
-            [subject, date, message]
+            "INSERT INTO enquiries (user_email, enq_type, submission, enq_message) VALUES($1, $2, $3, $4)",
+            [user_email, subject, date, message]
         )
         res.json(newEnquiry.rows[0])
     } catch (err) {
@@ -36,8 +38,102 @@ app.post("/contact", async (req, res) => {
 //get enquiries
 app.get("/contact", async (req, res) => {
     try {
-        const enquiries = await pool.query("SELECT * FROM enquiries")
+        const enq_type = req.query.enq_type
+        var query = ''
+        if (enq_type === 'All') {
+            query = "SELECT * FROM enquiries"
+        } else {
+            query = `SELECT * FROM enquiries WHERE enq_type = '${enq_type}'`
+        }
+        const enquiries = await pool.query(query)
         res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get total num of jobs for each month in a year
+app.get("/pcsline", async (req, res) => {
+    try {
+        const year = req.query.year
+        const numJobsPerMonth = await pool.query(
+            `SELECT employment_type, substring(duration, 1, 7) startYearMonth, COUNT(*)
+                FROM transactions_details
+                WHERE duration LIKE '${year}-%'
+                GROUP BY (employment_type, startYearMonth)`
+        )
+        res.json(numJobsPerMonth.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get total num of jobs for fulltimer and parttimer in a month
+app.get("/pcspie", async (req, res) => {
+    try {
+        const startYearMonth = req.query.duration
+        const numJobs = await pool.query(
+            `SELECT employment_type, COUNT(*)
+                FROM transactions_details 
+                WHERE duration LIKE '${startYearMonth}-%'
+                AND t_status = 3
+                GROUP BY employment_type`
+        )
+        if (numJobs.rows.length === 0) {
+            res.json([{ employment_type: 'fulltime', count: '0' }, { employment_type: 'parttime', count: '0' }])
+        } else if (numJobs.rows.length === 1) {
+            if (numJobs.rows[0].employment_type === 'fulltime') {
+                res.json(numJobs.rows.concat([{ employment_type: 'parttime', count: '0' }]))
+            } else if (numJobs.rows[0].employment_type === 'parttime') {
+                res.json([{ employment_type: 'parttime', count: '0' }].concat(numJobs.rows))
+            }
+        } else {
+            res.json(numJobs.rows)
+        }
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// get all enquiries to be answered by PCSadmin
+app.get("/pcsenquiries", async (req, res) => {
+    try {
+        const filter = req.query.filter
+        let query;
+        if (filter === 'Pending') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NULL \
+                        AND enquiries.admin_email IS NULL"
+        } else if (filter === 'Replied') {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries \
+                        WHERE enquiries.answer IS NOT NULL \
+                        AND enquiries.admin_email IS NOT NULL"
+        } else {
+            query = "SELECT user_email, enq_type, submission, enq_message, answer \
+                        FROM enquiries"
+        }
+
+        const enquiries = await pool.query(query)
+        res.json(enquiries.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// submit answer to enquiry
+app.put("/pcsanswer", async (req, res) => {
+    try {
+        const { user_email, enq_message, answer } = req.body
+        const jwtToken = req.header("token")
+        const admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const response = await pool.query(`UPDATE enquiries 
+                                            SET answer = '${answer}', 
+                                                admin_email = '${admin_email}' 
+                                            WHERE user_email = '${user_email}' 
+                                            AND enq_message = '${enq_message}'`)
+        res.json(response.rows[0])
     } catch (err) {
         console.error(err.message)
     }

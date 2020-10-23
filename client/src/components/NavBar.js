@@ -4,30 +4,30 @@ import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
 import { toast } from "react-toastify";
 
 
-export default function NavBar({isAuth, setAuth}) {
-    
+export default function NavBar({ isAuth, setAuth }) {
+
     const acc_type = localStorage.acc_type;
     const emp_type = localStorage.emp_type;
     const logout = async e => {
         e.preventDefault();
         try {
-          localStorage.removeItem("token");
-          localStorage.removeItem("acc_type");
-          if (localStorage.emp_type) {
-              localStorage.removeItem("emp_type");
-          }
-          setAuth(false);
-          toast.success("Logout successfully");
+            localStorage.removeItem("token");
+            localStorage.removeItem("acc_type");
+            if (localStorage.emp_type) {
+                localStorage.removeItem("emp_type");
+            }
+            setAuth(false);
+            toast.success("Logout successfully");
         } catch (err) {
-          console.error(err.message);
+            console.error(err.message);
         }
-      };
+    };
 
     return (
         <Fragment>
             <Navbar variant="dark" expand="md" sticky="top" style={{ padding: "0", backgroundColor: "#b19cd9" }}>
                 <Container>
-                    <Navbar.Brand style={{ paddingTop: "0" , marginRight: "2rem"}} href="/home">
+                    <Navbar.Brand style={{ paddingTop: "0", marginRight: "2rem" }} href="/home">
                         <img
                             alt=""
                             src={process.env.PUBLIC_URL + '/PetSocietyShadow.png'}
@@ -44,6 +44,7 @@ export default function NavBar({isAuth, setAuth}) {
                             {acc_type === "caretaker" && emp_type === "parttime" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "caretaker" && emp_type === "fulltime" && <Nav.Link href="/takeleave">Take Leave</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}
+                            {acc_type === "admin" && <Nav.Link href="/pcsenquiries">Enquiries</Nav.Link>}
                         </Nav>
                         <Nav>
                             {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}
