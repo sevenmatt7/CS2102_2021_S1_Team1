@@ -89,7 +89,7 @@ CREATE TABLE Transactions_Details (
 	duration VARCHAR NOT NULL, --Set by PetOwner
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
-	FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
+	-- FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
 );
 
 CREATE TABLE Enquiries (

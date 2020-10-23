@@ -175,16 +175,40 @@ app.get("/pets", async (req, res) => {
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email)
-        const searches = await pool.query(`SELECT DISTINCT pet_name, \
+        const searches = await pool.query(`SELECT DISTINCT owner_email, pet_name, \
                                             gender, special_req, pet_type \
-                                            FROM Owns_Pets, \
-                                             Users \
-                                             \
+                                            FROM Owns_Pets \
                                             WHERE owner_email = '${user_email}'; \ 
                                             ` );
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
+    }
+});
+
+//delete selected pet
+app.delete("/deletepet/:id", async (req, res) => {
+    try {
+        const jwtToken = req.header("token");
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const { id } = req.params;
+        const deleteItem = await pool.query(
+            "DELETE FROM Owns_Pets \
+            WHERE owner_email = $1 \
+            AND pet_name = $2 \
+            AND \
+            (SELECT 1 FROM Transactions_Details \
+            WHERE owner_email = $1 \
+            AND pet_name = $2 \
+            AND (t_status = 1 \
+            OR t_status = 3)) IS NULL \
+            ",
+            [user_email, id]
+        );
+
+        res.json("Deleted item!");
+    } catch (err) {
+        console.log(err.message);
     }
 });
 
@@ -216,13 +240,24 @@ app.get("/transactions", async (req, res) => {
         console.log(user_email)
         let searches;
         if (acc_type === "petowner") {
-            searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
-                                            FROM Transactions_Details LEFT JOIN Owns_pets  \
-                                            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
-                                            LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
-                                            WHERE Transactions_Details.owner_email = '${user_email}';\ 
-                                            ` );
+            var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+            gender, special_req, pet_type, duration, cost, mode_of_transfer, t_status, caretaker_email \
+            FROM Transactions_Details LEFT JOIN Owns_pets  \
+            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
+            LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
+            WHERE Transactions_Details.owner_email = '${user_email}'\ 
+            `
+            if (req.query.t_status != undefined) {
+                if (req.query.t_status == "4") {
+                    sql += " AND (t_status = 4 OR t_status = 5)";
+                }
+                if (req.query.t_status != "" && req.query.t_status != "4") {
+                    sql += " AND t_status = ";
+                    sql += ("'" + req.query.t_status + "'");
+                }
+            }
+
+            searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
             searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
                                             gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
