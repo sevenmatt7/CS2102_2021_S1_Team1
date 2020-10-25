@@ -8,7 +8,7 @@ const OwnerReview = ({ search, i }) => {
     const duration = search.duration;
 
     const [inputs, setInputs] = useState({
-        rating: 0,
+        rating: 5,
         review: ""
     });
 
@@ -32,6 +32,7 @@ const OwnerReview = ({ search, i }) => {
             const successMessage = "Your review for " + dateArr[0] + " to " +
                                     dateArr[1] + " has been submitted!";
             toast.success(successMessage);
+            window.location.reload();
         } catch (err) {
             console.error(err.message)
         }
@@ -65,6 +66,8 @@ const OwnerReview = ({ search, i }) => {
                                 <input type="number" 
                                 pattern="[0-9]+" 
                                 maxLength="2" 
+                                min = "0"
+                                max = "5"
                                 name="rating"
                                 value={rating}
                                 onChange={(e) => onChange(e)}

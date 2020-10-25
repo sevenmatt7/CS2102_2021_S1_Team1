@@ -8,29 +8,21 @@ import OwnerReview from "./OwnerReview";
 const Profile = ({ setAuth }) => {
 
   const [name, setName] = useState("");
-  const [searches, setSearches] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const acc_type = localStorage.acc_type;
 
-  const getTransactionStatus = (status) => {
-    switch (status) {
-      case 1:
-        return "Submitted";
-        break;
-      case 2:
-        return "Rejected";
-        break;
-      case 3:
-        return "Accepted";
-        break;
-      case 4:
-        return "Completed";
-        break;
-      default:
-        return "";
-        break;
+  const getTransactions = async () => {
+    try {
+        const res = await fetch("http://localhost:5000/transactions", {
+            method: "GET",
+            headers: { token: localStorage.token, acc_type: acc_type }
+        });
+        const jsonData = await res.json();
+        setTransactions(jsonData);
+    } catch (err) {
+        console.error(err.message);
     }
-  }
+};
 
   const getTransferMode = (mode) => {
     switch (mode) {
@@ -80,6 +72,8 @@ const Profile = ({ setAuth }) => {
       } else if (status_update === 4) { //when the job is marked as complete
         toast.success(`🎉 You have completed the job from ${search.full_name}!`);
       }
+
+      window.location.reload();
      
     } catch (err) {
       console.error(err.message);
@@ -100,38 +94,8 @@ const Profile = ({ setAuth }) => {
     }
   };
 
-
-  const getPets = async () => {
-    try {
-      if (acc_type === "petowner") {
-        const response = await fetch("http://localhost:5000/pets", {
-          method: "GET",
-          headers: { token: localStorage.token }
-        });
-        const jsonData = await response.json();
-        setSearches(jsonData);
-      }
-    } catch (error) {
-      console.log(error.message)
-    }
-  };
-
-  const getTransactions = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/transactions", {
-        method: "GET",
-        headers: { token: localStorage.token, acc_type: acc_type }
-      });
-      const jsonData = await res.json();
-      setTransactions(jsonData);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
   useEffect(() => {
     getProfile();
-    getPets();
     getTransactions();
   }, [])
 
@@ -159,7 +123,7 @@ const Profile = ({ setAuth }) => {
                 <h6>
                   {acc_type}
                 </h6>
-                <p className="proile-rating">RATINGS : <span>8/10</span></p>
+                <p className="profile-rating">RATINGS : <span>8/10</span></p>
               </div>
             </div>
             <div className="col-md-2">
@@ -230,69 +194,6 @@ const Profile = ({ setAuth }) => {
         </form>
       </div>
 
-      {/* If is Pet Owner, List their pets */}
-      {acc_type === "petowner" && <div className="container">
-        <h2 className="mb-3">My pets</h2>
-        <div className="row">
-          <div className="card-deck">
-            {searches.map((search, i) => (
-              <div className="col-md-6 mb-4">
-                <div key={i} className="card mb-3">
-                  <div className="row no-gutters">
-                    <div className="col-md-4">
-                      <img src={imposter} alt="" className="card-img" />
-                    </div>
-                    <div className="card-text col-md-8">
-                      <div className="card-body">
-                        <h5 className="card-title"> {search.pet_name}</h5>
-                        <p className="card-text">Gender: {search.gender}</p>
-                        <p className="card-text">Pet Type: {search.pet_type}</p>
-                        <p className="card-text">Special Requirement: {search.special_req}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>}
-      
-      {/* If is Pet Owner, List their transactions*/}
-      {acc_type === "petowner" && <div className="container">
-      <h2 className="mb-3">My transactions</h2>
-        <div className="row">
-           <div className="card-deck">
-            {transactions.map((search, i) => (
-              <div className="col-md-6 mb-4">
-                <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
-                  <div className="row no-gutters">
-                    <div className="col-md-4">
-                      <img src={imposter} alt="" className="card-img" />
-                    </div>
-                    <div className="col-md-8">
-                      <div className="card-body">
-                        <h5 className="card-title">My pet is with {search.full_name}</h5>
-                        <p className="card-text" >Caretaker's Address: {search.user_address}</p>
-                        <p className="card-text">Pet Name: {search.pet_name}</p>
-                        <p className="card-text">Gender: {search.gender}</p>
-                        <p className="card-text">Type: {search.pet_type}</p>
-                        <p className="card-text">Special requirements: {search.special_req}</p>
-                        <p className="card-text"> Offered price/day: {search.cost}</p>
-                        <p className="card-text">Requested period: {search.duration}</p>
-                        <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
-                        <p className="card-text">Status: {getTransactionStatus(search.t_status)}</p>
-                        {search.t_status === 4 && <OwnerReview search={search} i={i}/>}
-                        {search.t_status === 5 && <button className="btn disabled btn-light btn-block">You have submitted a review!</button>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>}
 
       {/* If is Care Taker, List their job offers */}
       <div className="container">

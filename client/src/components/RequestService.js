@@ -112,27 +112,27 @@ const RequestService = ({ search, i }) => {
 
                             <div className="md-form mb-4">
                                 <label data-error="wrong" data-success="right" htmlFor="startDate">Start Date</label>
-                                <input type="datetime-local" 
+                                <input type="date" 
                                 id="startDate" 
                                 name="service_request_from"
                                 value={service_request_from}
                                 onChange={e => onChange(e)}
                                 className="form-control validate" 
-                                min="2020-01-01T23:59" 
-                                max="2099-12-31T23:59" 
+                                min="2020-01-01" 
+                                max="2099-12-31" 
                                 required="required" />
                             </div>
 
                             <div className="md-form mb-4">
                                 <label data-error="wrong" data-success="right" htmlFor="endDate">End Date</label>
-                                <input type="datetime-local" 
+                                <input type="date" 
                                 id="endDate" 
                                 name="service_request_to"
                                 value={service_request_to}
                                 onChange={e => onChange(e)}
                                 className="form-control validate" 
-                                min="2020-01-01T23:59" 
-                                max="2099-12-31T23:59" 
+                                min="2020-01-01" 
+                                max="2099-12-31" 
                                 required="required" />
                             </div>
                         </div>

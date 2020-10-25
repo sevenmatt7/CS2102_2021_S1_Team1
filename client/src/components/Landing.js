@@ -12,24 +12,24 @@ const LandingPage = () => {
             <Jumbo fluid className="jumbo">
                 <div className="overlay"></div>
 
-                <div class="container flex text-center centerme">
-                    <h1 class="display-3 font-weight-bold">Welcome to Pet Society!</h1>
+                <div className="container flex text-center centerme">
+                    <h1 className="display-3 font-weight-bold">Welcome to Pet Society!</h1>
                     <hr color="white"></hr>
                     <p>Browse services offered by our trusted sitters, based on what you or your beloved pet needs.</p>
                 </div>
 
             </Jumbo>
 
-            <div class="container mt-5">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-5">
-                        <div class="card h-100">
-                            <div class="card-body">
+            <div className="container mt-5">
+                <div className="row text-center">
+                    <div className="col-md-4 mb-5">
+                        <div className="card h-100">
+                            <div className="card-body">
                                 <img src={mag} style={{ padding: 10 }} />
-                                <h2 class="card-title">Search</h2>
-                                <p class="card-text">Read verified reviews and search for your perfect sitter.</p>
+                                <h2 className="card-title">Search</h2>
+                                <p className="card-text">Read verified reviews and search for your perfect sitter.</p>
                             </div>
-                            <a href="/sitters" class="btn btn-primary btn-sm">Begin Search</a>
+                            <a href="/sitters" className="btn btn-primary btn-sm">Begin Search</a>
 
                         </div>
                     </div>
