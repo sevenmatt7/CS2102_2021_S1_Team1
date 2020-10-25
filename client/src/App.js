@@ -86,8 +86,6 @@ function App() {
           <Route exact path="/sitters" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<Sitters {...props} setAuth={setAuth} />)} />
 
-          {/* <Route exact path="/sitters" render={props =>
-            (<Sitters {...props} setAuth={setAuth} />)} /> */}
 
         </Switch>
       </Router>
