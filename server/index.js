@@ -587,10 +587,19 @@ app.put("/submitreview", async (req, res) => {
 //get all reviews of a caretaker
 app.get("/getreview", async (req, res) => {
     try {
-        console.log(req.query.caretaker_email);
+        let caretaker_email
+        // if the caretaker_email contains the token (only from the homepage of caretaker)
+        // a little janky 
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        } else {
+            caretaker_email = req.query.caretaker_email
+        }
+
         const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating, t_status FROM Transactions_Details \
                                            LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
-                                           WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}' AND  t_status = 5;`);
+                                           WHERE caretaker_email ='${caretaker_email}' AND  t_status = 5;`);
         // console.log(searches.rows)
         res.json(searches.rows);
     } catch (error) {

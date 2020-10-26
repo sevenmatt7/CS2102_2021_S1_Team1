@@ -1,13 +1,12 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Jumbotron as Jumbo } from 'react-bootstrap';
 import imposter from "../Assets/Images/imposter.jpg";
-import EditPet from "./EditPet";
-import OwnerReview from "./OwnerReview";
 import { toast } from "react-toastify";
+import AnimatedNumber from 'react-animated-number';
 
 const Caretaker = () => {
 
-    const [searches, setSearches] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [button, setButton] = useState({ t_status: "" });
     const [transactions, setTransactions] = useState([]);
     const acc_type = localStorage.acc_type;
@@ -46,6 +45,22 @@ const Caretaker = () => {
         }
     }
     
+    const getReviews= async () => {
+        try {
+            const response = await fetch("http://localhost:5000/getreview?" + new URLSearchParams({
+                caretaker_email: localStorage.token,
+                employment_type: "",
+            }), {
+            method: "GET"
+            });
+
+            const jsonData = await response.json();
+            setReviews(jsonData);
+        } catch (err) {
+            // console.error(err.message)
+        }
+    };
+
     const getDays = (start, end) => {
         let start_date = new Date(start)
         let end_date = new Date(end)
@@ -157,12 +172,13 @@ const Caretaker = () => {
     }
 
     useEffect(() => {
-        
+        getReviews();
         getTransactions();
     }, [])
 
     useEffect(() => {
         getTransactions();
+        
     }, [button])
 
     return (
@@ -248,38 +264,35 @@ const Caretaker = () => {
 
                     {/* Earnings information */}
                     <div class="tab-pane fade" id="pets" role="tabpanel" aria-labelledby="pets-tab">
-                        <h1>My estimated earnings for the month: {getEarnings(getPetDays(transactions)).reduce((sum, value) => sum + value, 0)}</h1>
-                        <h1>Total number of pet days for the month: {getPetDays(transactions).reduce((sum, value) => sum + value, 0)}</h1>
-                        <h1>My reviews: {}</h1>
-                        
-                        <h1>Total number of pet days for the month: {}</h1>
-                        <div className="row">
+                        <div className="col">
 
-                            {/* <div className="card-deck">
-                                {searches.map((search, i) => (
-                                    <div key={i} className="col-md-6 mb-4">
-                                        <div className="card mb-3">
-                                            <div className="row no-gutters">
-                                                <div className="col-md-4">
-                                                    <img src={imposter} alt="" className="card-img" />
-                                                </div>
-                                                <div className="card-text col-md-8">
-                                                    <div className="card-body">
-                                                        <h5 className="card-title ml-2"> {search.pet_name}</h5>
-                                                        <p className="card-text">Gender: {search.gender}</p>
-                                                        <p className="card-text">Pet Type: {search.pet_type}</p>
-                                                        <p className="card-text">Special Requirement: {search.special_req}</p>
-                                                        <EditPet search={search} i={i}/>
-                                                        <button className="btn btn-danger"
-                                                            onClick={() => deletePet(search.pet_name)}>Delete</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            <div className="card mb-3">
+                                <div className="card-body">
+                                <h1>My estimated earnings for the month: ${getEarnings(getPetDays(transactions)).reduce((sum, value) => sum + value, 0)}</h1>
+                                </div>
+                            </div>
 
+                            <div className="card mb-3">
+                                <div className="card-body">
+                                <h1>Total number of pet days for the month: {getPetDays(transactions).reduce((sum, value) => sum + value, 0)}</h1>
+                                </div>
+                            </div>
+                            
+                            <div className="card mb-3">
+                                <div className="card-body">
+                                    <h1 className="mb-3">My reviews:</h1>
+                                        <div className='card-deck'>
+                                            {reviews.map((review, i) => (
+                                            <div className="card mb-3">
+                                                <div className="card-body">
+                                                    <h5>Review from: {review.full_name}</h5>
+                                                    <p>Comments: {review.owner_review}</p>
+                                                    <p>Rating: {review.owner_rating}</p>
+                                                </div>
+                                            </div>))}
                                         </div>
-                                    </div>
-                                ))}
-                            </div> */}
+                                </div>
+                            </div>
 
                         </div>
                     </div>
