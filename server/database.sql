@@ -61,7 +61,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (owner_email, pet_name)
+	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
 CREATE TABLE Offers_Services (  
@@ -79,6 +79,7 @@ CREATE TABLE Offers_Services (
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
+	pet_type VARCHAR,
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	owner_review VARCHAR,
@@ -89,7 +90,8 @@ CREATE TABLE Transactions_Details (
 	duration VARCHAR NOT NULL, --Set by PetOwner
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
-	-- FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
+	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
+	FOREIGN KEY (caretaker_email) REFERENCES Caretakers(caretaker_email)
 );
 
 CREATE TABLE Enquiries (
