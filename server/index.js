@@ -76,7 +76,7 @@ app.get("/pcspie", async (req, res) => {
             `SELECT employment_type, COUNT(*)
                 FROM transactions_details 
                 WHERE duration LIKE '${startYearMonth}-%'
-                AND t_status = 3
+                AND t_status >= 3
                 GROUP BY employment_type`
         )
         if (numJobs.rows.length === 0) {
