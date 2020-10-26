@@ -104,21 +104,6 @@ CREATE TABLE Enquiries (
 	PRIMARY KEY (user_email, enq_message)
 );
 
---Removed e_id, changed foreign key, changed primary key
--- CREATE TABLE Answers (
--- 	user_email VARCHAR,
--- 	enq_message VARCHAR,
--- 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
--- 	FOREIGN KEY (user_email, enq_message) REFERENCES Enquires(user_email, enq_message),
--- 	PRIMARY KEY (user_email, enq_message, admin_email)
--- ); 
-
--- CREATE TABLE Belongs_to (
--- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
--- 	breed_name VARCHAR,
--- 	PRIMARY KEY (pet_id)
--- );
-
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
