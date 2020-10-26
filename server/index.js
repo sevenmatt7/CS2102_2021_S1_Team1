@@ -162,7 +162,7 @@ app.get("/caretakersadmin", async (req, res) => {
     try {
         const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, td.duration \
                                         FROM (Transactions_Details AS td JOIN Caretakers AS c ON td.caretaker_email=c.caretaker_email) \
-                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status=3");
+                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status>=3");
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
