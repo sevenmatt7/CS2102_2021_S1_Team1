@@ -6,7 +6,7 @@ const PCSTable = () => {
     const [month, setMonth] = useState("Select Month");
     const month_conversion = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December', 'Select Month'];
-    
+
     // Creates Date Object based on input string format
     const parseDate = (str) => {
         var mdy = str.split('-');
@@ -79,21 +79,25 @@ const PCSTable = () => {
 
     // Filters users if exists in a given month
     const user_exists_in_month = (userData, month) => {
-        let dateArray = userData.duration.split(',');
-        let startDate = parseDate(dateArray[0]);
-        let endDate = parseDate(dateArray[1]);
-        let fsd = filterStartDate(month, dateArray[0]);
-        let fed = filterEndDate(month, dateArray[1]);
+        let date_array = userData.duration.split(',');
+        let first_date = (date_array[0].split('T'))[0];
+        let second_date = (date_array[1].split('T'))[0];
+        let startDate = parseDate(first_date);
+        let endDate = parseDate(second_date);
+        let fsd = filterStartDate(month, first_date);
+        let fed = filterEndDate(month, second_date);
         return (startDate <= fed && endDate >= fsd);
     }
 
     // Calculates total working days in a given month
     const calc_total_days = (userData, month) => {
-        let dateArray = userData.duration.split(',');
-        let startDate = parseDate(dateArray[0]);
-        let endDate = parseDate(dateArray[1]);
-        let fsd = filterStartDate(month, dateArray[0]);
-        let fed = filterEndDate(month, dateArray[1]);
+        let date_array = userData.duration.split(',');
+        let first_date = (date_array[0].split('T'))[0];
+        let second_date = (date_array[1].split('T'))[0];
+        let startDate = parseDate(first_date);
+        let endDate = parseDate(second_date);
+        let fsd = filterStartDate(month, first_date);
+        let fed = filterEndDate(month, second_date);
         if (fsd <= startDate && fed >= endDate) {
             return datediff(startDate, endDate);
         } else if (fsd <= startDate && fed < endDate) {
