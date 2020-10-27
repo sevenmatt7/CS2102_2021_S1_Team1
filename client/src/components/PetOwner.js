@@ -5,11 +5,25 @@ import EditPet from "./EditPet";
 import OwnerReview from "./OwnerReview";
 
 const PetOwner = () => {
-
+    const [name, setName] = useState("");
     const [searches, setSearches] = useState([]);
     const [button, setButton] = useState({ t_status: "" });
     const [transactions, setTransactions] = useState([]);
     const acc_type = localStorage.acc_type;
+
+    const getProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:5000/home/", {
+            method: "GET",
+            headers: { token: localStorage.token }
+          });
+    
+          const jsonData = await res.json();
+          setName(jsonData.full_name);
+        } catch (err) {
+          console.error(err.message);
+        }
+    };
 
     const getPets = async () => {
         try {
@@ -122,6 +136,7 @@ const PetOwner = () => {
         <Fragment>
             {/* Tabs at the top*/}
             <div className="container petowner-home">
+                <h1 className="mb-3">👋 Welcome back {name}!</h1>
                 <div className="profile-head">
                     <ul class="nav nav-tabs" id="PetOwnerTab" role="tablist">
                         <li class="nav-item">
