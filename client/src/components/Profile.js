@@ -4,10 +4,14 @@ import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 import imposter from "../Assets/Images/imposter.jpg";
 import OwnerReview from "./OwnerReview";
+import EditProfile from "./EditProfile";
 
 const Profile = ({ setAuth }) => {
 
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [user_address, setAddress] = useState("");
+  const [profile_pic_URL, setProfilepic] = useState("");
   const [transactions, setTransactions] = useState([]);
   const acc_type = localStorage.acc_type;
 
@@ -22,63 +26,7 @@ const Profile = ({ setAuth }) => {
     } catch (err) {
         console.error(err.message);
     }
-};
-
-  const getTransferMode = (mode) => {
-    switch (mode) {
-      case "1":
-        return "Delivery by Pet Owner";
-        break;
-      case "2":
-        return "Pickup by Caretaker";
-        break;
-      case "3":
-        return "Transfer at HQ";
-        break;
-      default:
-        return "";
-        break;
-    }
-  }
-  // const {service_avail_from, service_avail_to, service_type, daily_price} = inputs;
-
-  // const onChange = (e) => {
-  //     setInputs({...inputs, [e.target.name]: e.target.value})
-  // }
-
-  const acceptBid = async (e, search, status_update) => {
-    e.preventDefault();
-    const emp_type = localStorage.emp_type;
-
-    try {
-      const { owner_email, pet_name, duration } = search;
-
-      const body = { owner_email, pet_name, duration, status_update };
-      const response = await fetch("http://localhost:5000/changebid", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          token: localStorage.token
-        },
-        body: JSON.stringify(body)
-      });
-
-      const parseResponse = await response.json();
-
-      if (status_update === 3) { //when the caretaker accepts the bid
-        toast.success(`You have accepted the offer from ${search.full_name}!`);
-      } else if (status_update === 2) {  //when the caretaker rejects the bid
-        toast.error(`You have rejected the offer from ${search.full_name}!`);
-      } else if (status_update === 4) { //when the job is marked as complete
-        toast.success(`🎉 You have completed the job from ${search.full_name}!`);
-      }
-
-      window.location.reload();
-     
-    } catch (err) {
-      console.error(err.message);
-    }
-  }
+  };
 
   const getProfile = async () => {
     try {
@@ -87,8 +35,11 @@ const Profile = ({ setAuth }) => {
         headers: { token: localStorage.token }
       });
 
-      const parseData = await res.json();
-      setName(parseData.full_name);
+      const jsonData = await res.json();
+      setName(jsonData.full_name);
+      setEmail(jsonData.email);
+      setAddress(jsonData.user_address)
+      setProfilepic(jsonData.profile_pic_address)
     } catch (err) {
       console.error(err.message);
     }
@@ -104,15 +55,10 @@ const Profile = ({ setAuth }) => {
     <Fragment>
 
       <div className="container emp-profile">
-        <form method="post">
           <div className="row">
             <div className="col-md-4">
               <div className="profile-img">
-                <img src={imposter} alt="" />
-                <div className="file btn btn-lg btn-primary">
-                  Change Photo
-                                <input type="file" name="file" />
-                </div>
+                <img src={profile_pic_URL} alt="You do not have a profile picture!" />
               </div>
             </div>
             <div className="col-md-6">
@@ -127,7 +73,7 @@ const Profile = ({ setAuth }) => {
               </div>
             </div>
             <div className="col-md-2">
-              <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
+              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL}/>
             </div>
           </div>
           <div className="profile-head">
@@ -167,7 +113,15 @@ const Profile = ({ setAuth }) => {
                       <label>Email</label>
                     </div>
                     <div className="col-md-6">
-                      <p></p>
+                      <p>{email}</p>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <label>Residential Address</label>
+                    </div>
+                    <div className="col-md-6">
+                      <p>{user_address}</p>
                     </div>
                   </div>
                   <div className="row">
@@ -191,52 +145,7 @@ const Profile = ({ setAuth }) => {
               </div>
             </div>
           </div>
-        </form>
-      </div>
-
-
-      {/* If is Care Taker, List their job offers */}
-      <div className="container">
-        <div className="row">
-          {acc_type === "caretaker" && <div className="card-deck">
-            {transactions.map((search, i) => (
-              <div className="col-md-6 mb-4">
-                <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
-                  <div className="row no-gutters">
-                    <div className="col-md-4">
-                      <img src={imposter} alt="" className="card-img" />
-                    </div>
-                    <div className="col-md-8">
-                      <div className="card-body">
-                        <h5 className="card-title">Offer from {search.full_name}</h5>
-                        <p className="card-text" >Address: {search.user_address}</p>
-                        <p className="card-text">Pet Name: {search.pet_name}</p>
-                        <p className="card-text">Gender: {search.gender}</p>
-                        <p className="card-text">Type: {search.pet_type}</p>
-                        <p className="card-text">Special requirements: {search.special_req}</p>
-                        <p className="card-text"> Offered price/day: {search.cost}</p>
-                        <p className="card-text">Requested period: {search.duration}</p>
-                        <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
-                        {search.t_status === 1 && <div className="row">
-                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 3)} >Accept</button>
-                          <div className="col-md-1 col-sm-1 col-12" />
-                          <button className="btn btn-danger  col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 2)} >Reject</button>
-                        </div>}
-                        {search.t_status === 2 && <button className="btn btn-warning btn-block">Rejected</button>}
-                        {search.t_status === 3 && <div className="row">
-                          <button className="btn btn-primary disabled col-md-5 col-sm-5 col-12" >Accepted</button>
-                          <div className="col-md-1 col-sm-1 col-12" />
-                          <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 4)} >Complete job</button>
-                        </div>}
-                        {search.t_status === 4 && <button className="btn btn-success btn-block">Completed</button>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>}
-        </div>
+        
       </div>
 
     </Fragment>

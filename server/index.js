@@ -76,7 +76,7 @@ app.get("/pcspie", async (req, res) => {
             `SELECT employment_type, COUNT(*)
                 FROM transactions_details 
                 WHERE duration LIKE '${startYearMonth}-%'
-                AND t_status = 3
+                AND t_status >= 3
                 GROUP BY employment_type`
         )
         if (numJobs.rows.length === 0) {
@@ -162,7 +162,7 @@ app.get("/caretakersadmin", async (req, res) => {
     try {
         const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, td.duration \
                                         FROM (Transactions_Details AS td JOIN Caretakers AS c ON td.caretaker_email=c.caretaker_email) \
-                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status=3");
+                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status>=3");
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -233,6 +233,25 @@ app.put("/editpet", async (req, res) => {
             [user_email, old_pet_name, new_pet_name, special_req, pet_type, gender]);
 
         res.json(editPet.rows);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
+//edit selected user details
+app.put("/edituser", async (req, res) => {
+    try {
+        const {full_name, user_address, profile_pic_address } = req.body;
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        console.log(user_email);
+
+        const editedUser = await pool.query(
+            "UPDATE Users SET (full_name, user_address, profile_pic_address) = ($1, $2, $3) \
+            WHERE email = $4 RETURNING *" ,
+            [full_name, user_address, profile_pic_address, user_email]);
+
+        res.json(editedUser.rows);
     } catch (err) {
         console.log(err.message);
     }
@@ -568,10 +587,19 @@ app.put("/submitreview", async (req, res) => {
 //get all reviews of a caretaker
 app.get("/getreview", async (req, res) => {
     try {
-        console.log(req.query.caretaker_email);
+        let caretaker_email
+        // if the caretaker_email contains the token (only from the homepage of caretaker)
+        // a little janky 
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        } else {
+            caretaker_email = req.query.caretaker_email
+        }
+
         const searches = await pool.query(`SELECT Users.full_name, owner_review, owner_rating, t_status FROM Transactions_Details \
                                            LEFT JOIN Users ON Transactions_Details.owner_email = Users.email \ 
-                                           WHERE caretaker_email ='${req.query.caretaker_email}' AND employment_type='${req.query.employment_type}' AND  t_status = 5;`);
+                                           WHERE caretaker_email ='${caretaker_email}' AND  t_status = 5;`);
         // console.log(searches.rows)
         res.json(searches.rows);
     } catch (error) {
