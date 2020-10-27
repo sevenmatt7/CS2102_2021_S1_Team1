@@ -61,7 +61,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (owner_email, pet_name)
+	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
 CREATE TABLE Offers_Services (  
@@ -79,6 +79,7 @@ CREATE TABLE Offers_Services (
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
+	pet_type VARCHAR,
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	owner_review VARCHAR,
@@ -89,7 +90,8 @@ CREATE TABLE Transactions_Details (
 	duration VARCHAR NOT NULL, --Set by PetOwner
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
-	-- FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
+	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
+	FOREIGN KEY (caretaker_email) REFERENCES Caretakers(caretaker_email)
 );
 
 CREATE TABLE Enquiries (
@@ -101,21 +103,6 @@ CREATE TABLE Enquiries (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
 	PRIMARY KEY (user_email, enq_message)
 );
-
---Removed e_id, changed foreign key, changed primary key
--- CREATE TABLE Answers (
--- 	user_email VARCHAR,
--- 	enq_message VARCHAR,
--- 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
--- 	FOREIGN KEY (user_email, enq_message) REFERENCES Enquires(user_email, enq_message),
--- 	PRIMARY KEY (user_email, enq_message, admin_email)
--- ); 
-
--- CREATE TABLE Belongs_to (
--- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
--- 	breed_name VARCHAR,
--- 	PRIMARY KEY (pet_id)
--- );
 
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
