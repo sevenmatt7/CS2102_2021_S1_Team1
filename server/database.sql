@@ -87,7 +87,8 @@ CREATE TABLE Transactions_Details (
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
-	duration VARCHAR NOT NULL, --Set by PetOwner
+	duration_from DATE NOT NULL, --Set by PetOwner
+	duration_to DATE NOT NULL, --Set by PetOwner
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
