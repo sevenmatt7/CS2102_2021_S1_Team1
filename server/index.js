@@ -376,7 +376,7 @@ app.get("/caretakersq", async (req, res) => {
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { service_avail, employment_type, daily_price, pet_type } = req.body;
+        const { service_avail_from, service_avail_to, employment_type, daily_price, pet_type } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
@@ -384,10 +384,11 @@ app.post("/setavail", async (req, res) => {
         console.log(user_email)
 
         const newService = await pool.query(
-            "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [user_email, employment_type, service_avail, pet_type, daily_price]);
+            "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [user_email, employment_type, service_avail_from, service_avail_to, pet_type, daily_price]);
 
-        res.json(newService.rows[0].service_avail);
+        res.json(newService.rows[0]);
 
     } catch (err) {
         console.error(err.message);

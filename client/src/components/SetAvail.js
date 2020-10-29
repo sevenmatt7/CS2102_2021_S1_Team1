@@ -23,8 +23,7 @@ const SetAvail = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-            const service_avail = service_avail_from + ',' + service_avail_to;
-            const body = { service_avail, employment_type, daily_price, pet_type }
+            const body = { service_avail_from, service_avail_to, employment_type, daily_price, pet_type }
             const response = await fetch("http://localhost:5000/setavail", {
                 method: "POST",
                 headers: {
@@ -34,10 +33,11 @@ const SetAvail = ({ setAuth }) => {
                 body: JSON.stringify(body)
             });
 
-            const parseResponse = await response.json();
-            let dateArr = parseResponse.split(',')
-            const successMessage = 'You have indicated your availability from ' + dateArr[0] + ' to ' +
-                dateArr[1] + '!';
+            const avail_dates = await response.json();
+            const start_date = avail_dates.service_avail_from;
+            const end_date = avail_dates.service_avail_to; 
+            const successMessage = 'You have indicated your availability from ' + start_date + ' to ' +
+                end_date + '!';
             toast.success(successMessage);
         } catch (err) {
             console.error(err.message)
