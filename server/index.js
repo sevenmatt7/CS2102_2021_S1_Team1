@@ -8,6 +8,45 @@ const { response } = require("express");
 app.use(cors());
 app.use(express.json());
 
+function parseDate(raw_date) {
+    function parseMonth(month) {
+        switch (month) {
+            case 'Jan':
+                return '01';
+            case 'Feb':
+                return '02';
+            case 'Mar':
+                return '03';
+            case 'Apr':
+                return '04';
+            case 'May':
+                return '05';
+            case 'Jun':
+                return '06';
+            case 'Jul':
+                return '07';
+            case 'Aug':
+                return '08';
+            case 'Sep':
+                return '09';
+            case 'Oct':
+                return '10';
+            case 'Nov':
+                return '11';
+            case 'Dec':
+                return '12';
+        }
+    }
+
+    date_string = new Date(raw_date).toDateString();
+    date_tokens = date_string.split(" ");
+    return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
+}
+
+
+
+
+
 //routes
 
 //register and login
@@ -377,7 +416,7 @@ app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { service_avail_from, service_avail_to, employment_type, daily_price, pet_type } = req.body;
-
+        
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -518,18 +557,22 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet } = req.body;
+        const { caretaker_email, employment_type, pet_type, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(owner_email)
-
+        
         const newService = await pool.query(
-            "INSERT INTO Transactions_Details (caretaker_email, employment_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [caretaker_email, employment_type, selected_pet, owner_email, "cash", bidding_offer, transfer_mode, service_request_period]);
+            "INSERT INTO Transactions_Details (caretaker_email, employment_type, \
+            pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
+            duration_to, service_avail_from, service_avail_to) \
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
+            [caretaker_email, employment_type, pet_type, selected_pet, owner_email, "cash", 
+            bidding_offer, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
+            parseDate(avail_to)]);
 
-        res.json(newService.rows[0].service_request_period);
+        res.json(newService.rows[0]);
 
     } catch (err) {
         console.error(err.message);
