@@ -10,7 +10,6 @@ import NavBar from "./components/NavBar"
 import Homepage from "./components/Homepage";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import PCSAdmin from "./components/PCSAdmin";
 import ContactUs from "./components/ContactUs";
 import RegisterPet from "./components/RegisterPet";
 import SetAvail from "./components/SetAvail";

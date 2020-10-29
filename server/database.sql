@@ -53,7 +53,7 @@ CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
 
-INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
+INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile'), ('all');
 
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
@@ -70,14 +70,13 @@ CREATE TABLE Offers_Services (
 	ON DELETE cascade,
 	employment_type VARCHAR NOT NULL,
 	service_avail_from DATE NOT NULL, 
-	service_avail_to DATE NOT NULL, --Set by Caretaker (date as string)
+	service_avail_to DATE NOT NULL, 
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
---Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
---Added status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
+-- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
