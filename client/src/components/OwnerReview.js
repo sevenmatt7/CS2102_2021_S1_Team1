@@ -5,7 +5,8 @@ const OwnerReview = ({ search, i }) => {
     const pet_name = search.pet_name;
     const caretaker_email = search.caretaker_email;
     const employment_type = search.employment_type;
-    const duration = search.duration;
+    const duration_from = search.duration_from;
+    const duration_to = search.duration_to;
 
     const [inputs, setInputs] = useState({
         rating: 5,
@@ -17,9 +18,7 @@ const OwnerReview = ({ search, i }) => {
     const submitReview= async (e) => {
         e.preventDefault();
         try {
-            // const service_request_period = service_request_from + ',' + service_request_to;
-           
-            const body = { caretaker_email, employment_type, pet_name, duration, rating, review };
+            const body = { caretaker_email, employment_type, pet_name, duration_from, duration_to, rating, review };
             const response = await fetch("http://localhost:5000/submitreview", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json",
@@ -27,10 +26,9 @@ const OwnerReview = ({ search, i }) => {
                 body: JSON.stringify(body)
             });
             
-            const parseResponse = await response.json();
-            let dateArr = parseResponse.split(',')
-            const successMessage = "Your review for " + dateArr[0] + " to " +
-                                    dateArr[1] + " has been submitted!";
+            const updatedData = await response.json();
+            const date_interval = `${new Date(updatedData.duration_from).toDateString()} TO ${new Date(updatedData.duration_to).toDateString()}`
+            const successMessage = "Your review for " + date_interval + " has been submitted!";
             toast.success(successMessage);
             window.location.reload();
         } catch (err) {

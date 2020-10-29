@@ -178,7 +178,7 @@ const PetOwner = () => {
                                                             {search.pet_type !== null && <p className="card-text">Pet type: {search.pet_type}</p>}
                                                             {search.special_req !== null && <p className="card-text">Special requirements: {search.special_req}</p>}
                                                             <p className="card-text"> Offered price/day: {search.cost}</p>
-                                                            <p className="card-text">Requested period: {search.duration}</p>
+                                                            <p className="card-text">Requested period: {`${new Date(search.duration_from).toDateString()} TO ${new Date(search.duration_to).toDateString()}`}</p>
                                                             <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                                                             <p className="card-text">Status: {getTransactionStatus(search.t_status)}</p>
                                                             {search.t_status === 4 && <OwnerReview search={search} i={i} />}

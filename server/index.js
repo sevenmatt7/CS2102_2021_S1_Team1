@@ -325,7 +325,7 @@ app.get("/transactions", async (req, res) => {
         let searches;
         if (acc_type === "petowner") {
             var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-            gender, special_req, pet_type, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
+            gender, special_req, owns_pets.pet_type, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
             FROM Transactions_Details LEFT JOIN Owns_pets  \
             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
@@ -344,7 +344,7 @@ app.get("/transactions", async (req, res) => {
             searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
             searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
+                                            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.owner_email
@@ -618,7 +618,7 @@ app.put("/submitreview", async (req, res) => {
         const txn = await pool.query(
             "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2, t_status = 5\
             WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration_from = $6 AND duration_to = $7) RETURNING *" ,
-            [rating, review, owner_email, caretaker_email, pet_name, duration_from, duration_to]);
+            [rating, review, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
 
         res.json(txn.rows[0]);
 
