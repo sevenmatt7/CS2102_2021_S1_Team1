@@ -325,7 +325,7 @@ app.get("/transactions", async (req, res) => {
         let searches;
         if (acc_type === "petowner") {
             var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-            gender, special_req, pet_type, duration, cost, mode_of_transfer, t_status, caretaker_email \
+            gender, special_req, pet_type, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
             FROM Transactions_Details LEFT JOIN Owns_pets  \
             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
@@ -344,7 +344,7 @@ app.get("/transactions", async (req, res) => {
             searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
             searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
+                                            gender, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.owner_email
@@ -584,19 +584,19 @@ app.post("/submitbid", async (req, res) => {
 app.put("/changebid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { owner_email, pet_name, duration, status_update } = req.body;
+        const { owner_email, pet_name, duration_to, duration_from, status_update } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(caretaker_email)
 
         const txn = await pool.query(
             "UPDATE Transactions_Details SET t_status = $1 \
-            WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 AND duration = $5) RETURNING *" ,
-            [status_update, owner_email, caretaker_email, pet_name, duration]);
-
-        res.json(txn.rows[0].duration);
+            WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 \
+            AND duration_from = $5 AND duration_to = $6) RETURNING *" ,
+            [status_update, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
+            
+        res.json(txn.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -608,7 +608,7 @@ app.put("/changebid", async (req, res) => {
 app.put("/submitreview", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, pet_name, duration, rating, review } = req.body;
+        const { caretaker_email, employment_type, pet_name, duration_to, duration_from, rating, review } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
@@ -617,10 +617,10 @@ app.put("/submitreview", async (req, res) => {
 
         const txn = await pool.query(
             "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2, t_status = 5\
-            WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration = $6) RETURNING *" ,
-            [rating, review, owner_email, caretaker_email, pet_name, duration]);
+            WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration_from = $6 AND duration_to = $7) RETURNING *" ,
+            [rating, review, owner_email, caretaker_email, pet_name, duration_from, duration_to]);
 
-        res.json(txn.rows[0].duration);
+        res.json(txn.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -650,39 +650,6 @@ app.get("/getreview", async (req, res) => {
         console.log(error.message)
     }
 });
-
-
-// //update an item
-// app.put("/items/:id", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { description } = req.body;
-//         const updateItem = await pool.query(
-//             "UPDATE sample SET description = $1 WHERE id = $2",
-//             [description, id]
-//         );
-
-//         res.json("Updated item");
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
-
-// //delete an item
-// app.delete("/items/:id", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const deleteItem = await pool.query(
-//             "DELETE FROM sample WHERE id = $1",
-//             [id]
-//         );
-
-//         res.json("Deleted item");
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
-
 
 app.listen(5000, () => {
     console.log('server has started at port 5000');
