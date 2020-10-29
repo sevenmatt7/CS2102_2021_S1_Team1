@@ -42,9 +42,16 @@ MARKING SCHEME
 
 ## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
 **Must show code and write description for each trigger**
+Trigger to update the average rating of the caretaker and the number of reviews for the caretaker
+Trigger to update the availability of the caretaker 
+Trigger to update the employee/caretaker of the month
 
 ## 🎉 Three most complex queries implemented in apllication <a name = "queries"></a>
 **Show code and write description**
+A cool SQL query would be to aggregate the number of pets in each category (dog, cat, lizard)
+and then compare it to the the number of caretakers that can take care od the different types of pets then the business can see what kind of caretakers they should advertise to join their website
+(For example, there are more lizards then lizard caretakers so more lizard caretakers should be recruited)
+
 
 ## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
 - [PostgreSQL](https://www.postgresql.org/) - Database
