@@ -144,7 +144,7 @@ app.get("/caretakers", async (req, res) => {
     try {
         const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
                                             avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
-                                            type_pref, service_avail, daily_price \
+                                            type_pref, service_avail_from, service_avail_to, daily_price \
                                             FROM Offers_services \
                                             LEFT JOIN Users \
                                             ON Offers_services.caretaker_email = Users.email \

@@ -175,7 +175,7 @@ const Sitters = ({ setAuth }) => {
                   <h5 className="card-title">{search.full_name}</h5>
                   <p className="card-text" >Address: {search.user_address}</p>
                   <p className="card-text">Employment Type: {search.employment_type}</p>
-                  <p className="card-text">Available: {search.service_avail}</p>
+                  <p className="card-text">Available: { `${search.service_avail_from} TO ${search.service_avail_to}` }</p>
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
                   <p className="card-text">Average Rating: {parseFloat(search.avg_rating).toFixed(2)}</p>
