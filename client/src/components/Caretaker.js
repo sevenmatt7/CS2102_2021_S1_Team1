@@ -141,22 +141,16 @@ const Caretaker = () => {
         switch (status) {
             case 1:
                 return "Submitted";
-                break;
             case 2:
                 return "Rejected";
-                break;
             case 3:
                 return "Accepted";
-                break;
             case 4:
                 return "Completed";
-                break;
             case 5:
                 return "Completed";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
@@ -164,16 +158,12 @@ const Caretaker = () => {
         switch (mode) {
             case "1":
                 return "Delivery by Pet Owner";
-                break;
             case "2":
                 return "Pickup by Caretaker";
-                break;
             case "3":
                 return "Transfer at HQ";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
