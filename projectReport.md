@@ -30,13 +30,13 @@ MARKING SCHEME
 ## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
-**Insert the finalised diagram here**
+![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
+Constraints not shown in ER diagram:
+- Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
 
-**Also need to list down app constraints not captured by ER model**
 
 ## Database schema <a name = "schema"></a>
 **Insert final schema.sql code here**
-![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
 **Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
 
 ## Normalization level of database <a name = "normalization"></a>
