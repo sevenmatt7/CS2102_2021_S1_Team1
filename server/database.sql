@@ -76,7 +76,7 @@ CREATE TABLE Offers_Services (
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
--- when caretaker take leave
+-- when caretaker take leave 
 -- avail 10/29 to 10/29
 -- txns 10/29 to 11/05
 -- leave 11/06 to 11/20 15 days leave
@@ -139,41 +139,32 @@ CREATE TRIGGER update_caretaker_rating
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_caretaker_rating();
 
+DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
 --- Trigger to check whether caretaker already reached the max amount of pets in his care 
 CREATE OR REPLACE FUNCTION check_caretaker_limit()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
 		date_start DATE := NEW.duration_from;
 		date_end DATE := NEW.duration_to;
-		count INTEGER;
 	BEGIN
-		-- initialize the variables to store the dates that we want to check
-		-- SELECT duration_from INTO date_start, duration_to INTO date_end
-		-- FROM Transactions_Details
-		-- WHERE (owner_email = NEW.owner_email AND caretaker_email = NEW.caretaker_email 
-		-- 		AND pet_name = NEW.pet_name AND service_avail_from = NEW.service_avail_from
-		-- 		AND service_avail_to = NEW.service_avail_to);
-		-- select all the transactions that are also in the same availability period as the transaction
-		-- to be accepted
-		SELECT duration_from, duration_to
-		FROM Transactions_Details
-		WHERE (caretaker_email = NEW.caretaker_email 
-				AND service_avail_from = NEW.service_avail_from
-				AND service_avail_to = NEW.service_avail_to AND t_status = 3 );
 		-- Loop over the each date of the new bid to be accepted and check if any of the days have
 		-- more than 5 transactions in progress
 		WHILE date_start <= date_end LOOP
-			SELECT COUNT(*) INTO count
-			FROM Transactions_Details
-			WHERE (caretaker_email = NEW.caretaker_email 
+			-- select all the transactions that are also in the same availability period as the transaction
+			-- to be accepted and check if they amount to 5
+			IF (SELECT COUNT(*)
+				FROM Transactions_Details
+				WHERE (caretaker_email = NEW.caretaker_email 
 				AND service_avail_from = NEW.service_avail_from
 				AND service_avail_to = NEW.service_avail_to AND t_status = 3 
-				AND date_start >= duration_from AND date_start <= duration_to);
-			IF count >= 5 THEN
-				RAISE EXCEPTION 'Max number of pets under care reached';
+				AND date_start >= duration_from AND date_start <= duration_to)) >= 5 THEN
+					IF (NEW.t_status = 4 OR NEW.t_status = 5) THEN
+						RETURN NEW;
+					END IF;
+					RAISE EXCEPTION 'Max number of pets under care reached';
+					RETURN NULL;
 			END IF;
 			date_start := date_start + 1;
-			count := 0;
 		END LOOP;
 		
 		RETURN NEW;

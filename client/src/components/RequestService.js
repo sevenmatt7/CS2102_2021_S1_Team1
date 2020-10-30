@@ -59,7 +59,8 @@ const RequestService = ({ search, i }) => {
                                     end_date + '!';
             toast.success(successMessage);
         } catch (err) {
-            console.error(err.message)
+            console.error(err)
+            toast.error("The caretaker cannot take care of that pet!");
         }
     }
 
