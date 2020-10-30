@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS Owns_Pets CASCADE;
 DROP TABLE IF EXISTS Offers_Services CASCADE;
 DROP TABLE IF EXISTS Transactions_Details CASCADE;
 DROP TABLE IF EXISTS Enquiries CASCADE;
+DROP FUNCTION IF EXISTS update_caretaker_rating CASCADE;
 
 CREATE TABLE Users (
 	email VARCHAR,
@@ -68,14 +69,14 @@ CREATE TABLE Offers_Services (
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
 	employment_type VARCHAR NOT NULL,
-	service_avail VARCHAR NOT NULL, --Set by Caretaker (date as string)
+	service_avail_from DATE NOT NULL, 
+	service_avail_to DATE NOT NULL, 
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
-	PRIMARY KEY (caretaker_email, type_pref, service_avail)
+	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
---Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
---Added status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
+-- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
@@ -87,11 +88,17 @@ CREATE TABLE Transactions_Details (
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
-	duration VARCHAR NOT NULL, --Set by PetOwner
+	duration_from DATE NOT NULL, --Set by PetOwner
+	duration_to DATE NOT NULL, --Set by PetOwner
+	service_avail_from DATE NOT NULL, 
+	service_avail_to DATE NOT NULL,
 	t_status INTEGER DEFAULT 1,
-	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
+	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
+	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
+	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
-	FOREIGN KEY (caretaker_email) REFERENCES Caretakers(caretaker_email)
+	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
+	REFERENCES Offers_Services(caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
 CREATE TABLE Enquiries (

@@ -5,20 +5,33 @@ import { toast } from "react-toastify";
 import AnimatedNumber from 'react-animated-number';
 
 const Caretaker = () => {
-
+    const [name, setName] = useState("");
     const [reviews, setReviews] = useState([]);
     const [button, setButton] = useState({ t_status: "" });
     const [transactions, setTransactions] = useState([]);
     const acc_type = localStorage.acc_type;
 
+    const getProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:5000/home/", {
+            method: "GET",
+            headers: { token: localStorage.token }
+          });
+    
+          const jsonData = await res.json();
+          setName(jsonData.full_name);
+        } catch (err) {
+          console.error(err.message);
+        }
+    };
+    
     const acceptBid = async (e, search, status_update) => {
         e.preventDefault();
-        const emp_type = localStorage.emp_type;
-    
         try {
-          const { owner_email, pet_name, duration } = search;
+          const { owner_email, pet_name, duration_to, duration_from } = search;
     
-          const body = { owner_email, pet_name, duration, status_update };
+          const body = { owner_email, pet_name, duration_to, duration_from, status_update };
+          
           const response = await fetch("http://localhost:5000/changebid", {
             method: "PUT",
             headers: {
@@ -72,7 +85,7 @@ const Caretaker = () => {
 
     const getPetDays = (transactions) => {
         let days_in_jobs = transactions.map( (txn, i) => (
-            getDays(txn.duration.split(',')[0], txn.duration.split(',')[1])
+            getDays(txn.duration_from, txn.duration_to)
         ))
         return days_in_jobs
     }
@@ -105,44 +118,21 @@ const Caretaker = () => {
         }
     };
 
-    const deletePet = async (pet_name) => {
-        try {
-            const res = await fetch("http://localhost:5000/deletepet/" + pet_name,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        token: localStorage.token
-                    },
-                });
-            const jsonData = await res.json();
-            console.log(jsonData);
-            
-        } catch (err) {
-            console.error(err.message);
-        }
-    }
 
     const getTransactionStatus = (status) => {
         switch (status) {
             case 1:
                 return "Submitted";
-                break;
             case 2:
                 return "Rejected";
-                break;
             case 3:
                 return "Accepted";
-                break;
             case 4:
                 return "Completed";
-                break;
             case 5:
                 return "Completed";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
@@ -150,16 +140,12 @@ const Caretaker = () => {
         switch (mode) {
             case "1":
                 return "Delivery by Pet Owner";
-                break;
             case "2":
                 return "Pickup by Caretaker";
-                break;
             case "3":
                 return "Transfer at HQ";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
@@ -174,6 +160,7 @@ const Caretaker = () => {
     useEffect(() => {
         getReviews();
         getTransactions();
+        getProfile();
     }, [])
 
     useEffect(() => {
@@ -185,6 +172,7 @@ const Caretaker = () => {
         <Fragment>
             {/* Tabs at the top*/}
             <div className="container petowner-home">
+                <h1 className="mb-3">👋 Welcome back {name}!</h1>
                 <div className="profile-head">
                     <ul class="nav nav-tabs" id="PetOwnerTab" role="tablist">
                         <li class="nav-item">
@@ -236,7 +224,7 @@ const Caretaker = () => {
                                                         <p className="card-text">Type: {search.pet_type}</p>
                                                         <p className="card-text">Special requirements: {search.special_req}</p>
                                                         <p className="card-text"> Offered price/day: {search.cost}</p>
-                                                        <p className="card-text">Requested period: {search.duration}</p>
+                                                        <p className="card-text">Requested period: {`${new Date(search.duration_from).toDateString()} TO ${new Date(search.duration_to).toDateString()}`}</p>
                                                         <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                                                         {search.t_status === 1 && <div className="row">
                                                         <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 3)} >Accept</button>
