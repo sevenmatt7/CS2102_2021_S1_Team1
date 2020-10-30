@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS Users CASCADE;
+DROP TABLE IF EXISTS PetOwners CASCADE;
+DROP TABLE IF EXISTS Caretakers CASCADE;
+DROP TABLE IF EXISTS PCSAdmins CASCADE;
+DROP TABLE IF EXISTS Manages CASCADE;
+DROP TABLE IF EXISTS Categories CASCADE;
+DROP TABLE IF EXISTS Owns_Pets CASCADE;
+DROP TABLE IF EXISTS Offers_Services CASCADE;
+DROP TABLE IF EXISTS Transactions_Details CASCADE;
+DROP TABLE IF EXISTS Enquiries CASCADE;
+DROP FUNCTION IF EXISTS update_caretaker_rating CASCADE;
+
 CREATE TABLE Users (
 	email VARCHAR,
 	full_name VARCHAR NOT NULL,
@@ -19,19 +31,19 @@ CREATE TABLE Caretakers(
 	REFERENCES Users(email)
 	ON DELETE cascade,
 	employment_type VARCHAR NOT NULL,
-	avg_rating NUMERIC,  -- NEED TO CREATE TRIGGER TO UPDATE AFTER EVERY REVIEW SUBMISSION
-	no_of_reviews INTEGER, -- NEED TO CREATE TRIGGER TO UPDATE AFTER EVERY REVIEW SUBMISSION
+	avg_rating NUMERIC,
+	no_of_reviews INTEGER,
 	PRIMARY KEY (caretaker_email)
 );
 
-CREATE TABLE PCSAdmins ( --create an account directly through the sql table
+CREATE TABLE PCSAdmins (
 	admin_email VARCHAR
 	REFERENCES Users(email)
 	ON DELETE cascade,
 	PRIMARY KEY (admin_email)
 );
 
-CREATE TABLE Manages (  --need to be filled in using trigger when PCSAdmins are assigned people to be taken care of
+CREATE TABLE Manages (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email),
 	PRIMARY KEY (admin_email, caretaker_email)
@@ -41,10 +53,8 @@ CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
 
-INSERT INTO Categories (pet_type)
-VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
+INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
 
---Removed pet_id, changed primary key to (owner_email, pet_name)
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
 	ON DELETE cascade,
@@ -52,40 +62,45 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	PRIMARY KEY (owner_email, gender, pet_name, pet_type)
+	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
---Removed service_type because its redundant, dont have to be specific (just take care)
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
-    service_type VARCHAR NOT NULL,
-	service_avail VARCHAR NOT NULL, --Set by Caretaker
+	employment_type VARCHAR NOT NULL,
+	service_avail_from DATE NOT NULL, 
+	service_avail_to DATE NOT NULL, 
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
-	PRIMARY KEY (caretaker_email, type_pref, service_avail)
+	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
---Removed pet_id, changed foreign key to (owner_email, pet_name) from Owns_Pets table
+-- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
-	tx_type VARCHAR,
+	employment_type VARCHAR,
+	pet_type VARCHAR,
 	pet_name VARCHAR,
 	owner_email VARCHAR,
 	owner_review VARCHAR,
-	owner_rating VARCHAR,
+	owner_rating INTEGER,
 	payment_mode VARCHAR NOT NULL,
 	cost NUMERIC NOT NULL,
 	mode_of_transfer VARCHAR NOT NULL,
-	duration VARCHAR NOT NULL, --Set by PetOwner
-	is_accepted BOOLEAN DEFAULT FALSE,
-	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration),
-	FOREIGN KEY (caretaker_email, tx_type) REFERENCES Offers_services(caretaker_email, service_type),
-	-- FOREIGN KEY (owner_email, pet_name) REFERENCES Owns_Pets(owner_email, pet_name)
+	duration_from DATE NOT NULL, --Set by PetOwner
+	duration_to DATE NOT NULL, --Set by PetOwner
+	service_avail_from DATE NOT NULL, 
+	service_avail_to DATE NOT NULL,
+	t_status INTEGER DEFAULT 1,
+	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
+	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
+	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
+	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
+	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
+	REFERENCES Offers_Services(caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
---Combined Enquires and Enquiries table, removed e_id, primary key changed to (user_email, enq_message)
---Removed Answers Table, added into Answer and Admin_email into Enquires table
 CREATE TABLE Enquiries (
 	user_email VARCHAR REFERENCES Users(email),
 	enq_type VARCHAR,
@@ -96,17 +111,23 @@ CREATE TABLE Enquiries (
 	PRIMARY KEY (user_email, enq_message)
 );
 
---Removed e_id, changed foreign key, changed primary key
--- CREATE TABLE Answers (
--- 	user_email VARCHAR,
--- 	enq_message VARCHAR,
--- 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
--- 	FOREIGN KEY (user_email, enq_message) REFERENCES Enquires(user_email, enq_message),
--- 	PRIMARY KEY (user_email, enq_message, admin_email)
--- ); 
+--- Trigger to update caretaker avg_rating after every review is submitted by the owner
+CREATE OR REPLACE FUNCTION update_caretaker_rating()
+RETURNS TRIGGER AS $$ 
+	BEGIN
+	UPDATE Caretakers 
+	SET avg_rating = (SELECT AVG(owner_rating) 
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email),
+	no_of_reviews = (SELECT COUNT(owner_rating) 
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email)
+    WHERE (caretaker_email = NEW.caretaker_email);
+	RETURN NULL;
+ 	END; 
+$$ LANGUAGE plpgsql;
 
--- CREATE TABLE Belongs_to (
--- 	pet_id INTEGER REFERENCES Owns_Pets(pet_id),
--- 	breed_name VARCHAR,
--- 	PRIMARY KEY (pet_id)
--- );
+CREATE TRIGGER update_caretaker_rating
+	AFTER UPDATE ON Transactions_Details
+	FOR EACH ROW
+	EXECUTE PROCEDURE update_caretaker_rating();

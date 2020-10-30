@@ -5,11 +5,25 @@ import EditPet from "./EditPet";
 import OwnerReview from "./OwnerReview";
 
 const PetOwner = () => {
-
+    const [name, setName] = useState("");
     const [searches, setSearches] = useState([]);
     const [button, setButton] = useState({ t_status: "" });
     const [transactions, setTransactions] = useState([]);
     const acc_type = localStorage.acc_type;
+
+    const getProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:5000/home/", {
+            method: "GET",
+            headers: { token: localStorage.token }
+          });
+    
+          const jsonData = await res.json();
+          setName(jsonData.full_name);
+        } catch (err) {
+          console.error(err.message);
+        }
+    };
 
     const getPets = async () => {
         try {
@@ -65,22 +79,16 @@ const PetOwner = () => {
         switch (status) {
             case 1:
                 return "Submitted";
-                break;
             case 2:
                 return "Rejected";
-                break;
             case 3:
                 return "Accepted";
-                break;
             case 4:
                 return "Completed";
-                break;
             case 5:
                 return "Completed";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
@@ -88,16 +96,12 @@ const PetOwner = () => {
         switch (mode) {
             case "1":
                 return "Delivery by Pet Owner";
-                break;
             case "2":
                 return "Pickup by Caretaker";
-                break;
             case "3":
                 return "Transfer at HQ";
-                break;
             default:
                 return "";
-                break;
         }
     }
 
@@ -122,6 +126,7 @@ const PetOwner = () => {
         <Fragment>
             {/* Tabs at the top*/}
             <div className="container petowner-home">
+                <h1 className="mb-3">👋 Welcome back {name}!</h1>
                 <div className="profile-head">
                     <ul class="nav nav-tabs" id="PetOwnerTab" role="tablist">
                         <li class="nav-item">
@@ -173,7 +178,7 @@ const PetOwner = () => {
                                                             {search.pet_type !== null && <p className="card-text">Pet type: {search.pet_type}</p>}
                                                             {search.special_req !== null && <p className="card-text">Special requirements: {search.special_req}</p>}
                                                             <p className="card-text"> Offered price/day: {search.cost}</p>
-                                                            <p className="card-text">Requested period: {search.duration}</p>
+                                                            <p className="card-text">Requested period: {`${new Date(search.duration_from).toDateString()} TO ${new Date(search.duration_to).toDateString()}`}</p>
                                                             <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                                                             <p className="card-text">Status: {getTransactionStatus(search.t_status)}</p>
                                                             {search.t_status === 4 && <OwnerReview search={search} i={i} />}
