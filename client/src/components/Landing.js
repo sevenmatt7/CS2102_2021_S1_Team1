@@ -33,24 +33,24 @@ const LandingPage = () => {
 
                         </div>
                     </div>
-                    <div class="col-md-4 mb-5">
-                        <div class="card h-100">
-                            <div class="card-body">
+                    <div className="col-md-4 mb-5">
+                        <div className="card h-100">
+                            <div className="card-body">
                                 <img src={book} style={{ padding: 10 }} />
-                                <h2 class="card-title">Book</h2>
-                                <p class="card-text">Book a sitter based on your pet's requirements.</p>
+                                <h2 className="card-title">Book</h2>
+                                <p className="card-text">Book a sitter based on your pet's requirements.</p>
                             </div>
-                            <a href="/login" class="btn btn-primary btn-sm">Login To Book</a>
+                            <a href="/login" className="btn btn-primary btn-sm">Login To Book</a>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-5">
-                        <div class="card h-100">
-                            <div class="card-body">
+                    <div className="col-md-4 mb-5">
+                        <div className="card h-100">
+                            <div className="card-body">
                                 <img src={dog} style={{ padding: 10 }} />
-                                <h2 class="card-title">Register</h2>
-                                <p class="card-text">Sign up as one of our trusted sitters!</p>
+                                <h2 className="card-title">Register</h2>
+                                <p className="card-text">Sign up as one of our trusted sitters!</p>
                             </div>
-                            <a href="/register" class="btn btn-primary btn-sm">Register As Caretaker</a>
+                            <a href="/register" className="btn btn-primary btn-sm">Register As Caretaker</a>
                         </div>
                     </div>
                 </div>

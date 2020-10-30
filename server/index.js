@@ -199,9 +199,11 @@ app.get("/caretakers", async (req, res) => {
 //get all caretaker searches
 app.get("/caretakersadmin", async (req, res) => {
     try {
-        const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, td.duration \
-                                        FROM (Transactions_Details AS td JOIN Caretakers AS c ON td.caretaker_email=c.caretaker_email) \
-                                        JOIN Users AS u ON c.caretaker_email=u.email WHERE td.t_status>=3");
+        const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, \
+                                        td.duration_from, td.duration_to \
+                                        FROM (Transactions_Details AS td JOIN Caretakers AS c \
+                                            ON td.caretaker_email=c.caretaker_email) JOIN Users AS u \
+                                            ON c.caretaker_email=u.email WHERE td.t_status>=3");
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -557,18 +559,18 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, pet_type, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet } = req.body;
-
+        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet } = req.body;
+        
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        
+
         const newService = await pool.query(
             "INSERT INTO Transactions_Details (caretaker_email, employment_type, \
             pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
             duration_to, service_avail_from, service_avail_to) \
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-            [caretaker_email, employment_type, pet_type, selected_pet, owner_email, "cash", 
+            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, "cash", 
             bidding_offer, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
             parseDate(avail_to)]);
 
