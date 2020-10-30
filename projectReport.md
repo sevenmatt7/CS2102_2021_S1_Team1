@@ -21,7 +21,7 @@ MARKING SCHEME
 ## 👨‍💻  Team <a name = "info"></a>
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
-| Matthew Nathanael Sugiri | A0183805B | Integration, API development
+| Matthew Nathanael Sugiri | A0183805B | Integration, API development, Deployment
 | Joshua Tam | A0190309H |
 | Tan Guan Yew | A0183464Y |
 | Sean Lim | A0187123H |
@@ -30,8 +30,10 @@ MARKING SCHEME
 ## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
-**Insert the finalised diagram here**
-**Also need to list down app constraints not captured by ER model**
+![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
+Constraints not shown in ER diagram:
+- Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
+
 
 ## Database schema <a name = "schema"></a>
 **Insert final schema.sql code here**
@@ -42,9 +44,16 @@ MARKING SCHEME
 
 ## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
 **Must show code and write description for each trigger**
+Trigger to update the average rating of the caretaker and the number of reviews for the caretaker
+Trigger to update the availability of the caretaker 
+Trigger to update the employee/caretaker of the month
 
 ## 🎉 Three most complex queries implemented in apllication <a name = "queries"></a>
 **Show code and write description**
+A cool SQL query would be to aggregate the number of pets in each category (dog, cat, lizard)
+and then compare it to the the number of caretakers that can take care od the different types of pets then the business can see what kind of caretakers they should advertise to join their website
+(For example, there are more lizards then lizard caretakers so more lizard caretakers should be recruited)
+
 
 ## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
 - [PostgreSQL](https://www.postgresql.org/) - Database

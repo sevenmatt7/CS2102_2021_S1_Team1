@@ -1,9 +1,4 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom"
-import RegisterPage from '../Assets/Images/RegisterPage.jpg';
-import { toast } from "react-toastify";
-import imposter from "../Assets/Images/imposter.jpg";
-import OwnerReview from "./OwnerReview";
 import EditProfile from "./EditProfile";
 
 const Profile = ({ setAuth }) => {
@@ -57,7 +52,7 @@ const Profile = ({ setAuth }) => {
       <div className="container emp-profile">
           <div className="row">
             <div className="col-md-4">
-              <div className="profile-img">
+              <div className="profile-img mb-5">
                 <img src={profile_pic_URL} alt="You do not have a profile picture!" />
               </div>
             </div>

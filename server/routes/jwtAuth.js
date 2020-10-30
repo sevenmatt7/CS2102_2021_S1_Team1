@@ -30,7 +30,7 @@ router.post("/register", validInfo, async (req, res) => {
             "INSERT INTO Users (full_name, email, user_password, user_address) VALUES ($1, $2, $3, $4) RETURNING *" , 
             [name, email, encryptedPassword, address] );
         
-        //insert user into respect account table
+        //insert user into respective account table
         if (acc_type === "petowner") {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)" , [email])
         } else if (acc_type === "caretaker") {
@@ -41,10 +41,11 @@ router.post("/register", validInfo, async (req, res) => {
         const today = new Date();
         const yyyy = today.getFullYear(); //in yyyy format
         const year = yyyy.toString();
-        const default_period = year + "-01-01," + year + "-12-31";
+        const default_start_date = year + "-01-01";
+        const default_end_date = year + "-12-31";
         if (emp_type === "fulltime") {
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5)", [email, emp_type, default_period, "all", "50"])
+            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, "all", 50])
         }   
         
         //step 5: generate jwt token

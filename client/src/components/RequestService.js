@@ -5,6 +5,8 @@ const RequestService = ({ search, i }) => {
     const pet_type = search.type_pref;
     const caretaker_email = search.caretaker_email;
     const employment_type = search.employment_type;
+    const avail_from = search.service_avail_from
+    const avail_to = search.service_avail_to
     
     const[petList, setPets] = useState([]);
     
@@ -41,9 +43,8 @@ const RequestService = ({ search, i }) => {
     const submitBid = async (e) => {
         e.preventDefault();
         try {
-            const service_request_period = service_request_from + ',' + service_request_to;
            
-            const body = { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet};
+            const body = { caretaker_email, employment_type, pet_type, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet};
             const response = await fetch("http://localhost:5000/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -51,13 +52,15 @@ const RequestService = ({ search, i }) => {
                 body: JSON.stringify(body)
             });
             
-            const parseResponse = await response.json();
-            let dateArr = parseResponse.split(',')
-            const successMessage = 'You have submitted your offer for ' + dateArr[0] + ' to ' +
-                                    dateArr[1] + '!';
+            const submittedData = await response.json();
+            const start_date = submittedData.duration_from;
+            const end_date = submittedData.duration_to;
+            const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
+                                    end_date + '!';
             toast.success(successMessage);
         } catch (err) {
-            console.error(err.message)
+            console.error(err)
+            toast.error("The caretaker cannot take care of that pet!");
         }
     }
 
@@ -76,7 +79,7 @@ const RequestService = ({ search, i }) => {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
+                        
                         <div className="modal-body mx-3">
                         <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Which pet?</label>
                         

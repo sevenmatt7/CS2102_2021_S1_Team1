@@ -8,6 +8,45 @@ const { response } = require("express");
 app.use(cors());
 app.use(express.json());
 
+function parseDate(raw_date) {
+    function parseMonth(month) {
+        switch (month) {
+            case 'Jan':
+                return '01';
+            case 'Feb':
+                return '02';
+            case 'Mar':
+                return '03';
+            case 'Apr':
+                return '04';
+            case 'May':
+                return '05';
+            case 'Jun':
+                return '06';
+            case 'Jul':
+                return '07';
+            case 'Aug':
+                return '08';
+            case 'Sep':
+                return '09';
+            case 'Oct':
+                return '10';
+            case 'Nov':
+                return '11';
+            case 'Dec':
+                return '12';
+        }
+    }
+
+    date_string = new Date(raw_date).toDateString();
+    date_tokens = date_string.split(" ");
+    return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
+}
+
+
+
+
+
 //routes
 
 //register and login
@@ -144,7 +183,7 @@ app.get("/caretakers", async (req, res) => {
     try {
         const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
                                             avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
-                                            type_pref, service_avail, daily_price \
+                                            type_pref, service_avail_from, service_avail_to, daily_price \
                                             FROM Offers_services \
                                             LEFT JOIN Users \
                                             ON Offers_services.caretaker_email = Users.email \
@@ -286,7 +325,7 @@ app.get("/transactions", async (req, res) => {
         let searches;
         if (acc_type === "petowner") {
             var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-            gender, special_req, pet_type, duration, cost, mode_of_transfer, t_status, caretaker_email \
+            gender, special_req, owns_pets.pet_type, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
             FROM Transactions_Details LEFT JOIN Owns_pets  \
             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
@@ -305,7 +344,7 @@ app.get("/transactions", async (req, res) => {
             searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
             searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, special_req, duration, cost, mode_of_transfer, t_status, caretaker_email \
+                                            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email \
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.owner_email
@@ -376,18 +415,19 @@ app.get("/caretakersq", async (req, res) => {
 app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { service_avail, employment_type, daily_price, pet_type } = req.body;
-
+        const { service_avail_from, service_avail_to, employment_type, daily_price, pet_type } = req.body;
+        
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email)
 
         const newService = await pool.query(
-            "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail, type_pref, daily_price) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [user_email, employment_type, service_avail, pet_type, daily_price]);
+            "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [user_email, employment_type, service_avail_from, service_avail_to, pet_type, daily_price]);
 
-        res.json(newService.rows[0].service_avail);
+        res.json(newService.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -517,18 +557,22 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, pet_type, service_request_period, bidding_offer, transfer_mode, selected_pet } = req.body;
+        const { caretaker_email, employment_type, pet_type, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(owner_email)
-
+        
         const newService = await pool.query(
-            "INSERT INTO Transactions_Details (caretaker_email, employment_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [caretaker_email, employment_type, selected_pet, owner_email, "cash", bidding_offer, transfer_mode, service_request_period]);
+            "INSERT INTO Transactions_Details (caretaker_email, employment_type, \
+            pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
+            duration_to, service_avail_from, service_avail_to) \
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
+            [caretaker_email, employment_type, pet_type, selected_pet, owner_email, "cash", 
+            bidding_offer, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
+            parseDate(avail_to)]);
 
-        res.json(newService.rows[0].service_request_period);
+        res.json(newService.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -540,19 +584,19 @@ app.post("/submitbid", async (req, res) => {
 app.put("/changebid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { owner_email, pet_name, duration, status_update } = req.body;
+        const { owner_email, pet_name, duration_to, duration_from, status_update } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(caretaker_email)
 
         const txn = await pool.query(
             "UPDATE Transactions_Details SET t_status = $1 \
-            WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 AND duration = $5) RETURNING *" ,
-            [status_update, owner_email, caretaker_email, pet_name, duration]);
-
-        res.json(txn.rows[0].duration);
+            WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 \
+            AND duration_from = $5 AND duration_to = $6) RETURNING *" ,
+            [status_update, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
+            
+        res.json(txn.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -564,7 +608,7 @@ app.put("/changebid", async (req, res) => {
 app.put("/submitreview", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, pet_name, duration, rating, review } = req.body;
+        const { caretaker_email, employment_type, pet_name, duration_to, duration_from, rating, review } = req.body;
 
         // get user_email from jwt token
         const jwtToken = req.header("token")
@@ -573,10 +617,10 @@ app.put("/submitreview", async (req, res) => {
 
         const txn = await pool.query(
             "UPDATE Transactions_Details SET owner_rating = $1, owner_review = $2, t_status = 5\
-            WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration = $6) RETURNING *" ,
-            [rating, review, owner_email, caretaker_email, pet_name, duration]);
+            WHERE (owner_email = $3 AND caretaker_email = $4 AND pet_name = $5 AND duration_from = $6 AND duration_to = $7) RETURNING *" ,
+            [rating, review, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
 
-        res.json(txn.rows[0].duration);
+        res.json(txn.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -606,39 +650,6 @@ app.get("/getreview", async (req, res) => {
         console.log(error.message)
     }
 });
-
-
-// //update an item
-// app.put("/items/:id", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { description } = req.body;
-//         const updateItem = await pool.query(
-//             "UPDATE sample SET description = $1 WHERE id = $2",
-//             [description, id]
-//         );
-
-//         res.json("Updated item");
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
-
-// //delete an item
-// app.delete("/items/:id", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const deleteItem = await pool.query(
-//             "DELETE FROM sample WHERE id = $1",
-//             [id]
-//         );
-
-//         res.json("Deleted item");
-//     } catch (err) {
-//         console.log(err.message);
-//     }
-// });
-
 
 app.listen(5000, () => {
     console.log('server has started at port 5000');
