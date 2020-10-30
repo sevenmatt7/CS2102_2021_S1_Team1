@@ -31,10 +31,12 @@ MARKING SCHEME
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 **Insert the finalised diagram here**
+
 **Also need to list down app constraints not captured by ER model**
 
 ## Database schema <a name = "schema"></a>
 **Insert final schema.sql code here**
+![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
 **Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
 
 ## Normalization level of database <a name = "normalization"></a>

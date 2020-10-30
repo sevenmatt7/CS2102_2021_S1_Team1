@@ -53,7 +53,7 @@ CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
 
-INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile'), ('all');
+INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
 
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
@@ -75,6 +75,13 @@ CREATE TABLE Offers_Services (
 	daily_price NUMERIC NOT NULL,
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
+
+-- when caretaker take leave
+-- avail 10/29 to 10/29
+-- txns 10/29 to 11/05
+-- leave 11/06 to 11/20 15 days leave
+-- -> avail change 10/29 to 11/05 and 11/21 to 10/29
+-- -> txns, search for caretaker email, t_status = 3 or 4 or 5, service_avail_from and to change to 10/29 to 11/05
 
 -- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
@@ -131,3 +138,49 @@ CREATE TRIGGER update_caretaker_rating
 	AFTER UPDATE ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_caretaker_rating();
+
+--- Trigger to check whether caretaker already reached the max amount of pets in his care 
+CREATE OR REPLACE FUNCTION check_caretaker_limit()
+RETURNS TRIGGER AS $$ 
+	DECLARE 
+		date_start DATE := NEW.duration_from;
+		date_end DATE := NEW.duration_to;
+		count INTEGER;
+	BEGIN
+		-- initialize the variables to store the dates that we want to check
+		-- SELECT duration_from INTO date_start, duration_to INTO date_end
+		-- FROM Transactions_Details
+		-- WHERE (owner_email = NEW.owner_email AND caretaker_email = NEW.caretaker_email 
+		-- 		AND pet_name = NEW.pet_name AND service_avail_from = NEW.service_avail_from
+		-- 		AND service_avail_to = NEW.service_avail_to);
+		-- select all the transactions that are also in the same availability period as the transaction
+		-- to be accepted
+		SELECT duration_from, duration_to
+		FROM Transactions_Details
+		WHERE (caretaker_email = NEW.caretaker_email 
+				AND service_avail_from = NEW.service_avail_from
+				AND service_avail_to = NEW.service_avail_to AND t_status = 3 );
+		-- Loop over the each date of the new bid to be accepted and check if any of the days have
+		-- more than 5 transactions in progress
+		WHILE date_start <= date_end LOOP
+			SELECT COUNT(*) INTO count
+			FROM Transactions_Details
+			WHERE (caretaker_email = NEW.caretaker_email 
+				AND service_avail_from = NEW.service_avail_from
+				AND service_avail_to = NEW.service_avail_to AND t_status = 3 
+				AND date_start >= duration_from AND date_start <= duration_to);
+			IF count >= 5 THEN
+				RAISE EXCEPTION 'Max number of pets under care reached';
+			END IF;
+			date_start := date_start + 1;
+			count := 0;
+		END LOOP;
+		
+		RETURN NEW;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_caretaker_limit
+	BEFORE UPDATE ON Transactions_Details
+	FOR EACH ROW
+	EXECUTE PROCEDURE check_caretaker_limit();
