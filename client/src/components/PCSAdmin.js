@@ -9,7 +9,7 @@ import PCSTable from "./PCSTable"
 const PCSAdmin = () => {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const [yearOptions, setYearOptions] = useState([])
-  const [yearDisplayed, setYearDisplayed] = useState([])
+  const [yearDisplayed, setYearDisplayed] = useState('')
   const [pieState, setPieState] = useState({
     monthDisplayed: '',
     data: {
@@ -246,9 +246,9 @@ const PCSAdmin = () => {
                 </button>
               </div>
             </div>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <label class="input-group-text" for="yearDisplayed">Year</label>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <label className="input-group-text" htmlFor="yearDisplayed">Year</label>
               </div>
               <select className="form-control" value={yearDisplayed} onChange={e => setYearDisplayed(e.target.value)} >
                 {
@@ -265,9 +265,9 @@ const PCSAdmin = () => {
                     <h4 className="card-title">No. of pets taken care of</h4>
                     <div className="card-category">
 
-                      <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                          <label class="input-group-text" for="monthDisplayed">Month</label>
+                      <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                          <label className="input-group-text" htmlFor="monthDisplayed">Month</label>
                         </div>
                         <select
                           className="form-control"
