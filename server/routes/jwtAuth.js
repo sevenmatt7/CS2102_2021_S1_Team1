@@ -94,7 +94,6 @@ router.post("/registerpet", validInfo, async (req, res) => {
 //login a user 
 router.post("/login", validInfo, async (req, res) => {
     try {
-<<<<<<< HEAD
         const {email, password, acc_type} = req.body;
         let user_in_category;
         let emp_type = "";
@@ -121,7 +120,7 @@ router.post("/login", validInfo, async (req, res) => {
             } 
         }    
         const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
-        
+
         if (!validPassword) {
             return res.status(401).json("Password or email is incorrect")
         }
