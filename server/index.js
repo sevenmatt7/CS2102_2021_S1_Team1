@@ -55,6 +55,10 @@ app.use("/home", require("./routes/homepage"));
 //user profiles
 app.use("/profile", require("./routes/profile"));
 
+//admin APIs
+//user profiles
+app.use("/admin", require("./routes/admin"));
+
 //submit enquiry
 app.post("/submitenquiry", async (req, res) => {
     try {

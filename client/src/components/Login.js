@@ -75,7 +75,7 @@ const Login = ({ setAuth }) => {
                                     <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
                                         <option value="petowner">Pet Owner</option>
                                         <option value="caretaker">Caretaker</option>
-                                        {/* <option value="pcsadmin">PCSAdmin</option> */}
+                                        <option value="admin">PCSAdmin</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
