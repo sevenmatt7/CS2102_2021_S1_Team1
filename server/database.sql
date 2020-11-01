@@ -76,7 +76,7 @@ CREATE TABLE Offers_Services (
 	service_avail_to DATE NOT NULL, 
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
-	is_unavail BOOLEAN DEFAULT FALSE,
+	is_avail BOOLEAN DEFAULT TRUE,
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
@@ -261,8 +261,118 @@ CREATE TRIGGER update_fulltime_price
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
 
+-- Trigger to check if the full time caretaker can take leave 
+DROP FUNCTION IF EXISTS take_leave_for_fulltime() CASCADE;
+CREATE OR REPLACE FUNCTION take_leave_for_fulltime()
+RETURNS TRIGGER AS $$ 
+	DECLARE 
+		emp_type VARCHAR := NEW.employment_type;
+		rating NUMERIC;
+		new_price INTEGER := 50;
+	BEGIN
+		
+		SELECT avg_rating INTO rating
+		FROM Caretakers
+		WHERE caretaker_email = NEW.caretaker_email;
+		IF (emp_type = 'fulltime') THEN
+			IF (rating > 4.2 AND rating < 4.4 ) THEN
+				new_price := 52;
+			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
+				new_price := 55;
+			ELSIF (rating > 4.4 AND rating < 4.6 ) THEN
+				new_price := 59;
+			ELSIF (rating > 4.6 AND rating < 4.8 ) THEN
+				new_price := 64;
+			ELSIF (rating > 4.8 ) THEN
+				new_price := 70;
+			END IF;
+		END IF;
+		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		RETURN NEW;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER take_leave_for_fulltime
+	BEFORE UPDATE OF is_avail ON Caretakers
+	FOR EACH ROW
+	EXECUTE PROCEDURE take_leave_for_fulltime();
 
 
+-- function to check if full time caretaker can take leave
+DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
+CREATE OR REPLACE FUNCTION check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE)
+RETURNS TABLE (new_service_avail_from1 DATE,
+			    new_service_avail_to1 DATE,
+				new_service_avail_from2 DATE,
+				new_service_avail_to2 DATE,
+				leave_duration INTEGER) AS $$ 
+	DECLARE 
+		old_service_avail_from DATE;
+		old_service_avail_to DATE;
+		previous_150_start DATE;
+		previous_150_end DATE;
+		leave_period INTEGER;
+	BEGIN
+		-- Check for valid input
+		IF leave_end < leave_start THEN
+			RAISE EXCEPTION 'You cannot take leave during this period!';
+		END IF;
+		
+		-- First, get the service period of the caretaker that contains the leave period from the Offers_services table
+		SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to
+		FROM Offers_Services 
+		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to;
+		
+		-- Then, check if there are any transactions accepted within the leave period, if yes return 0
+		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND 
+			service_avail_from = old_service_avail_from AND service_avail_to = old_service_avail_to AND 
+			leave_start >= duration_from AND leave_end <= duration_to AND t_status = 3) > 0 THEN
+			RAISE EXCEPTION 'You cannot take leave during this period!';
+		END IF;
+
+		-- proceed to check whether the caretaker has already had a 150 consecutive day period IN THE SAME YEAR
+		-- if they do not have a 150 day period served, 
+		SELECT service_avail_from, service_avail_to INTO previous_150_start, previous_150_end
+		FROM Offers_services WHERE caretaker_email = input_email AND (service_avail_to - service_avail_from >= 150);
+		
+		-- check if the previous 150 day shift was completed in the same year. If not, return false
+		IF (SELECT extract(year from previous_150_end)) != (SELECT extract(year from old_service_avail_from)) THEN
+			RAISE EXCEPTION 'You cannot take leave during this period!';
+		END IF;
+
+		leave_period := leave_end - leave_start + 1;
+		-- check whether the previous 150 day shift has an overlap with the current one we are looking at
+		IF (previous_150_start, previous_150_end) OVERLAPS (old_service_avail_from, old_service_avail_to) THEN
+			
+            -- check if the curr period has at least 300 days since we need to split up into 2 consecutive 150 days
+			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
+				-- if can split up, return true
+				IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
+					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
+							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
+				ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
+					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
+							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
+				END IF;
+			END IF;
+			
+		-- this means that there was already a 150 day consecutive period worked in the past
+		ELSE
+			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
+				-- if can split up, return true
+				IF (leave_start - old_service_avail_from > 150 OR old_service_avail_to - leave_end > 150) THEN
+					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
+							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
+                ELSE
+                    RAISE EXCEPTION 'You cannot take leave during this period!';
+				END IF;
+				-- if cannot split up to 150 days, return false
+			END IF;
+		END IF;
+
+ 	END; 
+$$ LANGUAGE plpgsql;
 
 
 
