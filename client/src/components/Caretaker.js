@@ -65,10 +65,21 @@ const Caretaker = () => {
         e.preventDefault();
         try {
           const { owner_email, pet_name, duration_to, duration_from } = search;
-    
+          
+          // check if caretaker can actually complete the job or not first
+          if (status_update === 4) {
+            const curr_date = parseDate(new Date());
+            const txn_end_date = parseDate(duration_to);
+            // console.log(curr_date)
+            // console.log(txn_end_date)
+            // check if the date of the job completion is correct
+            if (curr_date < txn_end_date) {
+                toast.error('You cannot complete this job now!')
+                return;
+            }
+          }
+          
           const body = { owner_email, pet_name, duration_to, duration_from, status_update };
-          
-          
           const response = await fetch("http://localhost:5000/changebid", {
             method: "PUT",
             headers: {
@@ -78,25 +89,20 @@ const Caretaker = () => {
             body: JSON.stringify(body)
           });
     
-          const parseResponse = await response.json();
-    
-          if (status_update === 3) { //when the caretaker accepts the bid
-            toast.success(`You have accepted the offer from ${search.full_name}!`);
-          } else if (status_update === 2) {  //when the caretaker rejects the bid
-            toast.error(`You have rejected the offer from ${search.full_name}!`);
-          } else if (status_update === 4) { //when the job is marked as complete
-            const curr_date = parseDate(new Date());
-            const txn_end_date = parseDate(duration_to);
-            // console.log(curr_date)
-            // console.log(txn_end_date)
-            // check if the date of the job completion is consistent
-            if (curr_date < txn_end_date) {
-                toast.error('You cannot complete this job now!')
-                return;
+          const txn = await response.json();
+          if (txn.t_status) {
+              if (txn.t_status === 3) { //when the caretaker accepts the bid
+                toast.success(`You have accepted the offer from ${search.full_name}!`);
+            } else if (txn.t_status === 2) {  //when the caretaker rejects the bid
+                toast.error(`You have rejected the offer from ${search.full_name}!`);
+            } else if (txn.t_status === 4) { //when the job is marked as complete
+                toast.success(`🎉 You have completed the job from ${search.full_name}!`);
             }
-            toast.success(`🎉 You have completed the job from ${search.full_name}!`);
+          } else {
+              toast.error(txn);
           }
-    
+          
+          
           window.location.reload();
          
         } catch (err) {

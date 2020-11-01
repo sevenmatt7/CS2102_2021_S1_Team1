@@ -33,7 +33,7 @@ CREATE TABLE Caretakers(
 	REFERENCES Users(email)
 	ON DELETE cascade,
 	employment_type VARCHAR NOT NULL,
-	avg_rating NUMERIC,
+	avg_rating NUMERIC DEFAULT 0,
 	no_of_reviews INTEGER,
 	PRIMARY KEY (caretaker_email)
 );
@@ -122,16 +122,25 @@ CREATE TABLE Enquiries (
 );
 
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
+DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
+	DECLARE 
+		rating NUMERIC := 0;
+		reviews_num INTEGER := 0;
 	BEGIN
+	SELECT AVG(owner_rating) INTO rating
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email;
+	SELECT COUNT(owner_rating) INTO reviews_num
+	FROM Transactions_Details
+	WHERE caretaker_email = NEW.caretaker_email;
+	IF (reviews_num = 0) THEN
+		rating := 0;
+	END IF;
 	UPDATE Caretakers 
-	SET avg_rating = (SELECT AVG(owner_rating) 
-	FROM Transactions_Details
-	WHERE caretaker_email = NEW.caretaker_email),
-	no_of_reviews = (SELECT COUNT(owner_rating) 
-	FROM Transactions_Details
-	WHERE caretaker_email = NEW.caretaker_email)
+	SET avg_rating = rating,
+	no_of_reviews = reviews_num
     WHERE (caretaker_email = NEW.caretaker_email);
 	RETURN NULL;
  	END; 
@@ -142,14 +151,25 @@ CREATE TRIGGER update_caretaker_rating
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_caretaker_rating();
 
-DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
+
 --- Trigger to check whether caretaker already reached the max amount of pets in his care 
+DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
 CREATE OR REPLACE FUNCTION check_caretaker_limit()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
 		date_start DATE := NEW.duration_from;
 		date_end DATE := NEW.duration_to;
+		emp_type VARCHAR := NEW.employment_type;
+		rating NUMERIC;
+		pet_limit INTEGER := 2;
 	BEGIN
+		-- get rating of caretaker
+		SELECT avg_rating INTO rating
+		FROM Caretakers
+		WHERE caretaker_email = NEW.caretaker_email;
+		IF ((emp_type = 'parttime' AND rating > 4) OR emp_type = 'fulltime') THEN
+			pet_limit := 5;
+		END IF;
 		-- Loop over the each date of the new bid to be accepted and check if any of the days have
 		-- more than 5 transactions in progress
 		WHILE date_start <= date_end LOOP
@@ -160,12 +180,12 @@ RETURNS TRIGGER AS $$
 				WHERE (caretaker_email = NEW.caretaker_email 
 				AND service_avail_from = NEW.service_avail_from
 				AND service_avail_to = NEW.service_avail_to AND t_status = 3 
-				AND date_start >= duration_from AND date_start <= duration_to)) >= 5 THEN
+				AND date_start >= duration_from AND date_start <= duration_to)) >= pet_limit THEN
 					IF (NEW.t_status = 4 OR NEW.t_status = 5) THEN
 						RETURN NEW;
 					END IF;
-					RAISE EXCEPTION 'Max number of pets under care reached';
-					RETURN NULL;
+				RAISE EXCEPTION 'You have already reached the limit for the number of pets you can take care of!';
+				RETURN NULL;
 			END IF;
 			date_start := date_start + 1;
 		END LOOP;
@@ -201,24 +221,6 @@ RETURNS INTEGER AS $$
 $$ LANGUAGE plpgsql;
 
 --- Trigger to check whether a full time caretaker can take leave
-DROP FUNCTION IF EXISTS login_user() CASCADE;
-if (user.rows.length === 0) {
-            return res.status(401).json("A user with the email you entered does not exist!")
-        } 
-        
-        if (acc_type === "petowner") 
-            petOwner = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
-            
-        if (acc_type === "caretaker") 
-            caretaker = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
-            if (caretaker.rows.length !== 0) {
-                return res.status(401).json("You are not registered as a Caretaker!")
-            }
-            emp_type = caretaker.rows[0].employment_type;
-        if (acc_type === "admin") 
-            admin = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]);
-
-
 -- DROP FUNCTION IF EXISTS login_user(character varying,character varying);
 -- CREATE OR REPLACE FUNCTION login_user(in_email VARCHAR, acc_type VARCHAR)
 -- RETURNS TABLE (email VARCHAR, 
