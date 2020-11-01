@@ -21,7 +21,7 @@ MARKING SCHEME
 ## 👨‍💻  Team <a name = "info"></a>
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
-| Matthew Nathanael Sugiri | A0183805B | Integration, API development, Deployment
+| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API development, Deployment
 | Joshua Tam | A0190309H |
 | Tan Guan Yew | A0183464Y |
 | Sean Lim | A0187123H |
