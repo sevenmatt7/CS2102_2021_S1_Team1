@@ -559,7 +559,9 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet } = req.body;
+        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to, 
+                service_request_from, service_request_to, daily_price, transfer_mode, 
+                selected_pet, payment_mode } = req.body;
         
         // get user_email from jwt token
         const jwtToken = req.header("token")
@@ -570,8 +572,8 @@ app.post("/submitbid", async (req, res) => {
             pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
             duration_to, service_avail_from, service_avail_to) \
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, "cash", 
-            bidding_offer, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
+            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, payment_mode, 
+            daily_price, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
             parseDate(avail_to)]);
 
         res.json(newService.rows[0]);
