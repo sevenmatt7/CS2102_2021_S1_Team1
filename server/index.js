@@ -580,7 +580,8 @@ app.post("/submitbid", async (req, res) => {
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("A server error has been encountered");
+        res.status(406);
+        res.json(err.message);
     }
 });
 

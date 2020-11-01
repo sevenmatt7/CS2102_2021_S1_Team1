@@ -65,14 +65,30 @@ const RequestService = ({ search, i }) => {
             });
             
             const submittedData = await response.json();
-            const start_date = submittedData.duration_from;
-            const end_date = submittedData.duration_to;
-            const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
+            
+            // Log successful if the bid has been inserted, if not show to user that there is an error
+            if (submittedData.duration_from) {
+                const start_date = submittedData.duration_from;
+                const end_date = submittedData.duration_to;
+                const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
                                     end_date + '!';
-            toast.success(successMessage);
+                toast.success(successMessage);
+            } else {
+                switch (submittedData) {
+                    case 'new row for relation "transactions_details" violates check constraint "transactions_details_check1"':
+                        toast.error("The caretaker cannot take care of pets in the specified period you are trying to bid for!")
+                        break;
+                    case 'insert or update on table "transactions_details" violates foreign key constraint "transactions_details_caretaker_email_pet_type_service_avai_fkey"':
+                        toast.error("The caretaker cannot take care of the pet you have specified in your bid!")
+                        break;
+                    default:
+                        toast.error("There is an error in submitting your bid, please check it again")
+                        break;
+                }
+            }
+            
         } catch (err) {
-            console.error(err)
-            toast.error("The caretaker cannot take care of that pet!");
+            console.error(err.message);
         }
     }
     
