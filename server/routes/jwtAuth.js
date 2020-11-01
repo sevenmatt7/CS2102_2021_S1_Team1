@@ -11,7 +11,7 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        const { name, email, password, address, acc_type, emp_type } = req.body;
+        let { name, email, password, address, acc_type, emp_type } = req.body;
 
         //step 2: check if user exists (throw error)
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -35,6 +35,10 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
+        } else if (acc_type === "both") {
+            pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
+            pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
+            acc_type = 'caretaker';
         }
 
         //insert into offers_services table if is a full-time caretaker (default entire year period)
@@ -110,9 +114,9 @@ router.post("/login", validInfo, async (req, res) => {
         } else if (acc_type === "caretaker") {
             user_in_category = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
             if (user_in_category.rows.length === 0) {
-                return res.status(401).json("You are not registered as a pet owner!")
+                return res.status(401).json("You are not registered as a caretaker!")
             } 
-            emp_type = caretaker.rows[0].employment_type;
+            emp_type = user_in_category.rows[0].employment_type;
         } else {
             user_in_category = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]); 
             if (user_in_category.length === 0) {
