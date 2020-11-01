@@ -48,10 +48,10 @@ const PCSTable = () => {
     }
 
     // Counts number of pet days from input stringduration
-    const count_pet_days = (duration) => {
-        let date_array = duration.split(',');
-        let first_date = (date_array[0].split('T'))[0];
-        let second_date = (date_array[1].split('T'))[0];
+    const count_pet_days = (fd, sd) => {
+        // let date_array = duration.split(',');
+        let first_date = (fd.split('T'))[0];
+        let second_date = (sd.split('T'))[0];
         return datediff(parseDate(first_date), parseDate(second_date));
     }
 
@@ -79,9 +79,8 @@ const PCSTable = () => {
 
     // Filters users if exists in a given month
     const user_exists_in_month = (userData, month) => {
-        let date_array = userData.duration.split(',');
-        let first_date = (date_array[0].split('T'))[0];
-        let second_date = (date_array[1].split('T'))[0];
+        let first_date = (userData.duration_from.split('T'))[0];
+        let second_date = (userData.duration_to.split('T'))[0];
         let startDate = parseDate(first_date);
         let endDate = parseDate(second_date);
         let fsd = filterStartDate(month, first_date);
@@ -91,9 +90,8 @@ const PCSTable = () => {
 
     // Calculates total working days in a given month
     const calc_total_days = (userData, month) => {
-        let date_array = userData.duration.split(',');
-        let first_date = (date_array[0].split('T'))[0];
-        let second_date = (date_array[1].split('T'))[0];
+        let first_date = (userData.duration_from.split('T'))[0];
+        let second_date = (userData.duration_to.split('T'))[0];
         let startDate = parseDate(first_date);
         let endDate = parseDate(second_date);
         let fsd = filterStartDate(month, first_date);
@@ -124,8 +122,8 @@ const PCSTable = () => {
     }
 
     // Adds additional attributes to user object
-    const createDetailedUser = (user, petdays) => {
-        let calc_days = count_pet_days(user.duration);
+    const createDetailedUser = (user, petdays) => { 
+        let calc_days = count_pet_days(user.duration_from, user.duration_to);
         let rating = Number(user.avg_rating);
         let base_price = Number(user.cost);
         let pet_days = (typeof petdays === 'undefined') ? calc_days : petdays;
@@ -209,6 +207,7 @@ const PCSTable = () => {
 
     useEffect(() => {
         getCareTakers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
