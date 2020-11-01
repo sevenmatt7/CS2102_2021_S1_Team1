@@ -48,6 +48,7 @@ CREATE TABLE PCSAdmins (
 CREATE TABLE Manages (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email),
+	base_price NUMERIC DEFAULT 50,
 	PRIMARY KEY (admin_email, caretaker_email)
 );
 
@@ -198,6 +199,51 @@ CREATE TRIGGER check_caretaker_limit
 	BEFORE UPDATE ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE PROCEDURE check_caretaker_limit();
+
+-- function to assign admin to user at registration
+DROP FUNCTION IF EXISTS assign_to_admin();
+CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
+RETURNS NUMERIC AS $$ 
+	DECLARE 
+		assigned_admin VARCHAR;
+		daily_price NUMERIC;
+	BEGIN
+		SELECT admin_email into assigned_admin
+		FROM PCSAdmins
+		ORDER BY RANDOM()
+		LIMIT 1;
+		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
+      	USING assigned_admin, input_email;  
+		IF emp_type = 'fulltime' THEN
+			SELECT base_price INTO daily_price FROM Manages WHERE admin_email = assigned_admin;
+			RETURN daily_price;
+		END IF;
+		RETURN 0;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
 												caretaker_email DATE , type_pref DATE, 

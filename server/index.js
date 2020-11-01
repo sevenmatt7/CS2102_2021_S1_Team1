@@ -44,9 +44,6 @@ function parseDate(raw_date) {
 }
 
 
-
-
-
 //routes
 
 //register and login
