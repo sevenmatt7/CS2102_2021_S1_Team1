@@ -2,7 +2,8 @@ import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
 const RequestService = ({ search, i }) => {
-    const pet_type = search.type_pref;
+    
+    // const pet_type = search.type_pref;
     const caretaker_email = search.caretaker_email;
     const employment_type = search.employment_type;
     const avail_from = search.service_avail_from
@@ -25,6 +26,14 @@ const RequestService = ({ search, i }) => {
     const [transfer_mode, setTransferMode] = useState(1);
 
     const [selected_pet, selectPet] = useState('');
+    const [selected_petType, selectPetType] = useState('');
+    
+    const setPetTypes = (value) => {
+        selectPet(value);
+        petList.map((pet) => {
+            if (pet.pet_name === value) selectPetType(pet.pet_type);
+        });
+    }
 
     const getPetList = async () => {
         try {
@@ -44,7 +53,7 @@ const RequestService = ({ search, i }) => {
         e.preventDefault();
         try {
            
-            const body = { caretaker_email, employment_type, pet_type, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet};
+            const body = { caretaker_email, employment_type, selected_petType, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet};
             const response = await fetch("http://localhost:5000/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -63,7 +72,7 @@ const RequestService = ({ search, i }) => {
             toast.error("The caretaker cannot take care of that pet!");
         }
     }
-
+    
     return (
         <Fragment>
             <button className="btn btn-success" data-toggle="modal" data-target={`#id${i}`}
@@ -84,7 +93,7 @@ const RequestService = ({ search, i }) => {
                         <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Which pet?</label>
                         
                             <select className="custom-select mt-2 mb-4 mr-sm-2" value={selected_pet} 
-                            onChange={e => selectPet(e.target.value)} required="required">
+                            onChange={e => setPetTypes(e.target.value)} required="required">
                                 <option selected >Choose...</option>
                                 {petList.map((pet, i) => (
                                     <option value={pet.pet_name}>{pet.pet_name}</option>
