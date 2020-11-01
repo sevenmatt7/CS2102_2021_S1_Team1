@@ -84,28 +84,33 @@ router.post("/registerpet", validInfo, async (req, res) => {
 //login a user 
 router.post("/login", validInfo, async (req, res) => {
     try {
-        const {email, password} = req.body;
-
-        let acc_type = "";
+        const {email, password, acc_type} = req.body;
+        let user_in_category;
         let emp_type = "";
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
-        const petOwner = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
-        const caretaker = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
-        const admin = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]);
-
-        
         if (user.rows.length === 0) {
-            return res.status(401).json("A user with the email you entered does not exist!")
-        } else if (petOwner.rows.length !== 0) {
-            acc_type = "petowner"
-        } else if (caretaker.rows.length !== 0) {
-            acc_type = "caretaker"
-            emp_type = caretaker.rows[0].employment_type
-        } else if (admin.rows.length !== 0) {
-            acc_type = "admin"
-        } 
+            return res.status(401).json("You are not registered!")
+        }
+        
+        if (acc_type === "petowner") {
+            user_in_category = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
+            if (user_in_category.rows.length === 0) {
+                return res.status(401).json("You are not registered as a pet owner!")
+            } 
+        } else if (acc_type === "caretaker") {
+            user_in_category = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
+            if (user_in_category.rows.length === 0) {
+                return res.status(401).json("You are not registered as a pet owner!")
+            } 
+            emp_type = caretaker.rows[0].employment_type;
+        } else {
+            user_in_category = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]); 
+            if (user_in_category.length === 0) {
+                return res.status(401).json("You are not registered as an admin!")
+            } 
+        }    
 
-        const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
+        let validPassword = await bcrypt.compare(password, user.rows[0].user_password);
         if (!validPassword) {
             return res.status(401).json("Password or email is incorrect")
         }
