@@ -46,8 +46,8 @@ CREATE TABLE PCSAdmins (
 );
 
 CREATE TABLE Manages (
-	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
-	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email),
+	admin_email VARCHAR REFERENCES PCSAdmins(admin_email) ON DELETE cascade,
+	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email) ON DELETE cascade,
 	base_price NUMERIC DEFAULT 50,
 	PRIMARY KEY (admin_email, caretaker_email)
 );
@@ -130,19 +130,20 @@ RETURNS TRIGGER AS $$
 		rating NUMERIC := 0;
 		reviews_num INTEGER := 0;
 	BEGIN
-	SELECT AVG(owner_rating) INTO rating
-	FROM Transactions_Details
-	WHERE caretaker_email = NEW.caretaker_email;
 	SELECT COUNT(owner_rating) INTO reviews_num
 	FROM Transactions_Details
 	WHERE caretaker_email = NEW.caretaker_email;
-	IF (reviews_num = 0) THEN
-		rating := 0;
+	IF (reviews_num > 0) THEN
+		SELECT AVG(owner_rating) INTO rating
+		FROM Transactions_Details
+		WHERE caretaker_email = NEW.caretaker_email;
 	END IF;
+	
 	UPDATE Caretakers 
 	SET avg_rating = rating,
 	no_of_reviews = reviews_num
     WHERE (caretaker_email = NEW.caretaker_email);
+	
 	RETURN NULL;
  	END; 
 $$ LANGUAGE plpgsql;
@@ -150,7 +151,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_caretaker_rating
 	AFTER UPDATE ON Transactions_Details
 	FOR EACH ROW
-	EXECUTE PROCEDURE update_caretaker_rating();
+	EXECUTE FUNCTION update_caretaker_rating();
 
 
 --- Trigger to check whether caretaker already reached the max amount of pets in his care 
@@ -163,6 +164,7 @@ RETURNS TRIGGER AS $$
 		emp_type VARCHAR := NEW.employment_type;
 		rating NUMERIC;
 		pet_limit INTEGER := 2;
+		count BIGINT := 0;
 	BEGIN
 		-- get rating of caretaker
 		SELECT avg_rating INTO rating
@@ -176,15 +178,14 @@ RETURNS TRIGGER AS $$
 		WHILE date_start <= date_end LOOP
 			-- select all the transactions that are also in the same availability period as the transaction
 			-- to be accepted and check if they amount to 5
-			IF (SELECT COUNT(*)
-				FROM Transactions_Details
-				WHERE (caretaker_email = NEW.caretaker_email 
-				AND service_avail_from = NEW.service_avail_from
-				AND service_avail_to = NEW.service_avail_to AND t_status = 3 
-				AND date_start >= duration_from AND date_start <= duration_to)) >= pet_limit THEN
-					IF (NEW.t_status = 4 OR NEW.t_status = 5) THEN
-						RETURN NEW;
-					END IF;
+			SELECT COUNT(*) INTO count
+			FROM Transactions_Details
+			WHERE (caretaker_email = NEW.caretaker_email 
+			AND service_avail_from = NEW.service_avail_from
+			AND service_avail_to = NEW.service_avail_to AND t_status = 3 
+			AND date_start >= duration_from AND date_start <= duration_to);
+			
+			IF (count >= pet_limit AND NEW.t_status = 3) THEN
 				RAISE EXCEPTION 'You have already reached the limit for the number of pets you can take care of!';
 				RETURN NULL;
 			END IF;
@@ -223,48 +224,83 @@ RETURNS NUMERIC AS $$
 $$ LANGUAGE plpgsql;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
-												caretaker_email DATE , type_pref DATE, 
-												old_avail_from DATE, old_avail_to DATE )
-RETURNS INTEGER AS $$ 
+-- Trigger to update the price of the fulltime caretaker's services after the avg_rating is computed, 
+DROP FUNCTION IF EXISTS update_fulltime_price() CASCADE;
+CREATE OR REPLACE FUNCTION update_fulltime_price()
+RETURNS TRIGGER AS $$ 
+	DECLARE 
+		emp_type VARCHAR := NEW.employment_type;
+		rating NUMERIC;
+		new_price INTEGER := 50;
 	BEGIN
-		-- Change the service_avail_from and service_avail_to of the service that we need to split the availability
-		-- of
-		PERFORM 'UPDATE Offers_Services SET service_avail_from = old_avail_from, service_avail_to = new_avail_to
-				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
-				AND service_avail_from = old_avail_from)';
-		-- Get all transactions that are related to the service offered by the caretaker that we need 
-		-- to change the dates to
-		PERFORM 'UPDATE TRansactions_Details
-				SET service_avail_from = new_avail_from, service_avail_to = new_avail_to
-				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
-				AND service_avail_from = old_avail_from)';
-		
-		RETURN 1;
+		-- get rating of caretaker
+		SELECT avg_rating INTO rating
+		FROM Caretakers
+		WHERE caretaker_email = NEW.caretaker_email;
+		IF (emp_type = 'fulltime') THEN
+			IF (rating > 4.2 AND rating < 4.4 ) THEN
+				new_price := 52;
+			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
+				new_price := 55;
+			ELSIF (rating > 4.4 AND rating < 4.6 ) THEN
+				new_price := 59;
+			ELSIF (rating > 4.6 AND rating < 4.8 ) THEN
+				new_price := 64;
+			ELSIF (rating > 4.8 ) THEN
+				new_price := 70;
+			END IF;
+		END IF;
+		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		RETURN NEW;
  	END; 
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_fulltime_price
+	AFTER UPDATE OF avg_rating ON Caretakers
+	FOR EACH ROW
+	EXECUTE PROCEDURE update_fulltime_price();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
+-- 												caretaker_email DATE , type_pref DATE, 
+-- 												old_avail_from DATE, old_avail_to DATE )
+-- RETURNS INTEGER AS $$ 
+-- 	BEGIN
+-- 		-- Change the service_avail_from and service_avail_to of the service that we need to split the availability
+-- 		-- of
+-- 		PERFORM 'UPDATE Offers_Services SET service_avail_from = old_avail_from, service_avail_to = new_avail_to
+-- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
+-- 				AND service_avail_from = old_avail_from)';
+-- 		-- Get all transactions that are related to the service offered by the caretaker that we need 
+-- 		-- to change the dates to
+-- 		PERFORM 'UPDATE TRansactions_Details
+-- 				SET service_avail_from = new_avail_from, service_avail_to = new_avail_to
+-- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
+-- 				AND service_avail_from = old_avail_from)';
+		
+-- 		RETURN 1;
+--  	END; 
+-- $$ LANGUAGE plpgsql;
 
 --- Trigger to check whether a full time caretaker can take leave
 -- DROP FUNCTION IF EXISTS login_user(character varying,character varying);

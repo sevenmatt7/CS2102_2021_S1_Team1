@@ -601,7 +601,7 @@ app.put("/changebid", async (req, res) => {
             WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 \
             AND duration_from = $5 AND duration_to = $6) RETURNING *" ,
             [status_update, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
-            
+        console.log(req.body)
         res.json(txn.rows[0]);
 
     } catch (err) {
