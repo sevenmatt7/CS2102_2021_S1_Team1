@@ -365,15 +365,17 @@ app.get("/transactions", async (req, res) => {
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, \
+        const jwtToken = req.header("token");
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        var sql = `SELECT DISTINCT full_name, user_address, \
         avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
-        type_pref, service_avail, daily_price \
+        type_pref, daily_price \
         FROM Offers_services \
         LEFT JOIN Users \
         ON Offers_services.caretaker_email = Users.email \
         LEFT JOIN Caretakers \
         ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
-        WHERE 1 = 1";
+        WHERE '${user_email}' != Offers_Services.caretaker_email`;
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
             sql += " AND Caretakers.employment_type = ";
