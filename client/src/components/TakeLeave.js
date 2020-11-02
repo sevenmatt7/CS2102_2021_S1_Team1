@@ -23,13 +23,7 @@ const TakeLeave = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-            let service_avail = apply_leave_from + ',' + apply_leave_to;
-            // Return back to backend the current service_avail dates too
-            // For each service_avail date range, append to service_avail
-            service_avail += service_avail_dates;
-            console.log(service_avail);
-            console.log(service_avail_dates)
-            const body = { service_avail, employment_type }
+            const body = { apply_leave_from, apply_leave_to }
             const response = await fetch("http://localhost:5000/takeleave", {
                 method: "POST",
                 headers: {
@@ -38,11 +32,8 @@ const TakeLeave = ({ setAuth }) => {
                 },
                 body: JSON.stringify(body)
             });
-
-            // Else show error message on front end
+            
             const parseResponse = await response.json();
-            console.log(parseResponse);
-
             if (parseResponse == "You cannot take leave during this period") {
                 toast.error(parseResponse);
             } else {
@@ -61,18 +52,18 @@ const TakeLeave = ({ setAuth }) => {
     }
 
     // Get the current working period from Database
-    const getLeaves = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/checkleave", {
-                method: "GET",
-                headers: { token: localStorage.token }
-            });
-            const jsonData = await response.json();
-            checkLeaves(jsonData);
-        } catch (error) {
-            console.log(error.message)
-        }
-    };
+    // const getLeaves = async () => {
+    //     try {
+    //         const response = await fetch("http://localhost:5000/checkleave", {
+    //             method: "GET",
+    //             headers: { token: localStorage.token }
+    //         });
+    //         const jsonData = await response.json();
+    //         checkLeaves(jsonData);
+    //     } catch (error) {
+    //         console.log(error.message)
+    //     }
+    // };
 
     // Get updates of current leave quota to display to caretaker
     var date_diff_indays = function (date1, date2) {
@@ -93,7 +84,7 @@ const TakeLeave = ({ setAuth }) => {
     daysRemaining -= daysInAYear;
 
     useEffect(() => {
-        getLeaves();
+        // getLeaves();
     }, []);
 
     return (

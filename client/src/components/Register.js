@@ -64,10 +64,11 @@ const Register = ({ setAuth }) => {
                                         <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
                                             <option value="petowner">Pet Owner</option>
                                             <option value="caretaker">Caretaker</option>
+                                            <option value="both">Pet Owner & Caretaker</option>
                                             {/* <option value="pcsadmin">PCSAdmin</option> */}
                                         </select>
                                     </div>
-                                    {acc_type === "caretaker" &&
+                                    {(acc_type === "caretaker" || acc_type === "both") &&
                                         <div className="form-group">
                                             <label>Part-time or Full-time?</label>
                                             <select className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>

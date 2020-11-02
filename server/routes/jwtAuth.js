@@ -11,7 +11,8 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        const { name, email, password, address, acc_type, emp_type } = req.body;
+        let { name, email, password, address, acc_type, emp_type } = req.body;
+        let assigned_price;
 
         //step 2: check if user exists (throw error)
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -35,27 +36,33 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
+            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
+        } else if (acc_type === "both") {
+            pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
+            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
+            pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
+            acc_type = 'caretaker';
         }
-
+        
+        
         //insert into offers_services table if is a full-time caretaker (default entire year period)
+        let base_price = assigned_price.rows[0].assign_to_admin;
         const today = new Date();
         const yyyy = today.getFullYear(); //in yyyy format
         const year = yyyy.toString();
         const default_start_date = year + "-01-01";
         const default_end_date = year + "-12-31";
         if (emp_type === "fulltime") {
-            // pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            // VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, "all", 50])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'dog', 50])
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'dog', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'cat', 50])
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'cat', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'bird', 50])
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'bird', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'rabbit', 50])
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'rabbit', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'reptile', 50]) 
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'reptile', base_price]) 
         }
 
         //step 5: generate jwt token
@@ -94,28 +101,33 @@ router.post("/registerpet", validInfo, async (req, res) => {
 //login a user 
 router.post("/login", validInfo, async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        let acc_type = "";
+        const {email, password, acc_type} = req.body;
+        let user_in_category;
         let emp_type = "";
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
-        const petOwner = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
-        const caretaker = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
-        const admin = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]);
-
-
         if (user.rows.length === 0) {
-            return res.status(401).json("A user with the email you entered does not exist!")
-        } else if (petOwner.rows.length !== 0) {
-            acc_type = "petowner"
-        } else if (caretaker.rows.length !== 0) {
-            acc_type = "caretaker"
-            emp_type = caretaker.rows[0].employment_type
-        } else if (admin.rows.length !== 0) {
-            acc_type = "admin"
+            return res.status(401).json("You are not registered!")
         }
-
+        
+        if (acc_type === "petowner") {
+            user_in_category = await pool.query("SELECT * from PetOwners WHERE owner_email = $1", [email]);
+            if (user_in_category.rows.length === 0) {
+                return res.status(401).json("You are not registered as a pet owner!")
+            } 
+        } else if (acc_type === "caretaker") {
+            user_in_category = await pool.query("SELECT * from Caretakers WHERE caretaker_email = $1", [email]);
+            if (user_in_category.rows.length === 0) {
+                return res.status(401).json("You are not registered as a caretaker!")
+            } 
+            emp_type = user_in_category.rows[0].employment_type;
+        } else {
+            user_in_category = await pool.query("SELECT * from PCSAdmins WHERE admin_email = $1", [email]); 
+            if (user_in_category.length === 0) {
+                return res.status(401).json("You are not registered as an admin!")
+            } 
+        }    
         const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
+
         if (!validPassword) {
             return res.status(401).json("Password or email is incorrect")
         }

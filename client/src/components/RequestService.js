@@ -8,22 +8,23 @@ const RequestService = ({ search, i }) => {
     const employment_type = search.employment_type;
     const avail_from = search.service_avail_from
     const avail_to = search.service_avail_to
-    
+    const daily_price = search.daily_price
+
     const[petList, setPets] = useState([]);
     
     const [inputs, setInputs] = useState({
         service_request_from: "",
         service_request_to: "",
-        bidding_offer: 0,
     });
 
-    const {service_request_from, service_request_to, bidding_offer } = inputs;
+    const {service_request_from, service_request_to} = inputs;
     
     const onChange = (e) => {
         setInputs({...inputs, [e.target.name]: e.target.value})
     }
 
     const [transfer_mode, setTransferMode] = useState(1);
+    const [payment_mode, setPaymentMode] = useState(1);
 
     const [selected_pet, selectPet] = useState('');
     const [selected_petType, selectPetType] = useState('');
@@ -53,7 +54,9 @@ const RequestService = ({ search, i }) => {
         e.preventDefault();
         try {
            
-            const body = { caretaker_email, employment_type, selected_petType, avail_from, avail_to, service_request_from, service_request_to, bidding_offer, transfer_mode, selected_pet};
+            const body = { caretaker_email, employment_type, selected_petType, avail_from, avail_to, 
+                           service_request_from, service_request_to, daily_price, transfer_mode, 
+                           selected_pet, payment_mode};
             const response = await fetch("http://localhost:5000/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
@@ -62,14 +65,30 @@ const RequestService = ({ search, i }) => {
             });
             
             const submittedData = await response.json();
-            const start_date = submittedData.duration_from;
-            const end_date = submittedData.duration_to;
-            const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
+            
+            // Log successful if the bid has been inserted, if not show to user that there is an error
+            if (submittedData.duration_from) {
+                const start_date = submittedData.duration_from;
+                const end_date = submittedData.duration_to;
+                const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
                                     end_date + '!';
-            toast.success(successMessage);
+                toast.success(successMessage);
+            } else {
+                switch (submittedData) {
+                    case 'new row for relation "transactions_details" violates check constraint "transactions_details_check1"':
+                        toast.error("The caretaker cannot take care of pets in the specified period you are trying to bid for!")
+                        break;
+                    case 'insert or update on table "transactions_details" violates foreign key constraint "transactions_details_caretaker_email_pet_type_service_avai_fkey"':
+                        toast.error("The caretaker cannot take care of the pet you have specified in your bid!")
+                        break;
+                    default:
+                        toast.error("There is an error in submitting your bid, please check it again")
+                        break;
+                }
+            }
+            
         } catch (err) {
-            console.error(err)
-            toast.error("The caretaker cannot take care of that pet!");
+            console.error(err.message);
         }
     }
     
@@ -100,18 +119,13 @@ const RequestService = ({ search, i }) => {
                                 ))}
                             </select>
 
-                            <div className="md-form mb-4">
-                                <label data-error="wrong" data-success="right">Bidding Offer ($ per hr)</label>
-                                <input type="number" 
-                                pattern="[0-9]+" 
-                                maxLength="4" 
-                                name="bidding_offer"
-                                value={bidding_offer}
-                                onChange={e => onChange(e)}
-                                id={`bid${search.full_name}`} 
-                                className="form-control validate" 
-                                required="required" />
-                            </div>
+                            <label className="my-1 mr-2" htmlFor="modeOfPetXfer">How would you like to pay?</label>
+                            <select className="custom-select mt-2 mb-4 mr-sm-2" id="modeOfPetXfer" value={payment_mode} 
+                            onChange={e => setPaymentMode(e.target.value)} required="required">
+                                <option selected disabled>Choose...</option>
+                                <option value="1">Cash</option>
+                                <option value="2">Credit Card</option>
+                            </select>
 
                             <label className="my-1 mr-2" htmlFor="modeOfPetXfer">Mode of Pet Transfer</label>
                             <select className="custom-select mt-2 mb-4 mr-sm-2" id="modeOfPetXfer" value={transfer_mode} 

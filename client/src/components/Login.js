@@ -10,6 +10,8 @@ const Login = ({ setAuth }) => {
         password: ""
     })
 
+    const [acc_type, setAcctype] = useState("petowner");
+
     const {email, password} = inputs;
 
     const onChange = (e) => {
@@ -19,7 +21,7 @@ const Login = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault()
         try {
-            const body = {email, password}
+            const body = {email, password, acc_type}
             const response = await fetch("http://localhost:5000/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
@@ -62,12 +64,20 @@ const Login = ({ setAuth }) => {
                         </div>
                     </div>
                     
-                
+
                     <div className="col-sm">
                         <div className="auth-wrapper"> 
                             <div className="auth-inner">
                                 <h1 className="text-center my-5">Login</h1>
                                 <form onSubmit={onSubmitForm}>
+                                <div className="form-group">
+                                    <label>What are you logging in as?</label>
+                                    <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
+                                        <option value="petowner">Pet Owner</option>
+                                        <option value="caretaker">Caretaker</option>
+                                        <option value="admin">PCSAdmin</option>
+                                    </select>
+                                </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
                                     <input type="email" 
