@@ -96,9 +96,10 @@ app.get("/pcsline", async (req, res) => {
     try {
         const year = req.query.year
         const numJobsPerMonth = await pool.query(
-            `SELECT employment_type, substring(duration, 1, 7) startYearMonth, COUNT(*)
+            `SELECT employment_type, to_char(duration_from, 'YYYY-MM') startYearMonth, COUNT(*)
                 FROM transactions_details
-                WHERE duration LIKE '${year}-%'
+                WHERE duration_from >= '${year + '-01-01'}'
+		        AND duration_from < '${parseInt(year) + 1 + '-01-01'}'
                 GROUP BY (employment_type, startYearMonth)`
         )
         res.json(numJobsPerMonth.rows)
@@ -111,10 +112,16 @@ app.get("/pcsline", async (req, res) => {
 app.get("/pcspie", async (req, res) => {
     try {
         const startYearMonth = req.query.duration
+        const year = startYearMonth.split('-')[0]
+        const month = startYearMonth.split('-')[1]
+        const nextMonth = parseInt(month) + 1;
+        const firstDayOfMonth = year + '-' + month + '-1'
+        const firstDayOfNextMonth = year + '-' + nextMonth + '-1'
         const numJobs = await pool.query(
             `SELECT employment_type, COUNT(*)
                 FROM transactions_details 
-                WHERE duration LIKE '${startYearMonth}-%'
+                WHERE duration_from >= '${firstDayOfMonth}'
+                AND duration_from < '${firstDayOfNextMonth}'
                 AND t_status >= 3
                 GROUP BY employment_type`
         )

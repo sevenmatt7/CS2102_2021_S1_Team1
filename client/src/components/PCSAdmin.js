@@ -304,8 +304,8 @@ const PCSAdmin = () => {
               <div className="col-md-8">
                 <div className="card">
                   <div className="card-header ">
-                    <h4 className="card-title">Number of jobs this year</h4>
-                    <p className="card-category">2020</p>
+                    <h4 className="card-title">Total Number of Jobs</h4>
+                    <p className="card-category">Year: {yearDisplayed}</p>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={lineState.data} type="Line" options={lineState.options} />
