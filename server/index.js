@@ -81,9 +81,9 @@ app.get("/contact", async (req, res) => {
         const enq_type = req.query.enq_type
         var query = ''
         if (enq_type === 'All') {
-            query = "SELECT * FROM enquiries"
+            query = "SELECT * FROM enquiries WHERE answer IS NOT NULL"
         } else {
-            query = `SELECT * FROM enquiries WHERE enq_type = '${enq_type}'`
+            query = `SELECT * FROM enquiries WHERE enq_type = '${enq_type}' AND answer IS NOT NULL`
         }
         const enquiries = await pool.query(query)
         res.json(enquiries.rows)
@@ -290,7 +290,7 @@ app.put("/editpet", async (req, res) => {
 //edit selected user details
 app.put("/edituser", async (req, res) => {
     try {
-        const {full_name, user_address, profile_pic_address } = req.body;
+        const { full_name, user_address, profile_pic_address } = req.body;
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email);
@@ -426,7 +426,7 @@ app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { service_avail_from, service_avail_to, employment_type, daily_price, pet_type } = req.body;
-        
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -463,7 +463,7 @@ app.post("/takeleave", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { apply_leave_from, apply_leave_to } = req.body;
-        
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -473,9 +473,9 @@ app.post("/takeleave", async (req, res) => {
 
 
         //make the old availability set to isavail = False
-        
+
         //need to insert new availabilities into the the offers_services_table
-        
+
         res.json(applyLeave.rows[0].check_for_leave);
 
     } catch (err) {
@@ -493,7 +493,7 @@ app.post("/takeleave", async (req, res) => {
 
     // //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
     // if (count_2_150_days >= 2) {
-        
+
     // } else {
     //     res.json("You cannot take leave during this period");
     //     //res.status(400).send("You cannot take leave during this period");
@@ -504,10 +504,10 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to, 
-                service_request_from, service_request_to, daily_price, transfer_mode, 
-                selected_pet, payment_mode } = req.body;
-        
+        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to,
+            service_request_from, service_request_to, daily_price, transfer_mode,
+            selected_pet, payment_mode } = req.body;
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -517,9 +517,9 @@ app.post("/submitbid", async (req, res) => {
             pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
             duration_to, service_avail_from, service_avail_to) \
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, payment_mode, 
-            daily_price, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
-            parseDate(avail_to)]);
+            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, payment_mode,
+                daily_price, transfer_mode, service_request_from, service_request_to, parseDate(avail_from),
+                parseDate(avail_to)]);
 
         res.json(newService.rows[0]);
 
