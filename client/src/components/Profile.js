@@ -53,7 +53,7 @@ const Profile = ({ setAuth }) => {
           <div className="row">
             <div className="col-md-4">
               <div className="profile-img mb-5">
-                <img src={profile_pic_URL} alt="You do not have a profile picture!" />
+                <img src={profile_pic_URL} alt="Your profile picture goes here!" />
               </div>
             </div>
             <div className="col-md-6">

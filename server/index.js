@@ -182,7 +182,7 @@ app.put("/pcsanswer", async (req, res) => {
 //get all caretaker searches
 app.get("/caretakers", async (req, res) => {
     try {
-        const searches = await pool.query("SELECT DISTINCT full_name, user_address, \
+        const searches = await pool.query("SELECT DISTINCT full_name, user_address, profile_pic_address,\
                                             avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
                                             type_pref, service_avail_from, service_avail_to, daily_price \
                                             FROM Offers_services \
@@ -365,7 +365,7 @@ app.get("/transactions", async (req, res) => {
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
     try {
-        var sql = "SELECT DISTINCT full_name, user_address, \
+        var sql = "SELECT DISTINCT full_name, user_address, profile_pic_address \
         avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
         type_pref, service_avail, daily_price \
         FROM Offers_services \

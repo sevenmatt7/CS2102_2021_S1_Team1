@@ -168,11 +168,11 @@ const Sitters = ({ setAuth }) => {
           <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
             <div className="row no-gutters">
               <div className="col-md-4">
-                <img src={imposter} className="card-img" alt="..." />
+              <img src={search.profile_pic_address} className="card-img" alt="Your profile picture!" />
               </div>
               <div className="col-md-8">
                 <div className="card-body">
-                  <h5 className="card-title">{search.full_name}</h5>
+                  <h5 className="card-title mx-2">{search.full_name}</h5>
                   <p className="card-text" >Address: {search.user_address}</p>
                   <p className="card-text">Employment Type: {search.employment_type}</p>
                   <p className="card-text">Available: { `${new Date(search.service_avail_from).toDateString()} TO ${new Date(search.service_avail_to).toDateString()}` }</p>
