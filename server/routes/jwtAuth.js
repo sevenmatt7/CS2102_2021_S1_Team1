@@ -12,7 +12,9 @@ router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
         let { name, email, password, address, acc_type, emp_type } = req.body;
-        let assigned_price;
+        let assigned_result;
+        let base_price;
+        const default_profile_pic = 'https://i.ibb.co/RYdWRxv/default-pic.png';
 
         //step 2: check if user exists (throw error)
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -28,25 +30,26 @@ router.post("/register", validInfo, async (req, res) => {
 
         //step 4: enter new user into database
         const newUser = await pool.query(
-            "INSERT INTO Users (full_name, email, user_password, user_address) VALUES ($1, $2, $3, $4) RETURNING *",
-            [name, email, encryptedPassword, address]);
+            "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [name, email, encryptedPassword, default_profile_pic, address]);
 
         //insert user into respective account table
         if (acc_type === "petowner") {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
-            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
+            assigned_result = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
         } else if (acc_type === "both") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
-            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
+            assigned_result = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
             acc_type = 'caretaker';
         }
         
         
         //insert into offers_services table if is a full-time caretaker (default entire year period)
-        let base_price = assigned_price.rows[0].assign_to_admin;
+        if (acc_type === 'caretaker' || acc_type === 'both')
+            base_price = assigned_result.rows[0].assign_to_admin;
         const today = new Date();
         const yyyy = today.getFullYear(); //in yyyy format
         const year = yyyy.toString();
@@ -71,7 +74,8 @@ router.post("/register", validInfo, async (req, res) => {
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("A server error has been encountered");
+        res.status(406)
+        res.json(err.message);
     }
 });
 
