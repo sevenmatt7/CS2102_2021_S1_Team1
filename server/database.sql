@@ -100,6 +100,7 @@ CREATE TABLE Transactions_Details (
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
 	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
 	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
+	CHECK (caretaker_email != owner_email),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
 	REFERENCES Offers_Services(caretaker_email, type_pref, service_avail_from, service_avail_to)
