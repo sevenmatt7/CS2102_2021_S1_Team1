@@ -60,16 +60,24 @@ const PCSAdmin = () => {
 
   const changeBasePrice = async (e) => {
     try {
-        const body = { baseprice };
-        const response = await fetch("http://localhost:5000/admin/changeprice", {
+        console.log(baseprice)
+        if (baseprice === undefined) {
+          toast.error("Please enter in a valid base price!")
+        } else {
+          const body = { baseprice };
+          const response = await fetch("http://localhost:5000/admin/changeprice", {
             method: "PUT",
             headers: { "Content-Type": "application/json",
                         token: localStorage.token },
             body: JSON.stringify(body)
-        });
+          });
         
-        const submittedData = await response.json();
-        toast.success("You have changed the base price!");
+          const submittedData = await response.json();
+        
+          window.location.reload();
+          toast.success("You have changed the base price to $" + submittedData.base_price);
+        }
+        
     } catch (err) {
         console.error(err.message);
     }
@@ -293,6 +301,7 @@ const PCSAdmin = () => {
                     <div className="input-group mb-3">
                       
                       <input type="text"
+                       pattern="[0-9]*"
                        name="baseprice"
                        placeholder="Enter base price here to change"
                        className="form-control"

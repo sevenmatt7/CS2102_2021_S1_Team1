@@ -38,8 +38,8 @@ function parseDate(raw_date) {
         }
     }
 
-    date_string = new Date(raw_date).toDateString();
-    date_tokens = date_string.split(" ");
+    let date_string = new Date(raw_date).toDateString();
+    let date_tokens = date_string.split(" ");
     return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
 }
 
@@ -466,7 +466,7 @@ app.post("/takeleave", async (req, res) => {
 
 
         //make the old availability set to isavail = False
-        
+
         //need to insert new availabilities into the the offers_services_table
         
         res.json(applyLeave.rows[0].check_for_leave);

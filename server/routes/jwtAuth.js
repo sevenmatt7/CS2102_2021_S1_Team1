@@ -32,6 +32,21 @@ router.post("/register", validInfo, async (req, res) => {
         const newUser = await pool.query(
             "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [name, email, encryptedPassword, default_profile_pic, address]);
+        
+
+        
+        // This block of code executes when there are no admins registered in the system
+        // It will register an admin with email admin@mail.com with password 123
+        const check_for_admin = await pool.query("SELECT * FROM PCSAdmins");
+        if (!check_for_admin.rows.length) {
+            let adminSalt = await bcrypt.genSalt(saltRound);
+            let adminPassword = await bcrypt.hash('123', adminSalt);
+            pool.query(
+                "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ('Admin', 'admin@mail.com', $1, $2, ' ') RETURNING *",
+                [adminPassword, default_profile_pic]);
+            pool.query("INSERT INTO PCSAdmins (admin_email) VALUES ('admin@mail.com')")
+        }
+
 
         //insert user into respective account table
         if (acc_type === "petowner") {
