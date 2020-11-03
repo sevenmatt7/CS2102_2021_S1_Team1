@@ -4,10 +4,47 @@ import { toast } from "react-toastify";
 
 const TakeLeave = ({ setAuth }) => {
 
+    // helper function to parse date
+    function parseDate(raw_date) {
+        function parseMonth(month) {
+            switch (month) {
+                case 'Jan':
+                    return '01';
+                case 'Feb':
+                    return '02';
+                case 'Mar':
+                    return '03';
+                case 'Apr':
+                    return '04';
+                case 'May':
+                    return '05';
+                case 'Jun':
+                    return '06';
+                case 'Jul':
+                    return '07';
+                case 'Aug':
+                    return '08';
+                case 'Sep':
+                    return '09';
+                case 'Oct':
+                    return '10';
+                case 'Nov':
+                    return '11';
+                case 'Dec':
+                    return '12';
+            }
+        }
+    
+        let date_string = new Date(raw_date).toDateString();
+        let date_tokens = date_string.split(" ");
+        return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
+    }
+
     const employment_type = localStorage.emp_type;
     let service_avail_dates = "";
-    const [leaves, checkLeaves] = useState([]);
+    const [workdays, setWorkdays] = useState([]);
     const [daysOfLeaves, setDaysOfLeaves] = useState(65)
+
 
     const [inputs, setInputs] = useState({
         apply_leave_from: "",
@@ -51,40 +88,33 @@ const TakeLeave = ({ setAuth }) => {
         }
     }
 
-    // Get the current working period from Database
-    // const getLeaves = async () => {
-    //     try {
-    //         const response = await fetch("http://localhost:5000/checkleave", {
-    //             method: "GET",
-    //             headers: { token: localStorage.token }
-    //         });
-    //         const jsonData = await response.json();
-    //         checkLeaves(jsonData);
-    //     } catch (error) {
-    //         console.log(error.message)
-    //     }
-    // };
+    // Get the current working periods from Database
+    const getWorkdays = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/checkworkdays", {
+                method: "GET",
+                headers: { token: localStorage.token }
+            });
+            const jsonData = await response.json();
+            setWorkdays(jsonData);
+        } catch (error) {
+            console.log(error.message)
+        }
+    };
 
-    // Get updates of current leave quota to display to caretaker
-    var date_diff_indays = function (date1, date2) {
-        let dt1 = new Date(date1);
-        let dt2 = new Date(date2);
-        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
-    }
-
-    let daysInAYear = 365;
-    leaves.map(data => {
-        service_avail_dates += '/';
-        service_avail_dates += data.service_avail;
-        const splitDate = data.service_avail.split(',');
-        const differenceInDays = date_diff_indays(splitDate[0], splitDate[1]);
-        daysInAYear -= differenceInDays;
-    })
-    let daysRemaining = 65;
-    daysRemaining -= daysInAYear;
+    // let daysInAYear = 365;
+    // leaves.map(data => {
+    //     service_avail_dates += '/';
+    //     service_avail_dates += data.service_avail;
+    //     const splitDate = data.service_avail.split(',');
+    //     const differenceInDays = date_diff_indays(splitDate[0], splitDate[1]);
+    //     daysInAYear -= differenceInDays;
+    // })
+    // let daysRemaining = 65;
+    // daysRemaining -= daysInAYear;
 
     useEffect(() => {
-        // getLeaves();
+        getWorkdays();
     }, []);
 
     return (
@@ -100,13 +130,13 @@ const TakeLeave = ({ setAuth }) => {
                                     which can be taken between working periods of 150 days.
                                 </p>
                                 <div>
-                                    {/* <p className="text-center"><u>Here are your current working periods:</u></p>
-                                    {leaves.map((leave, i) => (
+                                    <p className="text-center"><u>Here are your current working periods:</u></p>
+                                    {workdays.map((shift, i) => (
                                         <div key={i} >
-                                            <p className="text-center">{(leave.service_avail).replace(",", " to ") + " --- [" + date_diff_indays(leave.service_avail.split(',')[0], leave.service_avail.split(',')[1]) + " Days]"}</p>
+                                            <p className="text-center">{parseDate(shift.service_avail_from) + " to " + parseDate(shift.service_avail_to) + " --- " + shift.type_pref}</p>
                                         </div>
                                     ))}
-                                    <p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p> */}
+                                    {/*<p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p> */}
                                 </div>
                                 <form onSubmit={onSubmitForm}>
                                     <div className="row">
@@ -128,7 +158,7 @@ const TakeLeave = ({ setAuth }) => {
                                                 value={apply_leave_to}
                                                 onChange={e => onChange(e)} />
                                         </div>
-                                        <div className="form-group">
+                                        <div className="col form-group">
                                             <label>Employment Type</label>
                                             <input type="text"
                                                 name="employment_type"

@@ -438,18 +438,18 @@ app.post("/setavail", async (req, res) => {
     }
 });
 
-// //check working days for fulltime care takers
-// app.get("/checkleave", async (req, res) => {
-//     try {
-//         const jwtToken = req.header("token")
-//         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-//         const checkLeaves = await pool.query(`SELECT service_avail FROM Offers_services\
-//                    WHERE caretaker_email = '${user_email}';`);
-//         res.json(checkLeaves.rows);
-//     } catch (err) {
-//         console.error(err.message);
-//     }
-// });
+//check working days for fulltime care takers
+app.get("/checkworkdays", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        const checkLeaves = await pool.query(`SELECT service_avail_from, service_avail_to, type_pref FROM Offers_services\
+                   WHERE caretaker_email = '${user_email}' AND is_avail = 't';`);
+        res.json(checkLeaves.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 //take leave for fulltime care takers
 app.post("/takeleave", async (req, res) => {
@@ -474,14 +474,7 @@ app.post("/takeleave", async (req, res) => {
         const pet_types = await pool.query("SELECT type_pref FROM Offers_services WHERE caretaker_email = $1 \
                                             AND is_avail = 't'", [user_email]);
         
-        // console.log(pet_types.rows);
-        // const types = pet_types.rows;
-        // types.forEach(c)
-        // function c(row, user_email, ) {
-        //     console.log(row['type_pref'])
-        // }
-        console.log(pet_types.rows.length)
-        // parse the result of query from database
+        // parse the result of the check_for_leave function from database
         const raw_leave_details = applyLeave.rows[0]['check_for_leave']
         const leave_details = raw_leave_details.slice(raw_leave_details.indexOf('(') + 1, raw_leave_details.indexOf(')')).split(',')
         const avail_from1 = leave_details[0];
@@ -490,20 +483,18 @@ app.post("/takeleave", async (req, res) => {
         const avail_to2 = leave_details[3];
         const leave_duration = leave_details[4];
 
-        
+        // used to debug
         console.log("start avail 1: " + avail_from1)
         console.log("start avail end 1: " + avail_to1)
         console.log("start avail 2: " + avail_from2)
         console.log("start avail end 2: " + avail_to2)
         console.log(leave_duration);
         
-        //make the old availability set to isavail = 'False'
+        //make the old availability set to is_avail = 'False'
         pool.query("UPDATE Offers_services SET is_avail = 'f' \
                     WHERE caretaker_email = $1 AND service_avail_from <= $2 AND \
                     service_avail_to >= $3 AND is_avail = 't'",
                     [user_email, apply_leave_from, apply_leave_to]);
-
-        
 
         // insert new availabilities for every pet type that the caretaker takes care of
         if (avail_from1 === avail_to1 & avail_from2 === avail_to1) {
@@ -542,21 +533,6 @@ app.post("/takeleave", async (req, res) => {
         res.status(406);
         res.json(err.message);
     }
-    // //step 1: destructure req.body to get details
-    // const { service_avail, employment_type } = req.body;
-
-    // // get user_email from jwt token
-    // const jwtToken = req.header("token")
-    // const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-    // console.log(user_email);
-
-    // //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
-    // if (count_2_150_days >= 2) {
-        
-    // } else {
-    //     res.json("You cannot take leave during this period");
-    //     //res.status(400).send("You cannot take leave during this period");
-    // }
 });
 
 //petowner to submit bid for service
