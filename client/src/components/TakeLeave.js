@@ -32,9 +32,9 @@ const TakeLeave = ({ setAuth }) => {
                 },
                 body: JSON.stringify(body)
             });
-            
+
             const parseResponse = await response.json();
-            if (parseResponse == "You cannot take leave during this period") {
+            if (parseResponse == "You cannot take leave during this period!") {
                 toast.error(parseResponse);
             } else {
                 // Show success message on front end

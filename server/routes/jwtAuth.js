@@ -33,8 +33,6 @@ router.post("/register", validInfo, async (req, res) => {
             "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [name, email, encryptedPassword, default_profile_pic, address]);
         
-
-        
         // This block of code executes when there are no admins registered in the system
         // It will register an admin with email admin@mail.com with password 123
         const check_for_admin = await pool.query("SELECT * FROM PCSAdmins");
@@ -47,7 +45,7 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO PCSAdmins (admin_email) VALUES ('admin@mail.com')")
         }
 
-
+        
         //insert user into respective account table
         if (acc_type === "petowner") {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
@@ -63,14 +61,13 @@ router.post("/register", validInfo, async (req, res) => {
         
         
         //insert into offers_services table if is a full-time caretaker (default entire year period)
-        if (acc_type === 'caretaker' || acc_type === 'both')
-            base_price = assigned_result.rows[0].assign_to_admin;
         const today = new Date();
         const yyyy = today.getFullYear(); //in yyyy format
         const year = yyyy.toString();
         const default_start_date = year + "-01-01";
         const default_end_date = year + "-12-31";
-        if (emp_type === "fulltime") {
+        if (acc_type === 'caretaker' && emp_type === "fulltime") {
+            base_price = assigned_result.rows[0]['assign_to_admin'];
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
             VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'dog', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \

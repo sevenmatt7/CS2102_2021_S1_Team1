@@ -464,12 +464,78 @@ app.post("/takeleave", async (req, res) => {
         const applyLeave = await pool.query("SELECT check_for_leave($1, $2, $3)",
             [user_email, apply_leave_from, apply_leave_to]);
 
-
-        //make the old availability set to isavail = False
-
-        //need to insert new availabilities into the the offers_services_table
+        // get base_price and types of pets the full time caretaker takes care of
+        const price_result = await pool.query("SELECT daily_price FROM Offers_services \
+                                            WHERE caretaker_email = $1 AND is_avail = 't' \
+                                            LIMIT 1", [user_email]);
         
-        res.json(applyLeave.rows[0].check_for_leave);
+        const base_price = price_result.rows[0]['daily_price'];
+        
+        const pet_types = await pool.query("SELECT type_pref FROM Offers_services WHERE caretaker_email = $1 \
+                                            AND is_avail = 't'", [user_email]);
+        
+        // console.log(pet_types.rows);
+        // const types = pet_types.rows;
+        // types.forEach(c)
+        // function c(row, user_email, ) {
+        //     console.log(row['type_pref'])
+        // }
+        console.log(pet_types.rows.length)
+        // parse the result of query from database
+        const raw_leave_details = applyLeave.rows[0]['check_for_leave']
+        const leave_details = raw_leave_details.slice(raw_leave_details.indexOf('(') + 1, raw_leave_details.indexOf(')')).split(',')
+        const avail_from1 = leave_details[0];
+        const avail_to1 = leave_details[1];
+        const avail_from2 = leave_details[2];
+        const avail_to2 = leave_details[3];
+        const leave_duration = leave_details[4];
+
+        
+        console.log("start avail 1: " + avail_from1)
+        console.log("start avail end 1: " + avail_to1)
+        console.log("start avail 2: " + avail_from2)
+        console.log("start avail end 2: " + avail_to2)
+        console.log(leave_duration);
+        
+        //make the old availability set to isavail = 'False'
+        pool.query("UPDATE Offers_services SET is_avail = 'f' \
+                    WHERE caretaker_email = $1 AND service_avail_from <= $2 AND \
+                    service_avail_to >= $3 AND is_avail = 't'",
+                    [user_email, apply_leave_from, apply_leave_to]);
+
+        
+
+        // insert new availabilities for every pet type that the caretaker takes care of
+        if (avail_from1 === avail_to1 & avail_from2 === avail_to1) {
+            // case 2: leave ends the start of the availability period and only lasts one day, insert only the second availability
+            // case 3: leave starts at the start of the availability period and lasts multiple days, insert only the second availability
+            for (i = 0; i < pet_types.rows.length; i++) {
+                pool.query(
+                    "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+                    [user_email, "fulltime", avail_from2, avail_to2, pet_types.rows[i]['type_pref'], base_price]);
+            }
+            
+        } else if (avail_from2 == avail_to2 && avail_from2 === avail_to1) {
+            // case 4: leave ends at the end of the availability period and only lasts one day, need to check whether it spills over to the next year
+            // case 5: leave ends at the end of the availability period and lasts multiple days, only insert the first availability
+            for (i = 0; i < pet_types.rows.length; i++) {
+                pool.query(
+                    "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+                    [user_email, "fulltime", avail_from1, avail_to1, pet_types.rows[i]['type_pref'], base_price]);
+            }
+        } else {
+            // case 1: leave is in the middle of the availability period (the easiest), just insert two availabilities
+            for (i = 0; i < pet_types.rows.length; i++) {
+                pool.query(
+                    "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+                    VALUES ($1, $2, $3, $4, $5, $6), ($1, $2, $7, $8, $5, $6)",
+                    [user_email, "fulltime", avail_from1, avail_to1, pet_types.rows[i]['type_pref'], base_price, avail_from2, avail_to2]);
+            }
+        }
+        
+        res.json("Done");
 
     } catch (err) {
         console.error(err.message);
