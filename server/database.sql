@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS Owns_Pets CASCADE;
 DROP TABLE IF EXISTS Offers_Services CASCADE;
 DROP TABLE IF EXISTS Transactions_Details CASCADE;
 DROP TABLE IF EXISTS Enquiries CASCADE;
-DROP FUNCTION IF EXISTS update_caretaker_rating CASCADE;
+DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 
 CREATE TABLE Users (
 	email VARCHAR,
@@ -114,14 +114,11 @@ CREATE TABLE Enquiries (
 	PRIMARY KEY (user_email, enq_message)
 );
 
-
-
 -----------------------------------------------------------------------------------------------------------------------
 -- SQL TRIGGERS IMPLEMENTED
 -----------------------------------------------------------------------------------------------------------------------
 
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
-DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
 	DECLARE 

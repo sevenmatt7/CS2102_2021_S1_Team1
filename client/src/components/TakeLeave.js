@@ -139,8 +139,8 @@ const TakeLeave = ({ setAuth }) => {
                                     {/*<p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p> */}
                                 </div>
                                 <form onSubmit={onSubmitForm}>
-                                    <div className="row">
-                                        <div className="col form-group">
+                                   
+                                        <div className="form-group">
                                             <label>Start date</label>
                                             <input type="date"
                                                 name="apply_leave_from"
@@ -149,7 +149,7 @@ const TakeLeave = ({ setAuth }) => {
                                                 value={apply_leave_from}
                                                 onChange={e => onChange(e)} />
                                         </div>
-                                        <div className="col form-group">
+                                        <div className="form-group">
                                             <label>End date</label>
                                             <input type="date"
                                                 name="apply_leave_to"
@@ -158,7 +158,7 @@ const TakeLeave = ({ setAuth }) => {
                                                 value={apply_leave_to}
                                                 onChange={e => onChange(e)} />
                                         </div>
-                                        <div className="col form-group">
+                                        <div className="form-group ">
                                             <label>Employment Type</label>
                                             <input type="text"
                                                 name="employment_type"
@@ -167,8 +167,8 @@ const TakeLeave = ({ setAuth }) => {
                                                 value={employment_type === "parttime" ? "Part-time" : "Full-time"}
                                             />
                                         </div>
-                                    </div>
-                                    <button className="btn btn-success btn-block">Submit</button>
+                                    
+                                    <button className="btn btn-success btn-block mt-5">Submit</button>
                                 </form>
                             </div>
                         </div>
