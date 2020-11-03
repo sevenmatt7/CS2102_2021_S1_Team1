@@ -100,13 +100,13 @@ const TakeLeave = ({ setAuth }) => {
                                     which can be taken between working periods of 150 days.
                                 </p>
                                 <div>
-                                    <p className="text-center"><u>Here are your current working periods:</u></p>
+                                    {/* <p className="text-center"><u>Here are your current working periods:</u></p>
                                     {leaves.map((leave, i) => (
                                         <div key={i} >
                                             <p className="text-center">{(leave.service_avail).replace(",", " to ") + " --- [" + date_diff_indays(leave.service_avail.split(',')[0], leave.service_avail.split(',')[1]) + " Days]"}</p>
                                         </div>
                                     ))}
-                                    <p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p>
+                                    <p className="text-center">You have <b>{daysRemaining}</b> days of leaves remaining this year.</p> */}
                                 </div>
                                 <form onSubmit={onSubmitForm}>
                                     <div className="row">
