@@ -80,13 +80,6 @@ CREATE TABLE Offers_Services (
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
--- when caretaker take leave 
--- avail 10/29 to 10/29
--- txns 10/29 to 11/05
--- leave 11/06 to 11/20 15 days leave
--- -> avail change 10/29 to 11/05 and 11/21 to 10/29
--- -> txns, search for caretaker email, t_status = 3 or 4 or 5, service_avail_from and to change to 10/29 to 11/05
-
 -- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
@@ -260,44 +253,6 @@ CREATE TRIGGER update_fulltime_price
 	AFTER UPDATE OF avg_rating ON Caretakers
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
-
--- Trigger to check if the full time caretaker can take leave 
-DROP FUNCTION IF EXISTS take_leave_for_fulltime() CASCADE;
-CREATE OR REPLACE FUNCTION take_leave_for_fulltime()
-RETURNS TRIGGER AS $$ 
-	DECLARE 
-		emp_type VARCHAR := NEW.employment_type;
-		rating NUMERIC;
-		new_price INTEGER := 50;
-	BEGIN
-		
-		SELECT avg_rating INTO rating
-		FROM Caretakers
-		WHERE caretaker_email = NEW.caretaker_email;
-		IF (emp_type = 'fulltime') THEN
-			IF (rating > 4.2 AND rating < 4.4 ) THEN
-				new_price := 52;
-			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
-				new_price := 55;
-			ELSIF (rating > 4.4 AND rating < 4.6 ) THEN
-				new_price := 59;
-			ELSIF (rating > 4.6 AND rating < 4.8 ) THEN
-				new_price := 64;
-			ELSIF (rating > 4.8 ) THEN
-				new_price := 70;
-			END IF;
-		END IF;
-		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
-		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
-		RETURN NEW;
- 	END; 
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER take_leave_for_fulltime
-	BEFORE UPDATE OF is_avail ON Caretakers
-	FOR EACH ROW
-	EXECUTE PROCEDURE take_leave_for_fulltime();
-
 
 -- function to check if full time caretaker can take leave
 DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
