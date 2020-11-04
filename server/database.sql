@@ -398,7 +398,6 @@ RETURNS TABLE (new_service_avail_from1 DATE,
  	END; 
 $$ LANGUAGE plpgsql;
 
-<<<<<<< HEAD
 -- Returns start day of month
 DROP FUNCTION IF EXISTS start_of_month(DATE);
 CREATE OR REPLACE FUNCTION start_of_month(DATE)
@@ -596,7 +595,6 @@ RETURNS TABLE (caretaker_email VARCHAR,
 		END LOOP; 
  	END; 
 $$ LANGUAGE plpgsql;
-=======
 -- function to get underperforming caretakers (rating less than 2)
 DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 DROP TYPE IF EXISTS return_type;
@@ -762,4 +760,3 @@ $$ LANGUAGE plpgsql;
 -- 		END IF;
 --  	END; 
 -- $$ LANGUAGE plpgsql;
->>>>>>> fee0529acbcf87f3226ebf086ced8ca8f9fae9e1
