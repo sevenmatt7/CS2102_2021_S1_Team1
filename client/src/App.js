@@ -51,37 +51,37 @@ function App() {
 
       <Router>
         <Switch>
-          <Route exact path="/" render={props =>
+          <Route exact path="/c" render={props =>
             (<LandingPage {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/login" render={props => !isAuthenticated ?
-            (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+          <Route exact path="/c/login" render={props => !isAuthenticated ?
+            (<Login {...props} setAuth={setAuth} />) : (<Redirect to="/c/home" />)} />
 
-          <Route exact path="/register" render={props => !isAuthenticated ?
-            (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/home" />)} />
+          <Route exact path="/c/register" render={props => !isAuthenticated ?
+            (<Register {...props} setAuth={setAuth} />) : (<Redirect to="/c/home" />)} />
 
-          <Route exact path="/pcsenquiries" render={(props) => !isAuthenticated ?
+          <Route exact path="/c/pcsenquiries" render={(props) => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<PCSEnquiries {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/contact" render={props => !isAuthenticated ?
+          <Route exact path="/c/contact" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<ContactUs {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/registerpet" render={props => !isAuthenticated ?
+          <Route exact path="/c/registerpet" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<RegisterPet {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/takeleave" render={props => !isAuthenticated ?
+          <Route exact path="/c/takeleave" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<TakeLeave {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/setavail" render={props => !isAuthenticated ?
+          <Route exact path="/c/setavail" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<SetAvail {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/profile" render={props => !isAuthenticated ?
+          <Route exact path="/c/profile" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<Profile {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/home" render={props => isAuthenticated ?
+          <Route exact path="/c/home" render={props => isAuthenticated ?
             (<Homepage {...props} setAuth={setAuth} />) : (<LandingPage {...props} setAuth={setAuth} />)} />
 
-          <Route exact path="/sitters" render={props => !isAuthenticated ?
+          <Route exact path="/c/sitters" render={props => !isAuthenticated ?
             (<Login {...props} setAuth={setAuth} />) : (<Sitters {...props} setAuth={setAuth} />)} />
 
 

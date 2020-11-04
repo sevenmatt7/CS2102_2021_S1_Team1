@@ -39,18 +39,18 @@ export default function NavBar({ isAuth, setAuth }) {
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="mr-auto">
-                            {acc_type !== "caretaker" && <Nav.Link href="/sitters">Caretakers</Nav.Link>}
+                            {acc_type !== "caretaker" && <Nav.Link href="/c/sitters">Caretakers</Nav.Link>}
                             <Nav.Link href="/contact">Contact Us</Nav.Link>
-                            {acc_type === "caretaker" && emp_type === "parttime" && <Nav.Link href="/setavail">Indicate availabilites</Nav.Link>}
-                            {acc_type === "caretaker" && emp_type === "fulltime" && <Nav.Link href="/takeleave">Take Leave</Nav.Link>}
-                            {acc_type === "petowner" && <Nav.Link href="/registerpet">Pet registration</Nav.Link>}
-                            {acc_type === "admin" && <Nav.Link href="/pcsenquiries">Enquiries</Nav.Link>}
+                            {acc_type === "caretaker" && emp_type === "parttime" && <Nav.Link href="/c/setavail">Indicate availabilites</Nav.Link>}
+                            {acc_type === "caretaker" && emp_type === "fulltime" && <Nav.Link href="/c/takeleave">Take Leave</Nav.Link>}
+                            {acc_type === "petowner" && <Nav.Link href="/c/registerpet">Pet registration</Nav.Link>}
+                            {acc_type === "admin" && <Nav.Link href="/c/pcsenquiries">Enquiries</Nav.Link>}
                         </Nav>
                         <Nav>
                             {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}
-                            {!isAuth && <Nav.Link eventKey={2} href="/register">Register</Nav.Link>}
-                            {isAuth && <Nav.Link eventKey={3} href="/" onClick={e => logout(e)}>Logout</Nav.Link>}
-                            {isAuth && <Nav.Link eventKey={4} href="/profile">My Profile</Nav.Link>}
+                            {!isAuth && <Nav.Link eventKey={2} href="/c/register">Register</Nav.Link>}
+                            {isAuth && <Nav.Link eventKey={3} href="/c" onClick={e => logout(e)}>Logout</Nav.Link>}
+                            {isAuth && <Nav.Link eventKey={4} href="/c/profile">My Profile</Nav.Link>}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

@@ -105,7 +105,7 @@ const Login = ({ setAuth }) => {
                                 <button className="btn btn-success btn-block">Submit</button>
                                 </form>
                                 <p className="forgot-password text-right">
-                                    New User? Click here to <Link to="/register">Register</Link>
+                                    New User? Click here to <Link to="/c/register">Register</Link>
                                 </p>
                             </div>
                         </div>
