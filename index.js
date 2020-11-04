@@ -14,9 +14,9 @@ app.use(express.json());
 //process.env.NODE_ENV => production when deployed on heroku
 if (process.env.NODE_ENV === "production") {
     // when on heroku, it will just serve the pages generated, found in client/static
-    app.use(express.static(path.join(__dirname, "client/static")))
+    app.use(express.static(path.join(__dirname, "client/build")))
     app.get('/*', function(req, res) {
-        return res.sendFile(path.resolve( __dirname, 'client/static' , 'index.html'));
+        return res.sendFile(path.resolve( __dirname, 'client/build' , 'index.html'));
     });
 }
 
