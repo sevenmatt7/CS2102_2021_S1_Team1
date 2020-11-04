@@ -231,7 +231,7 @@ app.get("/pets", async (req, res) => {
     try {
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email)
+        // console.log(user_email)
         const searches = await pool.query(`SELECT DISTINCT owner_email, pet_name, \
                                             gender, special_req, pet_type \
                                             FROM Owns_Pets \
@@ -301,7 +301,7 @@ app.put("/edituser", async (req, res) => {
         const { full_name, user_address, profile_pic_address } = req.body;
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email);
+        // console.log(user_email);
 
         const editedUser = await pool.query(
             "UPDATE Users SET (full_name, user_address, profile_pic_address) = ($1, $2, $3) \
@@ -319,7 +319,7 @@ app.get("/bids", async (req, res) => {
     try {
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(caretaker_email)
+        // console.log(caretaker_email)
         const searches = await pool.query(`SELECT users.full_name, users.user_address, Petowner_bids.owner_email, Petowner_bids.selected_pet, \
                                             gender, special_req, service_request_period, offer_price, transfer_mode, Petowner_bids.pet_type \
                                             FROM Petowner_bids LEFT JOIN Owns_pets  \
@@ -339,7 +339,7 @@ app.get("/transactions", async (req, res) => {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const acc_type = req.header("acc_type");
-        console.log(user_email)
+        // console.log(user_email)
         let searches;
         if (acc_type === "petowner") {
             var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
@@ -376,6 +376,48 @@ app.get("/transactions", async (req, res) => {
         console.log(error.message)
     }
 });
+
+//get all transactions for caretaker or petowner
+app.get("/salary", async (req, res) => {
+    try {
+        let caretaker_email
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        } else {
+            caretaker_email = req.query.caretaker_email
+        }
+        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
+                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
+                                             ORDER BY duration_from", [caretaker_email]);
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+}); 4
+
+//get all transactions for caretaker or petowner
+app.get("/filtersalary", async (req, res) => {
+    try {
+        let caretaker_email;
+        let month = req.query.month;
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email;
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;;
+        } else {
+            caretaker_email = req.query.caretaker_email;
+        }
+
+        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
+                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
+                                             AND (EXTRACT(MONTH FROM duration_to)=$2 OR EXTRACT(MONTH FROM duration_from)=$3)\
+                                         ORDER BY duration_from", [caretaker_email, month, month]);
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
 
 
 //get all filtered searches
@@ -441,7 +483,7 @@ app.post("/setavail", async (req, res) => {
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email)
+        // console.log(user_email)
 
         const newService = await pool.query(
             "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
@@ -597,7 +639,7 @@ app.put("/changebid", async (req, res) => {
             WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 \
             AND duration_from = $5 AND duration_to = $6) RETURNING *" ,
             [status_update, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
-        console.log(req.body)
+        // console.log(req.body)
         res.json(txn.rows[0]);
 
     } catch (err) {

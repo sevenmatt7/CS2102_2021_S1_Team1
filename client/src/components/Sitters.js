@@ -93,20 +93,20 @@ const Sitters = ({ setAuth }) => {
   return (
     <Fragment>
 
-      <div class="card mx-auto">
-        <div class="card-body">
-          <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="emp_type">Employment Type</label >
-              <select id="emp_type" name="employment_type" class="form-control" value={filters.employment_type} onChange={(e) => onSelect(e)}>
+      <div className="card mx-auto">
+        <div className="card-body">
+          <div className="form-row">
+            <div className="form-group col-md-4">
+              <label htmlFor="emp_type">Employment Type</label >
+              <select id="emp_type" name="employment_type" className="form-control" value={filters.employment_type} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
                 <option value="fulltime">Full-Time</option>
                 <option value="parttime">Part-Time</option>
               </select>
             </div>
-            <div class="form-group col-md-4">
-              <label for="rating">Rating</label>
-              <select id="rating" name="avg_rating" class="form-control" value={filters.avg_rating} onChange={(e) => onSelect(e)}>
+            <div className="form-group col-md-4">
+              <label htmlFor="rating">Rating</label>
+              <select id="rating" name="avg_rating" className="form-control" value={filters.avg_rating} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
                 <option value="5">5</option>
                 <option value="4">4</option>
@@ -115,9 +115,9 @@ const Sitters = ({ setAuth }) => {
                 <option value="1">1</option>
               </select>
             </div>
-            <div class="form-group col-md-4">
-              <label for="inputPet">Pet</label>
-              <select id="inputPet" name="type_pref" class="form-control" value={filters.type_pref} onChange={(e) => onSelect(e)}>
+            <div className="form-group col-md-4">
+              <label htmlFor="inputPet">Pet</label>
+              <select id="inputPet" name="type_pref" className="form-control" value={filters.type_pref} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
                 <option value="dog">Dog</option>
                 <option value="cat">Cat</option>
@@ -127,9 +127,9 @@ const Sitters = ({ setAuth }) => {
               </select>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="from">From</label>
+          <div className="form-row">
+            <div className="form-group col-md-4">
+              <label htmlFor="from">From</label>
               <input type="date"
                 id="from"
                 name="start_date"
@@ -141,8 +141,8 @@ const Sitters = ({ setAuth }) => {
                 required="required"/>
             </div>
 
-            <div class="form-group col-md-4">
-              <label for="to">To</label>
+            <div className="form-group col-md-4">
+              <label htmlFor="to">To</label>
               <input type="date"
                 id="to"
                 name="end_date"
@@ -154,8 +154,8 @@ const Sitters = ({ setAuth }) => {
                 required="required"/>
             </div>
 
-            <div class="form-group col-md-4">
-              <label for="searchname">Search by name:</label>
+            <div className="form-group col-md-4">
+              <label htmlFor="searchname">Search by name:</label>
               <input className="form-control" name="form" type="text" placeholder="Enter name..." id="searchname"
                 aria-label="Search" value={filters.form} onChange={(e) => onSelect(e)} />
             </div>

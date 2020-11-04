@@ -115,7 +115,7 @@ const RequestService = ({ search, i }) => {
                             onChange={e => setPetTypes(e.target.value)} required="required">
                                 <option selected >Choose...</option>
                                 {petList.map((pet, i) => (
-                                    <option value={pet.pet_name}>{pet.pet_name}</option>
+                                    <option key={i} value={pet.pet_name}>{pet.pet_name}</option>
                                 ))}
                             </select>
 
