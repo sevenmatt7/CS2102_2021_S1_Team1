@@ -563,3 +563,51 @@ $$ LANGUAGE plpgsql;
 -- 		END IF;
 --  	END; 
 -- $$ LANGUAGE plpgsql;
+
+-- -- function to assign admin to user at registration
+-- DROP FUNCTION IF EXISTS determine_area (zipcode VARCHAR);
+-- CREATE OR REPLACE FUNCTION determine_area (zipcode VARCHAR)
+-- RETURNS VARCHAR AS $$ 
+-- 	DECLARE 
+-- 		assigned_admin VARCHAR;
+-- 		daily_price NUMERIC;
+-- 	BEGIN
+-- 		CASE 
+-- 		   	WHEN zipcode => 1 AND zipcode <= 6 THEN
+--               area =  'Raffles Place';
+-- 		   	WHEN zipcode >= 7 AND zipcode <= 8  THEN
+--               area =  'Tanjong Pagar';
+-- 		   	WHEN zipcode >= 9 AND zipcode <= 10  THEN
+--               area =  'Harbourfront';
+-- 			WHEN zipcode >= 11 AND zipcode <= 13 THEN
+--               area =  'Clementi';
+-- 			WHEN zipcode >= 14 AND zipcode <= 16 THEN
+--               area =  'Queenstown';
+-- 		   	WHEN zipcode >= 17 AND zipcode <= 19  THEN
+--               area =  'Beach Road';
+-- 		   	WHEN zipcode >= 20 AND zipcode <= 21  THEN
+--               area =  'Little India';
+-- 			WHEN zipcode >= 22 AND zipcode <= 27 THEN
+--               area =  'Orchard/Tanglin';
+-- 			WHEN zipcode >= 28 AND zipcode <= 30 THEN
+--               area =  'Novena';
+-- 		   	WHEN zipcode >= 31 AND zipcode <= 37  THEN
+--               area =  'Toa Payoh/Serangoon';
+-- 		   	WHEN zipcode >= 38 AND zipcode <= 45  THEN
+--               area =  'Geylang/Katong';
+-- 			WHEN zipcode >= 46 AND zipcode <= 48 THEN
+--               area =  'Bedok';
+-- 			WHEN zipcode >= 28 AND zipcode <= 30 THEN
+--               area =  'Novena';
+-- 		   	WHEN zipcode >= 50 AND zipcode <= 52  THEN
+--               area =  'Tampines';
+-- 		   	WHEN zipcode >= 38 AND zipcode <= 45  THEN
+--               area =  'Geylang/Katong';
+-- 			WHEN zipcode >= 46 AND zipcode <= 48 THEN
+--               area =  'Bedok';
+-- 		   ELSE
+-- 	    	  price_segment = 'Unspecified';
+-- 		   END CASE;
+-- 		RETURN 0;
+--  	END; 
+-- $$ LANGUAGE plpgsql;
