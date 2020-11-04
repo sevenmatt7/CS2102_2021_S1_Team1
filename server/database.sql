@@ -16,6 +16,7 @@ CREATE TABLE Users (
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
 	user_address VARCHAR,
+	is_deleted BOOLEAN DEFAULT FALSE;
 	PRIMARY KEY (email)
 );
 
@@ -63,6 +64,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
+	is_deleted BOOLEAN DEFAULT FALSE;
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
