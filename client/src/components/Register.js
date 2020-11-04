@@ -12,6 +12,35 @@ const Register = ({ setAuth }) => {
         address: ""
     });
 
+    // Set default button colors
+    const [buttonColors, setButtonColors] = useState({
+        dog: false,
+        cat: false,
+        fish: false,
+        rabbit: false,
+        bird: false,
+        reptile: false
+    });
+
+    // Set state to store final selected pets for type_pref
+    const [type_pref, setTypePref] = useState([]);
+
+    // To toggle button colors on click, and store selected type prefs in an array
+    function toggleBtn(key) {
+        let previousState = { ...buttonColors }
+        previousState[key] = !previousState[key]
+        setButtonColors(previousState)
+        const keys = Object.keys(previousState)
+        const values = Object.values(previousState)
+        let chosen = []
+        for (let i = 0; i < values.length; i++) {
+            if (values[i] === true) {
+                chosen.push(keys[i])
+            }
+        }
+        setTypePref(chosen)
+    }
+
     const [acc_type, setAcctype] = useState("petowner");
     const [emp_type, setEmployment] = useState("fulltime");
 
@@ -24,8 +53,7 @@ const Register = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-
-            const body = { name, email, password, address, acc_type, emp_type }
+            const body = { name, email, password, address, acc_type, emp_type, type_pref }
             const response = await fetch("http://localhost:5000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -41,10 +69,10 @@ const Register = ({ setAuth }) => {
                 toast.success("Register Successfully");
             } else {
                 setAuth(false);
-                toast.error(parseResponse);
+                toast.error("You were not assigned an admin but your account has been created");
             }
         } catch (err) {
-            console.error(err.message)
+            toast.error(err.message);
         }
     }
 
@@ -115,7 +143,38 @@ const Register = ({ setAuth }) => {
                                             onChange={e => onChange(e)} />
                                     </div>
 
-
+                                    {(acc_type === "caretaker" || acc_type === "both") && emp_type === "fulltime" &&
+                                        <div className="form-group">
+                                            <label>Select Pet Type Preference</label>
+                                            <br></br>
+                                            <div class="container">
+                                                <div class="row align-items-center">
+                                                    <div class="col-sm-4">
+                                                        <button value="dog" type="button" class="btn btn-sm btn-block" style={buttonColors['dog'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('dog')}>Dog</button>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <button value="cat" type="button" class="btn btn-sm btn-block" style={buttonColors['cat'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('cat')}>Cat</button>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <button value="fish" type="button" class="btn btn-sm btn-block" style={buttonColors['fish'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('fish')}>Fish</button>
+                                                    </div>
+                                                </div>
+                                                <br></br>
+                                                <div class="row align-items-center">
+                                                    <div class="col-sm-4">
+                                                        <button value="rabbit" type="button" class="btn btn-sm btn-block" style={buttonColors['rabbit'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('rabbit')}>Rabbit</button>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <button value="bird" type="button" class="btn btn-sm btn-block" style={buttonColors['bird'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('bird')}>Bird</button>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <button value="reptile" type="button" class="btn btn-sm btn-block" style={buttonColors['reptile'] ? { backgroundColor: "green" } : { backgroundColor: "lightgrey" }} onClick={() => toggleBtn('reptile')}>Reptile</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <br></br>
                                     <button className="btn btn-success btn-block">Submit</button>
                                 </form>
                                 <p className="forgot-password text-right">
@@ -131,7 +190,7 @@ const Register = ({ setAuth }) => {
                             <div class="card-body">
                                 <h5 class="card-title">Join Us!</h5>
                                 <p class="card-text">We are a loving community of Pet Owners and Care Takers, we're sure you'll find a home with us!</p>
-                    
+
                             </div>
                         </div>
                     </div>

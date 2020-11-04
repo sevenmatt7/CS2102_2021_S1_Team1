@@ -299,3 +299,13 @@ body, html, .App, #root, .auth-wrapper {
   max-height: 150px;
   overflow-x: hidden;
 }
+
+
+/* Button Color Change */
+.inactive {
+  background-color: "secondary";
+}
+
+.active {
+  background-color: "primary" ;
+}

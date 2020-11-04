@@ -112,15 +112,15 @@ const Profile = ({ setAuth }) => {
 
   return (
     <Fragment>
-
+      <div>
       <div className="container emp-profile">
-        <div className="row">
-          <div className="col-md-4">
-            <div className="profile-img mb-5">
-              <img src={profile_pic_URL} alt="You do not have a profile picture!" />
+          <div className="row" id="profile-pic-name-rating">
+            <div className="col-md-4">
+              <div className="profile-img mb-5">
+                <img src={profile_pic_URL} alt="Your profile picture goes here!" />
+              </div>
             </div>
-          </div>
-          <div className="col-md-6">
+            <div className="col-md-6">
             <div className="profile-head">
               <h5>
                 {name}
@@ -136,9 +136,10 @@ const Profile = ({ setAuth }) => {
                 {acc_type === 'caretaker' && <p className="profile-rating">Total number of ratings : <span>{totalNumOfRatings}</span></p>}
               </h6>
             </div>
-          </div>
-          <div className="col-md-2">
-            <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL} />
+            </div>
+            <div className="col-md-2">
+              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL}/>
+            </div>
           </div>
         </div>
         <div className="profile-head">
@@ -389,12 +390,12 @@ const Profile = ({ setAuth }) => {
               </div> */}
 
 
-
+              
             </div>
           </div>
         </div>
       </div>
-
+    
     </Fragment >
   );
 };

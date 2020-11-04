@@ -11,8 +11,11 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        let { name, email, password, address, acc_type, emp_type } = req.body;
-        let assigned_price;
+        let { name, email, password, address, acc_type, emp_type, type_pref } = req.body;
+        let assigned_result;
+        let base_price;
+
+        const default_profile_pic = 'https://i.ibb.co/RYdWRxv/default-pic.png';
 
         //step 2: check if user exists (throw error)
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
@@ -28,41 +31,50 @@ router.post("/register", validInfo, async (req, res) => {
 
         //step 4: enter new user into database
         const newUser = await pool.query(
-            "INSERT INTO Users (full_name, email, user_password, user_address) VALUES ($1, $2, $3, $4) RETURNING *",
-            [name, email, encryptedPassword, address]);
+            "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [name, email, encryptedPassword, default_profile_pic, address]);
+        
+        // This block of code executes when there are no admins registered in the system
+        // It will register an admin with email admin@mail.com with password 123
+        const check_for_admin = await pool.query("SELECT * FROM PCSAdmins");
+        if (!check_for_admin.rows.length) {
+            let adminSalt = await bcrypt.genSalt(saltRound);
+            let adminPassword = await bcrypt.hash('123', adminSalt);
+            pool.query(
+                "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ('Admin', 'admin@mail.com', $1, $2, ' ') RETURNING *",
+                [adminPassword, default_profile_pic]);
+            pool.query("INSERT INTO PCSAdmins (admin_email) VALUES ('admin@mail.com')")
+        }
 
+        
         //insert user into respective account table
         if (acc_type === "petowner") {
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
         } else if (acc_type === "caretaker") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
-            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
+            assigned_result = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
         } else if (acc_type === "both") {
             pool.query("INSERT INTO Caretakers (caretaker_email, employment_type) VALUES ($1, $2)", [email, emp_type])
-            assigned_price = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
             pool.query("INSERT INTO PetOwners (owner_email) VALUES ($1)", [email])
+            assigned_result = await pool.query("SELECT assign_to_admin($1, $2)", [email, emp_type])
             acc_type = 'caretaker';
         }
         
         
         //insert into offers_services table if is a full-time caretaker (default entire year period)
-        let base_price = assigned_price.rows[0].assign_to_admin;
         const today = new Date();
         const yyyy = today.getFullYear(); //in yyyy format
         const year = yyyy.toString();
         const default_start_date = year + "-01-01";
         const default_end_date = year + "-12-31";
-        if (emp_type === "fulltime") {
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'dog', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'cat', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'bird', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'rabbit', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'reptile', base_price]) 
+        if (acc_type === 'caretaker' && emp_type === "fulltime") {
+            console.log(type_pref)
+            base_price = assigned_result.rows[0]['assign_to_admin'];
+            for (let i = 0; i < type_pref.length; i++) {
+                let type_prefs = type_pref[i]
+                pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, type_prefs, base_price])
+            }
         }
 
         //step 5: generate jwt token
@@ -71,7 +83,8 @@ router.post("/register", validInfo, async (req, res) => {
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("A server error has been encountered");
+        res.status(406)
+        res.json(err.message);
     }
 });
 
