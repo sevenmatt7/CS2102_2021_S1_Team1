@@ -468,16 +468,16 @@ const Caretaker = () => {
                             <div className="card mb-3">
                                 <div className="card-body">
                                     <h2 className="mb-3">My reviews:</h2>
-                                    <div className='card-deck'>
-                                        {reviews.map((review, i) => (
+                                    {reviews.map((review, i) => (
+                                        <div className='card-deck'>
                                             <div className="card mb-3">
                                                 <div className="card-body">
                                                     <h2>Review from: {review.full_name}</h2>
                                                     <p>Comments: {review.owner_review}</p>
                                                     <p>Rating: {review.owner_rating}</p>
                                                 </div>
-                                            </div>))}
-                                    </div>
+                                            </div>
+                                        </div>))}
                                 </div>
                             </div>
 
