@@ -139,8 +139,10 @@ CREATE TABLE Transactions_Details (
 	service_avail_to DATE NOT NULL,
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
-	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
-	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
+	-- CHECK the start of the service must be same day or days later than the start of the availability period
+    CHECK (duration_from >= service_avail_from), 
+    -- CHECK the end of the service must be same day or earlier than the end date of the availability period
+	CHECK (duration_to <= service_avail_to), 
 	CHECK (caretaker_email != owner_email),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
@@ -265,8 +267,10 @@ RETURNS TRIGGER AS $$
 				new_price := 70;
 			END IF;
 		END IF;
-		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
-		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' 
+            USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' 
+            USING new_price, NEW.caretaker_email;
 		RETURN NEW;
  	END; 
 $$ LANGUAGE plpgsql;
@@ -327,7 +331,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		-- First, get the service period of the caretaker that contains the leave period from the Offers_services table
 		SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to
 		FROM Offers_Services 
-		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to AND is_avail = 't';
+		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND 
+        leave_end <= service_avail_to AND is_avail = 't';
 		
 		-- Then, check if there are any transactions accepted within the leave period, if yes return 0
 		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND 
@@ -351,12 +356,14 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		new_service_avail_to_1 := leave_start - 1;
 		new_service_avail_from_2 := leave_end + 1;
 		
-		-- case when the start of the leave == service_avail_from date (e.g 1/1/2020 start leave and 1/1/2020 start availability)
+		-- case when the start of the leave == service_avail_from date 
+        -- (e.g 1/1/2020 start leave and 1/1/2020 start availability)
 		IF (leave_start = old_service_avail_from) THEN
 			new_service_avail_to_1 := old_service_avail_from;
 		END IF;
 
-		-- case when end of leave ==  service_avail_to date (e.g 31/10/2020 end leave and 31/10/2020 end availability)
+		-- case when end of leave ==  service_avail_to date 
+        -- (e.g 31/10/2020 end leave and 31/10/2020 end availability)
 		IF (leave_end = old_service_avail_to) THEN
 			new_service_avail_from_2 := old_service_avail_to;
 		END IF;
@@ -370,8 +377,10 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
 			-- if can split up, return true
 			IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
-				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				-- case when caretaker wants to take leave on is on the same day 
+                -- the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date
+                -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 					old_service_avail_from := old_service_avail_from + 1;
 					new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -382,13 +391,18 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 					new_service_avail_from_2 := new_service_avail_from_2 + 1;
 				END IF;
 
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, 
+                new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, 
+                old_service_avail_to::DATE AS new_service_avail_to2, 
+                leave_period AS leave_duration;
 
 
 			ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
-				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				-- case when caretaker wants to take leave on is on the same day 
+                -- the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date
+                -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 					old_service_avail_from := old_service_avail_from + 1;
 					new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -399,8 +413,11 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 					new_service_avail_from_2 := new_service_avail_from_2 + 1;
 				END IF;
 
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1,
+                new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, 
+                old_service_avail_to::DATE AS new_service_avail_to2, 
+                leave_period AS leave_duration;
 
 			ELSE 
 				RAISE EXCEPTION 'You cannot take leave during this period!';
@@ -411,8 +428,10 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
 				-- if can split up, return true
 				IF (leave_start - old_service_avail_from > 150 OR old_service_avail_to - leave_end > 150) THEN
-					-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
-					-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+					-- case when caretaker wants to take leave on is on the same day 
+                    -- the availability starts when he takes a one day leave
+					-- so need to add 1 day to the date
+                    -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 					IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 						old_service_avail_from := old_service_avail_from + 1;
 						new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -423,8 +442,11 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 						new_service_avail_from_2 := new_service_avail_from_2 + 1;
 					END IF;
 
-					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-					new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
+					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, 
+                    new_service_avail_to_1::DATE AS new_service_avail_to1, 
+                    new_service_avail_from_2::DATE AS new_service_avail_from2, 
+                    old_service_avail_to::DATE AS new_service_avail_to2, 
+                    leave_period AS leave_duration;
                 ELSE
                     RAISE EXCEPTION 'You cannot take leave during this period!';
 				END IF;
