@@ -319,7 +319,7 @@ const PCSAdmin = () => {
 
                   <div className="card-body ">
                     {managed.map((caretaker, i) => (
-                      <div className="card mb-3">
+                      <div key={i} className="card mb-3">
                         <div className="card-body">
                           <h5>Name: {caretaker.full_name}</h5>
                           <p>Rating: {caretaker.avg_rating}</p>
