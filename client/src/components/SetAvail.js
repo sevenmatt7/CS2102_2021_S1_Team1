@@ -3,6 +3,41 @@ import RegisterPage from '../Assets/Images/RegisterPage.jpg';
 import { toast } from "react-toastify";
 
 const SetAvail = ({ setAuth }) => {
+    // helper function to parse date
+    function parseDate(raw_date) {
+        function parseMonth(month) {
+            switch (month) {
+                case 'Jan':
+                    return '01';
+                case 'Feb':
+                    return '02';
+                case 'Mar':
+                    return '03';
+                case 'Apr':
+                    return '04';
+                case 'May':
+                    return '05';
+                case 'Jun':
+                    return '06';
+                case 'Jul':
+                    return '07';
+                case 'Aug':
+                    return '08';
+                case 'Sep':
+                    return '09';
+                case 'Oct':
+                    return '10';
+                case 'Nov':
+                    return '11';
+                case 'Dec':
+                    return '12';
+            }
+        }
+    
+        let date_string = new Date(raw_date).toDateString();
+        let date_tokens = date_string.split(" ");
+        return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
+    }
 
     const employment_type = localStorage.emp_type;
 
@@ -34,13 +69,13 @@ const SetAvail = ({ setAuth }) => {
             });
 
             const avail_dates = await response.json();
-            const start_date = avail_dates.service_avail_from;
-            const end_date = avail_dates.service_avail_to; 
+            const start_date = parseDate(avail_dates.service_avail_from);
+            const end_date = parseDate(avail_dates.service_avail_to); 
             const successMessage = 'You have indicated your availability from ' + start_date + ' to ' +
-                end_date + '!';
+                end_date + ' !';
             toast.success(successMessage);
         } catch (err) {
-            console.error(err.message)
+            toast.error(err.message)
         }
     }
 
