@@ -216,7 +216,7 @@ app.get("/pets", async (req, res) => {
     try {
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email)
+        // console.log(user_email)
         const searches = await pool.query(`SELECT DISTINCT owner_email, pet_name, \
                                             gender, special_req, pet_type \
                                             FROM Owns_Pets \
@@ -283,10 +283,10 @@ app.put("/editpet", async (req, res) => {
 //edit selected user details
 app.put("/edituser", async (req, res) => {
     try {
-        const {full_name, user_address, profile_pic_address } = req.body;
+        const { full_name, user_address, profile_pic_address } = req.body;
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email);
+        // console.log(user_email);
 
         const editedUser = await pool.query(
             "UPDATE Users SET (full_name, user_address, profile_pic_address) = ($1, $2, $3) \
@@ -304,7 +304,7 @@ app.get("/bids", async (req, res) => {
     try {
         const jwtToken = req.header("token")
         const caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(caretaker_email)
+        // console.log(caretaker_email)
         const searches = await pool.query(`SELECT users.full_name, users.user_address, Petowner_bids.owner_email, Petowner_bids.selected_pet, \
                                             gender, special_req, service_request_period, offer_price, transfer_mode, Petowner_bids.pet_type \
                                             FROM Petowner_bids LEFT JOIN Owns_pets  \
@@ -324,7 +324,7 @@ app.get("/transactions", async (req, res) => {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const acc_type = req.header("acc_type");
-        console.log(user_email)
+        // console.log(user_email)
         let searches;
         if (acc_type === "petowner") {
             var sql = `SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
@@ -360,6 +360,48 @@ app.get("/transactions", async (req, res) => {
         console.log(error.message)
     }
 });
+
+//get all transactions for caretaker or petowner
+app.get("/salary", async (req, res) => {
+    try {
+        let caretaker_email
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+        } else {
+            caretaker_email = req.query.caretaker_email
+        }
+        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
+                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
+                                             ORDER BY duration_from", [caretaker_email]);
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+}); 4
+
+//get all transactions for caretaker or petowner
+app.get("/filtersalary", async (req, res) => {
+    try {
+        let caretaker_email;
+        let month = req.query.month;
+        if (req.query.caretaker_email.indexOf("@") === -1) {
+            let jwtToken = req.query.caretaker_email;
+            caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;;
+        } else {
+            caretaker_email = req.query.caretaker_email;
+        }
+
+        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
+                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
+                                             AND (EXTRACT(MONTH FROM duration_to)=$2 OR EXTRACT(MONTH FROM duration_from)=$3)\
+                                         ORDER BY duration_from", [caretaker_email, month, month]);
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
 
 
 //get all filtered searches
@@ -419,11 +461,11 @@ app.post("/setavail", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { service_avail_from, service_avail_to, employment_type, daily_price, pet_type } = req.body;
-        
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email)
+        // console.log(user_email)
 
         const newService = await pool.query(
             "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
@@ -456,7 +498,7 @@ app.post("/takeleave", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
         const { apply_leave_from, apply_leave_to } = req.body;
-        
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -466,9 +508,9 @@ app.post("/takeleave", async (req, res) => {
 
 
         //make the old availability set to isavail = False
-        
+
         //need to insert new availabilities into the the offers_services_table
-        
+
         res.json(applyLeave.rows[0].check_for_leave);
 
     } catch (err) {
@@ -486,7 +528,7 @@ app.post("/takeleave", async (req, res) => {
 
     // //If it is feasible to take leave and still have consecutive blocks of 2 x 150 days of work, execute update
     // if (count_2_150_days >= 2) {
-        
+
     // } else {
     //     res.json("You cannot take leave during this period");
     //     //res.status(400).send("You cannot take leave during this period");
@@ -497,10 +539,10 @@ app.post("/takeleave", async (req, res) => {
 app.post("/submitbid", async (req, res) => {
     try {
         //step 1: destructure req.body to get details
-        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to, 
-                service_request_from, service_request_to, daily_price, transfer_mode, 
-                selected_pet, payment_mode } = req.body;
-        
+        const { caretaker_email, employment_type, selected_petType, avail_from, avail_to,
+            service_request_from, service_request_to, daily_price, transfer_mode,
+            selected_pet, payment_mode } = req.body;
+
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const owner_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
@@ -510,9 +552,9 @@ app.post("/submitbid", async (req, res) => {
             pet_type, pet_name, owner_email, payment_mode, cost, mode_of_transfer, duration_from, \
             duration_to, service_avail_from, service_avail_to) \
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, payment_mode, 
-            daily_price, transfer_mode, service_request_from, service_request_to, parseDate(avail_from), 
-            parseDate(avail_to)]);
+            [caretaker_email, employment_type, selected_petType, selected_pet, owner_email, payment_mode,
+                daily_price, transfer_mode, service_request_from, service_request_to, parseDate(avail_from),
+                parseDate(avail_to)]);
 
         res.json(newService.rows[0]);
 
@@ -538,7 +580,7 @@ app.put("/changebid", async (req, res) => {
             WHERE (owner_email = $2 AND caretaker_email = $3 AND pet_name = $4 \
             AND duration_from = $5 AND duration_to = $6) RETURNING *" ,
             [status_update, owner_email, caretaker_email, pet_name, parseDate(duration_from), parseDate(duration_to)]);
-        console.log(req.body)
+        // console.log(req.body)
         res.json(txn.rows[0]);
 
     } catch (err) {

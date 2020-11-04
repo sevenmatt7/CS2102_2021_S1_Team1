@@ -58,6 +58,8 @@ router.post("/register", validInfo, async (req, res) => {
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
             VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'cat', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'fish', base_price]) 
+            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
             VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'bird', base_price])
             pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
             VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'rabbit', base_price])
