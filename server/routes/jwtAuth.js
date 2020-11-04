@@ -11,9 +11,10 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        let { name, email, password, address, acc_type, emp_type } = req.body;
+        let { name, email, password, address, acc_type, emp_type, type_pref } = req.body;
         let assigned_result;
         let base_price;
+
         const default_profile_pic = 'https://i.ibb.co/RYdWRxv/default-pic.png';
 
         //step 2: check if user exists (throw error)
@@ -67,19 +68,13 @@ router.post("/register", validInfo, async (req, res) => {
         const default_start_date = year + "-01-01";
         const default_end_date = year + "-12-31";
         if (acc_type === 'caretaker' && emp_type === "fulltime") {
+            console.log(type_pref)
             base_price = assigned_result.rows[0]['assign_to_admin'];
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'dog', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'cat', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'fish', base_price]) 
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'bird', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'rabbit', base_price])
-            pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
-            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, 'reptile', base_price]) 
+            for (let i = 0; i < type_pref.length; i++) {
+                let type_prefs = type_pref[i]
+                pool.query("INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+            VALUES ($1, $2, $3, $4, $5, $6)", [email, emp_type, default_start_date, default_end_date, type_prefs, base_price])
+            }
         }
 
         //step 5: generate jwt token
