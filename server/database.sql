@@ -374,10 +374,94 @@ RETURNS TABLE (new_service_avail_from1 DATE,
  	END; 
 $$ LANGUAGE plpgsql;
 
+-- function to get underperforming caretakers (rating less than 2)
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
+DROP TYPE IF EXISTS return_type;
+CREATE TYPE return_type AS
+    		( caretaker VARCHAR, num_pet_days NUMERIC, avg_rating NUMERIC, num_rating_5 NUMERIC, num_rating_4 NUMERIC, num_rating_3 NUMERIC, num_rating_2 NUMERIC, num_rating_1 NUMERIC, num_rating_0 NUMERIC );
+CREATE OR REPLACE FUNCTION get_underperforming_caretakers()
+RETURNS SETOF return_type AS $$ 
+	DECLARE 
+		caretakers_arr VARCHAR [] := '{}';
+		caretaker VARCHAR;
+		avg_rating_arr NUMERIC [] := '{}';
+		transactions_duration_to DATE [] := '{}';
+		transactions_duration_from DATE [] := '{}';
+		duration NUMERIC;
+		num_pet_days NUMERIC;
+		num_ratings NUMERIC;
+		val return_type;
+		rec RECORD;
+	BEGIN
+		caretakers_arr := ARRAY (SELECT caretaker_email
+		FROM caretakers
+		WHERE employment_type = 'fulltime'
+		AND avg_rating <= 2
+		ORDER BY avg_rating ASC);
 
+		avg_rating_arr := ARRAY (SELECT avg_rating
+		FROM caretakers
+		WHERE employment_type = 'fulltime'
+		AND avg_rating <= 2
+		ORDER BY avg_rating ASC);
 
+		FOR index IN array_lower(caretakers_arr, 1) .. array_upper(caretakers_arr, 1) LOOP 
 
+			transactions_duration_from := ARRAY (SELECT duration_from
+													FROM transactions_details
+													WHERE caretaker_email = caretakers_arr[index]);
+			transactions_duration_to := ARRAY (SELECT duration_to
+													FROM transactions_details
+													WHERE caretaker_email = caretakers_arr[index]);
+			IF array_length(transactions_duration_from, 1) IS NULL OR array_length(transactions_duration_from, 1) = 0 THEN
+				CONTINUE;
+			END IF;
+			num_ratings := (SELECT COUNT(*)
+							FROM transactions_details
+							WHERE caretaker_email = caretakers_arr[index]
+							AND owner_rating IS NOT NULL);
+			IF num_ratings = 0 THEN
+				CONTINUE;
+			END IF;
+			num_pet_days := 0;
+			FOR i IN array_lower(transactions_duration_from, 1) .. array_upper(transactions_duration_from, 1) LOOP
+				duration := transactions_duration_to[i] - transactions_duration_from[i] + 1;
+				num_pet_days := num_pet_days + duration;
+			END LOOP;
+			val.caretaker := caretakers_arr[index];
+			val.num_pet_days := num_pet_days;
+			val.avg_rating := avg_rating_arr[index];
+			val.num_rating_5 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 5);
+			val.num_rating_4 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 4);
+			val.num_rating_3 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 3);
+			val.num_rating_2 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 2);
+			val.num_rating_1 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 1);
+			val.num_rating_0 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 0);
+			RETURN NEXT val;
+		END LOOP;
+		
+		RETURN;
 
+ 	END; 
+$$ LANGUAGE plpgsql;
 
 
 
