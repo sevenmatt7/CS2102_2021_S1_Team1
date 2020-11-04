@@ -57,7 +57,8 @@ const Sitters = ({ setAuth }) => {
         end_date: e_date,
         form: namesearch
       }), {
-        method: "GET"
+        method: "GET",
+        headers: { token: localStorage.token, acc_type: acc_type }
       });
       const jsonData = await response.json();
       setSearches(jsonData);

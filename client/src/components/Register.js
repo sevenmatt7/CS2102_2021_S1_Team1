@@ -68,7 +68,7 @@ const Register = ({ setAuth }) => {
                                             {/* <option value="pcsadmin">PCSAdmin</option> */}
                                         </select>
                                     </div>
-                                    {(acc_type === "caretaker" || acc_type === "both") &&
+                                    {(acc_type === "caretaker" ||   acc_type === "both") &&
                                         <div className="form-group">
                                             <label>Part-time or Full-time?</label>
                                             <select className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>
