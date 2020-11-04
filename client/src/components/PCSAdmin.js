@@ -19,7 +19,7 @@ const PCSAdmin = () => {
       series: []
     },
     options: {
-      chartPadding: 10,
+      chartPadding: 15,
       labelOffset: 50,
       labelDirection: 'explode',
     }
@@ -271,6 +271,7 @@ const PCSAdmin = () => {
   useEffect(() => {
     getCurrMonthYear()
     getManagedCareTakers()
+    getunderPerformingCaretakers()
   }, [])
 
   useEffect(() => {
@@ -281,7 +282,6 @@ const PCSAdmin = () => {
 
   useEffect(() => {
     getPieData()
-    getunderPerformingCaretakers()
   }, [pieState.monthDisplayed])
 
   return (
@@ -316,29 +316,29 @@ const PCSAdmin = () => {
               </select>
             </div>
 
-            <div className="input-group mb-3">
-              <div className="input-group-prepend">
-                <label className="input-group-text" htmlFor="monthDisplayed">Month</label>
-              </div>
-              <select
-                className="form-control"
-                value={pieState.monthDisplayed}
-                onChange={setMonthDisplayed}
-              >
-                {
-                  monthNames.map((month, index) => (
-                    <option key={index} value={index}>{month}</option>
-                  ))
-                }
-              </select>
-            </div>
+
 
             <div className="row">
               <div className="col-md-4">
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">No. of pets taken care of</h4>
-                    <p className="card-category">Month: {monthNames[pieState.monthDisplayed]}</p>
+                    <div className="input-group mb-3">
+                      <div className="input-group-prepend">
+                        <label className="input-group-text" htmlFor="monthDisplayed">Month</label>
+                      </div>
+                      <select
+                        className="form-control"
+                        value={pieState.monthDisplayed}
+                        onChange={setMonthDisplayed}
+                      >
+                        {
+                          monthNames.map((month, index) => (
+                            <option key={index} value={index}>{month}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={pieState.data} type="Pie" options={pieState.options} />
@@ -408,11 +408,11 @@ const PCSAdmin = () => {
                     <p className="card-category">Month: {monthNames[pieState.monthDisplayed]}</p> */}
                   </div>
                   <div className="card-body ">
+                    <div className="row">
+                      {
+                        underPerformingCaretakers.map(attributes => (
 
-                    {
-                      underPerformingCaretakers.map(attributes => (
-                        <div className="row">
-                          <div className="card col-lg-12">
+                          <div className="card col-md-6">
                             <div className="card-header ">
                               <h5>Caretaker: {attributes.split(',')[0]}</h5>
                             </div>
@@ -490,10 +490,10 @@ const PCSAdmin = () => {
 
                             </div>
                           </div>
-                        </div>
-                      ))
-                    }
 
+                        ))
+                      }
+                    </div>
                   </div>
                   <div className="card-footer ">
                     <div className="legend">

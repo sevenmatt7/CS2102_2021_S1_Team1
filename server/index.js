@@ -181,14 +181,6 @@ app.get("/pcspie", async (req, res) => {
 // get underperforming caretakers of the month
 app.get("/underperformingcaretakers", async (req, res) => {
     try {
-        // const startYearMonth = req.query.duration
-        // const year = startYearMonth.split('-')[0]
-        // const month = startYearMonth.split('-')[1]
-        // const nextMonth = parseInt(month) + 1;
-        // const firstDayOfMonth = year + '-' + month + '-1'
-        // const firstDayOfNextMonth = year + '-' + nextMonth + '-1'
-        // console.log(`${firstDayOfMonth}, ${firstDayOfNextMonth}`)
-        // console.log('entering query')
         const data = await pool.query("SELECT get_underperforming_caretakers()")
         console.log('finish query')
         console.log(data)
