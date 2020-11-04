@@ -23,7 +23,7 @@ const RegisterPet = ({setAuth}) => {
         e.preventDefault();
         try {
             const body = { pet_name, special_req, pet_type, gender }
-            const response = await fetch("http://localhost:5000/auth/registerpet", {
+            const response = await fetch("/auth/registerpet", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
                             token: localStorage.token },

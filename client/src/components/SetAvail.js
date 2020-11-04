@@ -59,7 +59,7 @@ const SetAvail = ({ setAuth }) => {
         e.preventDefault();
         try {
             const body = { service_avail_from, service_avail_to, employment_type, daily_price, pet_type }
-            const response = await fetch("http://localhost:5000/setavail", {
+            const response = await fetch("/setavail", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -17,7 +17,7 @@ const EditPet = ({ search, i }) => {
     const editPet = async () => {
         try {
             const body = info;
-            const res = await fetch("http://localhost:5000/editpet", {
+            const res = await fetch("/editpet", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

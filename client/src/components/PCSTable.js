@@ -171,7 +171,7 @@ const PCSTable = () => {
     // Default method to get all CareTakers earnings
     const getCareTakers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/caretakersadmin");
+            const response = await fetch("/caretakersadmin");
             const userData = await response.json();
             let users_list = {};
             for (let i = 0; i < Object.keys(userData).length; i++) {
@@ -188,7 +188,7 @@ const PCSTable = () => {
     // Filter table based on a given month
     const filterTable = async (month) => {
         try {
-            const response = await fetch("http://localhost:5000/caretakersadmin");
+            const response = await fetch("/caretakersadmin");
             const userData = await response.json();
             let users_list = {};
             for (let i = 0; i < Object.keys(userData).length; i++) {

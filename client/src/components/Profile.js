@@ -16,7 +16,7 @@ const Profile = ({ setAuth }) => {
 
   const getTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:5000/transactions", {
+      const res = await fetch("/transactions", {
         method: "GET",
         headers: { token: localStorage.token, acc_type: acc_type }
       });
@@ -29,7 +29,7 @@ const Profile = ({ setAuth }) => {
 
   const getProfile = async () => {
     try {
-      const res = await fetch("http://localhost:5000/home/", {
+      const res = await fetch("/home/", {
         method: "GET",
         headers: { token: localStorage.token }
       });
@@ -47,7 +47,7 @@ const Profile = ({ setAuth }) => {
   const getAvgRating = async () => {
     if (acc_type === 'caretaker') {
       try {
-        const res = await fetch("http://localhost:5000/avgrating", {
+        const res = await fetch("/avgrating", {
           method: "GET",
           headers: { token: localStorage.token }
         })
@@ -63,7 +63,7 @@ const Profile = ({ setAuth }) => {
   const getTotalNumOfRatings = async () => {
     if (acc_type === 'caretaker') {
       try {
-        const res = await fetch("http://localhost:5000/numrating", {
+        const res = await fetch("/numrating", {
           method: "GET",
           headers: { token: localStorage.token }
         })
@@ -78,7 +78,7 @@ const Profile = ({ setAuth }) => {
   const getEnquiries = async () => {
     try {
       console.log('enter getenquiries')
-      const res = await fetch("http://localhost:5000/ownerenquiries", {
+      const res = await fetch("/ownerenquiries", {
         method: "GET",
         headers: { token: localStorage.token }
       })

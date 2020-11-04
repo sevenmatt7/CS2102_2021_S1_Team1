@@ -19,7 +19,7 @@ const EditProfile = ({name, address, profile_pic_URL}) => {
         try {
            
             const body = {full_name, user_address, profile_pic_address };
-            const response = await fetch("http://localhost:5000/edituser", {
+            const response = await fetch("/edituser", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json",
                             token: localStorage.token },

@@ -33,7 +33,7 @@ const Sitters = ({ setAuth }) => {
 
   const getAll = async () => {
     try {
-      const response = await fetch("http://localhost:5000/caretakers");
+      const response = await fetch("/caretakers");
       const jsonData = await response.json();
       setSearches(jsonData);
     } catch (error) {
@@ -49,7 +49,7 @@ const Sitters = ({ setAuth }) => {
     const e_date = filters["end_date"];
     const namesearch = filters["form"];
     try {
-      const response = await fetch('http://localhost:5000/caretakersq?' + new URLSearchParams({
+      const response = await fetch('/caretakersq?' + new URLSearchParams({
         employment_type: e_type,
         avg_rating: r_type,
         type_pref: p_type,

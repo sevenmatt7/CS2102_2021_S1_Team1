@@ -18,7 +18,7 @@ const PCSEnquiries = () => {
 			const { user_email, enq_message } = enquiries[currReply]
 			const body = { user_email, enq_message, answer }
 			const response = await fetch(
-				"http://localhost:5000/pcsanswer",
+				"/pcsanswer",
 				{
 					method: "PUT",
 					headers: {
@@ -42,7 +42,7 @@ const PCSEnquiries = () => {
 
 	const getEnquiries = async () => {
 		try {
-			const response = await fetch("http://localhost:5000/pcsenquiries?" + new URLSearchParams({
+			const response = await fetch("/pcsenquiries?" + new URLSearchParams({
 				filter: filter
 			}), {
 				method: "GET"

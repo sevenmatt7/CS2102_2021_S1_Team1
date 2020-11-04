@@ -38,7 +38,7 @@ const RequestService = ({ search, i }) => {
 
     const getPetList = async () => {
         try {
-            const response = await fetch("http://localhost:5000/pets", {
+            const response = await fetch("/pets", {
                                         method: "GET",
                                         headers: {token: localStorage.token}
                                         });
@@ -57,7 +57,7 @@ const RequestService = ({ search, i }) => {
             const body = { caretaker_email, employment_type, selected_petType, avail_from, avail_to, 
                            service_request_from, service_request_to, daily_price, transfer_mode, 
                            selected_pet, payment_mode};
-            const response = await fetch("http://localhost:5000/submitbid", {
+            const response = await fetch("/submitbid", {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
                             token: localStorage.token },
