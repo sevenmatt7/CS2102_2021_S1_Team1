@@ -38,8 +38,7 @@ Constraints not shown in ER diagram:
 ## Database schema <a name = "schema"></a>
 **Insert final schema.sql code here**
 **Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
-```PLSQL
-
+```sql
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS PetOwners CASCADE;
 DROP TABLE IF EXISTS Caretakers CASCADE;
@@ -277,8 +276,6 @@ CREATE TRIGGER update_fulltime_price
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
 
-
-
 -----------------------------------------------------------------------------------------------------------------------
 -- SQL FUNCTIONS USED 
 -----------------------------------------------------------------------------------------------------------------------
@@ -437,7 +434,6 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		END IF;
  	END; 
 $$ LANGUAGE plpgsql;
-
 ```
 ## Normalization level of database <a name = "normalization"></a>
 **3NF or CNF?**
