@@ -4,9 +4,21 @@ const cors = require("cors");
 const pool = require("./db");
 const jwt = require("jsonwebtoken");
 const { response } = require("express");
+const path = require("path")
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+//process.env.PORT
+//process.env.NODE_ENV => production when deployed on heroku
+if (process.env.NODE_ENV === "production") {
+    // when on heroku, it will just serve the pages generated, found in client/static
+    app.use(express.static(path.join(__dirname, "client/static")))
+    app.get('/*', function(req, res) {
+        return res.sendFile(path.resolve( __dirname, 'client/static' , 'index.html'));
+    });
+}
 
 function parseDate(raw_date) {
     function parseMonth(month) {
@@ -42,6 +54,7 @@ function parseDate(raw_date) {
     let date_tokens = date_string.split(" ");
     return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
 }
+
 
 
 //routes
@@ -781,6 +794,6 @@ app.get('/ownerenquiries', async (req, res) => {
     }
 })
 
-app.listen(5000, () => {
-    console.log('server has started at port 5000');
+app.listen(PORT, () => {
+    console.log(`server has started at port ${PORT}`);
 });
