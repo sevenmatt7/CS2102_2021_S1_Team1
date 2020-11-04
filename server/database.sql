@@ -75,7 +75,7 @@ CREATE TABLE Offers_Services (
 	type_pref VARCHAR NOT NULL,
 	daily_price NUMERIC NOT NULL,
 	is_avail BOOLEAN DEFAULT TRUE,
-	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to, is_avail)
+	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
 -- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
