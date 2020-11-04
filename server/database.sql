@@ -84,7 +84,7 @@ CREATE TABLE Transactions_Details (
 	employment_type VARCHAR,
 	pet_type VARCHAR,
 	pet_name VARCHAR,
-	owner_email VARCHAR,
+	owner_email VARCHAR CHECK (caretaker_email != owner_email),
 	owner_review VARCHAR,
 	owner_rating INTEGER,
 	payment_mode VARCHAR NOT NULL,

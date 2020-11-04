@@ -47,14 +47,14 @@ const PCSAdmin = () => {
 
   const getManagedCareTakers = async () => {
     try {
-        const res = await fetch("http://localhost:5000/admin/caretakers", {
-            method: "GET",
-            headers: { token: localStorage.token }
-        });
-        const jsonData = await res.json();
-        setManagedCaretakers(jsonData);
+      const res = await fetch("http://localhost:5000/admin/caretakers", {
+        method: "GET",
+        headers: { token: localStorage.token }
+      });
+      const jsonData = await res.json();
+      setManagedCaretakers(jsonData);
     } catch (err) {
-        console.error(err.message);
+      console.error(err.message);
     }
   };
 
@@ -77,57 +77,59 @@ const PCSAdmin = () => {
           window.location.reload();
           toast.success("You have changed the base price to $" + submittedData.base_price);
         }
-        
     } catch (err) {
-        console.error(err.message);
+      console.error(err.message);
     }
   }
 
   // get number of full-time & part-time jobs for each month of the year
   const getLineData = async () => {
-    try {
-      console.log("enter getLineData")
-      const year = yearDisplayed.toString()
-      const response = await fetch('http://localhost:5000/pcsline?' + new URLSearchParams({
-        year: year
-      }), {
-        method: "GET"
-      });
-      const data = await response.json()
-      let numFulltime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      let numParttime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      let numTotal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      data.map(datum => {
-        let month = datum.startyearmonth.substring(5)
-        if (month.includes('-')) {
-          month = month.substring(0, 1)
-        }
-        if (datum.employment_type === 'fulltime') {
-          numFulltime[parseInt(month) - 1] = parseInt(datum.count)
-        } else if (datum.employment_type === 'parttime') {
-          numParttime[parseInt(month) - 1] = parseInt(datum.count)
-        }
-      })
-      for (let i = 0; i < numTotal.length; i++) {
-        console.log(numFulltime[i])
-        numTotal[i] = numFulltime[i] + numParttime[i]
-      }
-      setLineState(prevState => {
-        return {
-          ...prevState,
-          data: {
-            labels: monthNames,
-            series: [
-              numFulltime,
-              numParttime,
-              numTotal
-            ]
+    if (yearDisplayed != '') {
+      try {
+        console.log("enter getLineData")
+        console.log(`year = ${yearDisplayed}`)
+        const year = yearDisplayed.toString()
+        const response = await fetch('http://localhost:5000/pcsline?' + new URLSearchParams({
+          year: year
+        }), {
+          method: "GET"
+        });
+        const data = await response.json()
+        let numFulltime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let numParttime = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let numTotal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        data.map(datum => {
+          let month = datum.startyearmonth.substring(5)
+          if (month.includes('-')) {
+            month = month.substring(0, 1)
           }
-        };
-      });
+          if (datum.employment_type === 'fulltime') {
+            numFulltime[parseInt(month) - 1] = parseInt(datum.count)
+          } else if (datum.employment_type === 'parttime') {
+            numParttime[parseInt(month) - 1] = parseInt(datum.count)
+          }
+        })
+        for (let i = 0; i < numTotal.length; i++) {
+          console.log(numFulltime[i])
+          numTotal[i] = numFulltime[i] + numParttime[i]
+        }
+        setLineState(prevState => {
+          return {
+            ...prevState,
+            data: {
+              labels: monthNames,
+              series: [
+                numFulltime,
+                numParttime,
+                numTotal
+              ]
+            }
+          };
+        });
 
-    } catch (err) {
-      console.error(err.message)
+      } catch (err) {
+        console.error(err.message)
+      }
     }
   }
 
@@ -137,14 +139,14 @@ const PCSAdmin = () => {
     for (var i = 0; i < 10; i++) {
       years[i] = d.getFullYear() - i
     }
-    setYearOptions(years)
+    setYearDisplayed(d.getFullYear().toString())
     setPieState(prevState => {
       return {
         ...prevState,
         monthDisplayed: d.getMonth().toString(),
       };
     });
-    setYearDisplayed(d.getFullYear().toString())
+    setYearOptions(years)
   }
 
   const setMonthDisplayed = e => {
@@ -163,28 +165,30 @@ const PCSAdmin = () => {
   }
 
   const getPieData = async () => {
-    try {
-      const duration = yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
-      const response = await fetch('http://localhost:5000/pcspie?' + new URLSearchParams({
-        duration: duration
-      }), {
-        method: "GET"
-      });
-      const data = await response.json()
-      setPieState(prevState => {
-        return {
-          ...prevState,
-          data: {
-            labels: ["Full-Time", "Part-Time"],
-            series: [data[0].count, data[1].count]
-          }
-        };
-      });
-    } catch (err) {
-      console.error(err.message)
+    if (pieState.monthDisplayed != '') {
+      try {
+        const duration = yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
+        const response = await fetch('http://localhost:5000/pcspie?' + new URLSearchParams({
+          duration: duration
+        }), {
+          method: "GET"
+        });
+        const data = await response.json()
+        setPieState(prevState => {
+          return {
+            ...prevState,
+            data: {
+              labels: ["Full-Time", "Part-Time"],
+              series: [data[0].count, data[1].count]
+            }
+          };
+        });
+      } catch (err) {
+        console.error(err.message)
+      }
     }
   }
-  // get prev month on mount
+
   useEffect(() => {
     getCurrMonthYear()
     getManagedCareTakers()
@@ -258,9 +262,9 @@ const PCSAdmin = () => {
                   <div className="card-body ">
                     <ChartistGraph data={pieState.data} type="Pie" options={pieState.options} />
                     <div className="legend">
-                      <p>Total number of jobs: {parseInt(pieState.data.series[0]) + parseInt(pieState.data.series[1])}</p>
-                      <p>Number of Full-timer jobs: {pieState.data.series[0]}</p>
-                      <p>Number of Part-timer jobs: {pieState.data.series[1]}</p>
+                      <p>Total number of Jobs: {parseInt(pieState.data.series[0]) + parseInt(pieState.data.series[1])}</p>
+                      <p>Number of Full-timer Jobs: {pieState.data.series[0]}</p>
+                      <p>Number of Part-timer Jobs: {pieState.data.series[1]}</p>
                     </div>
                     <hr />
                     <div className="stats">
@@ -273,8 +277,8 @@ const PCSAdmin = () => {
               <div className="col-md-8">
                 <div className="card">
                   <div className="card-header ">
-                    <h4 className="card-title">Number of jobs this year</h4>
-                    <p className="card-category">2020</p>
+                    <h4 className="card-title">Total Number of Jobs</h4>
+                    <p className="card-category">Year: {yearDisplayed}</p>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={lineState.data} type="Line" options={lineState.options} />
@@ -290,8 +294,8 @@ const PCSAdmin = () => {
                 </div>
               </div>
             </div>
-            
-            
+
+
             <div className="row">
 
               <div className="col-md-6">
@@ -299,7 +303,7 @@ const PCSAdmin = () => {
                   <div className="card-header ">
                     <h4 className="card-title">Caretakers under management</h4>
                     <div className="input-group mb-3">
-                      
+
                       <input type="text"
                        pattern="[0-9]*"
                        name="baseprice"
@@ -312,22 +316,22 @@ const PCSAdmin = () => {
                     </div>
                     </div>
                   </div>
-                  
+
                   <div className="card-body ">
-                  {managed.map((caretaker, i) => (
+                    {managed.map((caretaker, i) => (
                       <div className="card mb-3">
                         <div className="card-body">
                           <h5>Name: {caretaker.full_name}</h5>
                           <p>Rating: {caretaker.avg_rating}</p>
                           <p>Base price/day: ${caretaker.base_price}</p>
                         </div>
-                     </div>)
-                  )}
+                      </div>)
+                    )}
                   </div>
                 </div>
               </div>
 
-            
+
             </div>
 
 
