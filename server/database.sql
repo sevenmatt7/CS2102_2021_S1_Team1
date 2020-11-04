@@ -1,5 +1,3 @@
--- SET timezone 'Asia/Singapore'; SET datestyle 'ISO', 'DMY'
-
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS PetOwners CASCADE;
 DROP TABLE IF EXISTS Caretakers CASCADE;
@@ -10,7 +8,7 @@ DROP TABLE IF EXISTS Owns_Pets CASCADE;
 DROP TABLE IF EXISTS Offers_Services CASCADE;
 DROP TABLE IF EXISTS Transactions_Details CASCADE;
 DROP TABLE IF EXISTS Enquiries CASCADE;
-DROP FUNCTION IF EXISTS update_caretaker_rating CASCADE;
+DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 
 CREATE TABLE Users (
 	email VARCHAR,
@@ -80,20 +78,13 @@ CREATE TABLE Offers_Services (
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
 
--- when caretaker take leave 
--- avail 10/29 to 10/29
--- txns 10/29 to 11/05
--- leave 11/06 to 11/20 15 days leave
--- -> avail change 10/29 to 11/05 and 11/21 to 10/29
--- -> txns, search for caretaker email, t_status = 3 or 4 or 5, service_avail_from and to change to 10/29 to 11/05
-
 -- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
 	pet_type VARCHAR,
 	pet_name VARCHAR,
-	owner_email VARCHAR,
+	owner_email VARCHAR CHECK (caretaker_email != owner_email),
 	owner_review VARCHAR,
 	owner_rating INTEGER,
 	payment_mode VARCHAR NOT NULL,
@@ -107,6 +98,7 @@ CREATE TABLE Transactions_Details (
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
 	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
 	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
+	CHECK (caretaker_email != owner_email),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
 	REFERENCES Offers_Services(caretaker_email, type_pref, service_avail_from, service_avail_to)
@@ -122,8 +114,11 @@ CREATE TABLE Enquiries (
 	PRIMARY KEY (user_email, enq_message)
 );
 
+-----------------------------------------------------------------------------------------------------------------------
+-- SQL TRIGGERS IMPLEMENTED
+-----------------------------------------------------------------------------------------------------------------------
+
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
-DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -201,29 +196,6 @@ CREATE TRIGGER check_caretaker_limit
 	FOR EACH ROW
 	EXECUTE PROCEDURE check_caretaker_limit();
 
--- function to assign admin to user at registration
-DROP FUNCTION IF EXISTS assign_to_admin();
-CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
-RETURNS NUMERIC AS $$ 
-	DECLARE 
-		assigned_admin VARCHAR;
-		daily_price NUMERIC;
-	BEGIN
-		SELECT admin_email into assigned_admin
-		FROM PCSAdmins
-		ORDER BY RANDOM()
-		LIMIT 1;
-		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
-      	USING assigned_admin, input_email;  
-		IF emp_type = 'fulltime' THEN
-			SELECT base_price INTO daily_price FROM Manages WHERE admin_email = assigned_admin;
-			RETURN daily_price;
-		END IF;
-		RETURN 0;
- 	END; 
-$$ LANGUAGE plpgsql;
-
-
 -- Trigger to update the price of the fulltime caretaker's services after the avg_rating is computed, 
 DROP FUNCTION IF EXISTS update_fulltime_price() CASCADE;
 CREATE OR REPLACE FUNCTION update_fulltime_price()
@@ -261,42 +233,32 @@ CREATE TRIGGER update_fulltime_price
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
 
--- Trigger to check if the full time caretaker can take leave 
-DROP FUNCTION IF EXISTS take_leave_for_fulltime() CASCADE;
-CREATE OR REPLACE FUNCTION take_leave_for_fulltime()
-RETURNS TRIGGER AS $$ 
+
+
+-----------------------------------------------------------------------------------------------------------------------
+-- SQL FUNCTIONS USED 
+-----------------------------------------------------------------------------------------------------------------------
+
+-- function to assign admin to user at registration
+DROP FUNCTION IF EXISTS assign_to_admin();
+CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
+RETURNS NUMERIC AS $$ 
 	DECLARE 
-		emp_type VARCHAR := NEW.employment_type;
-		rating NUMERIC;
-		new_price INTEGER := 50;
+		assigned_admin VARCHAR;
+		daily_price NUMERIC;
 	BEGIN
-		
-		SELECT avg_rating INTO rating
-		FROM Caretakers
-		WHERE caretaker_email = NEW.caretaker_email;
-		IF (emp_type = 'fulltime') THEN
-			IF (rating > 4.2 AND rating < 4.4 ) THEN
-				new_price := 52;
-			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
-				new_price := 55;
-			ELSIF (rating > 4.4 AND rating < 4.6 ) THEN
-				new_price := 59;
-			ELSIF (rating > 4.6 AND rating < 4.8 ) THEN
-				new_price := 64;
-			ELSIF (rating > 4.8 ) THEN
-				new_price := 70;
-			END IF;
+		SELECT admin_email into assigned_admin
+		FROM PCSAdmins
+		ORDER BY RANDOM()
+		LIMIT 1;
+		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
+      	USING assigned_admin, input_email;  
+		IF emp_type = 'fulltime' THEN
+			RETURN 50;
 		END IF;
-		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
-		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
-		RETURN NEW;
+		RETURN 0;
  	END; 
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER take_leave_for_fulltime
-	BEFORE UPDATE OF is_avail ON Caretakers
-	FOR EACH ROW
-	EXECUTE PROCEDURE take_leave_for_fulltime();
 
 
 -- function to check if full time caretaker can take leave
@@ -312,6 +274,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		old_service_avail_to DATE;
 		previous_150_start DATE;
 		previous_150_end DATE;
+		new_service_avail_to_1 DATE;
+		new_service_avail_from_2 DATE;
 		leave_period INTEGER;
 	BEGIN
 		-- Check for valid input
@@ -322,7 +286,7 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		-- First, get the service period of the caretaker that contains the leave period from the Offers_services table
 		SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to
 		FROM Offers_Services 
-		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to;
+		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to AND is_avail = 't';
 		
 		-- Then, check if there are any transactions accepted within the leave period, if yes return 0
 		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND 
@@ -334,7 +298,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		-- proceed to check whether the caretaker has already had a 150 consecutive day period IN THE SAME YEAR
 		-- if they do not have a 150 day period served, 
 		SELECT service_avail_from, service_avail_to INTO previous_150_start, previous_150_end
-		FROM Offers_services WHERE caretaker_email = input_email AND (service_avail_to - service_avail_from >= 150);
+		FROM Offers_services WHERE caretaker_email = input_email AND (service_avail_to - service_avail_from >= 150)
+		AND service_avail_to < old_service_avail_from;
 		
 		-- check if the previous 150 day shift was completed in the same year. If not, return false
 		IF (SELECT extract(year from previous_150_end)) != (SELECT extract(year from old_service_avail_from)) THEN
@@ -342,19 +307,62 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		END IF;
 
 		leave_period := leave_end - leave_start + 1;
+		new_service_avail_to_1 := leave_start - 1;
+		new_service_avail_from_2 := leave_end + 1;
+		
+		-- case when the start of the leave == service_avail_from date (e.g 1/1/2020 start leave and 1/1/2020 start availability)
+		IF (leave_start = old_service_avail_from) THEN
+			new_service_avail_to_1 := old_service_avail_from;
+		END IF;
+
+		-- case when end of leave ==  service_avail_to date (e.g 31/10/2020 end leave and 31/10/2020 end availability)
+		IF (leave_end = old_service_avail_to) THEN
+			new_service_avail_from_2 := old_service_avail_to;
+		END IF;
+
 		-- check whether the previous 150 day shift has an overlap with the current one we are looking at
-		IF (previous_150_start, previous_150_end) OVERLAPS (old_service_avail_from, old_service_avail_to) THEN
+		IF (previous_150_start, previous_150_end) OVERLAPS (old_service_avail_from, old_service_avail_to)  THEN
+			RAISE EXCEPTION 'You cannot take leave during this period!';
+		END IF;
 			
-            -- check if the curr period has at least 300 days since we need to split up into 2 consecutive 150 days
-			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
-				-- if can split up, return true
-				IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
-					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
-							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
-				ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
-					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
-							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
+        -- check if the curr period has at least 300 days since we need to split up into 2 consecutive 150 days
+		IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
+			-- if can split up, return true
+			IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
+				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
+					old_service_avail_from := old_service_avail_from + 1;
+					new_service_avail_to_1 := new_service_avail_to_1 + 1;
 				END IF;
+
+				IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
+					old_service_avail_to := old_service_avail_to + 1;
+					new_service_avail_from_2 := new_service_avail_from_2 + 1;
+				END IF;
+
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
+
+
+			ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
+				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
+					old_service_avail_from := old_service_avail_from + 1;
+					new_service_avail_to_1 := new_service_avail_to_1 + 1;
+				END IF;
+
+				IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
+					old_service_avail_to := old_service_avail_to + 1;
+					new_service_avail_from_2 := new_service_avail_from_2 + 1;
+				END IF;
+
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
+
+			ELSE 
+				RAISE EXCEPTION 'You cannot take leave during this period!';
 			END IF;
 			
 		-- this means that there was already a 150 day consecutive period worked in the past
@@ -362,96 +370,26 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
 				-- if can split up, return true
 				IF (leave_start - old_service_avail_from > 150 OR old_service_avail_to - leave_end > 150) THEN
-					RETURN QUERY SELECT old_service_avail_from::DATE, (leave_start-1)::DATE,
-							(leave_end+1)::DATE, old_service_avail_to::DATE, leave_period AS leave_duration;
+					-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+					-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+					IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
+						old_service_avail_from := old_service_avail_from + 1;
+						new_service_avail_to_1 := new_service_avail_to_1 + 1;
+					END IF;
+
+					IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
+						old_service_avail_to := old_service_avail_to + 1;
+						new_service_avail_from_2 := new_service_avail_from_2 + 1;
+					END IF;
+
+					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+					new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
                 ELSE
                     RAISE EXCEPTION 'You cannot take leave during this period!';
 				END IF;
-				-- if cannot split up to 150 days, return false
+			ELSE-- if cannot split up to 150 days, return false
+				RAISE EXCEPTION 'You cannot take leave during this period!';
 			END IF;
 		END IF;
-
  	END; 
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
--- 												caretaker_email DATE , type_pref DATE, 
--- 												old_avail_from DATE, old_avail_to DATE )
--- RETURNS INTEGER AS $$ 
--- 	BEGIN
--- 		-- Change the service_avail_from and service_avail_to of the service that we need to split the availability
--- 		-- of
--- 		PERFORM 'UPDATE Offers_Services SET service_avail_from = old_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
--- 		-- Get all transactions that are related to the service offered by the caretaker that we need 
--- 		-- to change the dates to
--- 		PERFORM 'UPDATE TRansactions_Details
--- 				SET service_avail_from = new_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
-		
--- 		RETURN 1;
---  	END; 
--- $$ LANGUAGE plpgsql;
-
---- Trigger to check whether a full time caretaker can take leave
--- DROP FUNCTION IF EXISTS login_user(character varying,character varying);
--- CREATE OR REPLACE FUNCTION login_user(in_email VARCHAR, acc_type VARCHAR)
--- RETURNS TABLE (email VARCHAR, 
--- 				user_password VARCHAR, 
--- 				emp_type VARCHAR) AS $$ 
--- 	BEGIN
--- 		IF (SELECT COUNT(*) from users WHERE Users.email = in_email) = 0 THEN
--- 			RAISE EXCEPTION 'User with email does not exist';
--- 		ELSE
--- 			IF acc_type = 'petowner' THEN
--- 			IF (SELECT COUNT(*) from PetOwners WHERE owner_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PetOwners LEFT JOIN Users ON Petowners.owner_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSIF acc_type = 'caretaker' THEN
--- 			IF (SELECT COUNT(*) from Caretakers WHERE caretaker_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, Caretakers.employment_type as emp_type
--- 			FROM Caretakers LEFT JOIN Users ON Caretakers.caretaker_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSE
--- 			IF (SELECT COUNT(*) from PCSAdmins WHERE admin_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as an admin';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PCSAdmins LEFT JOIN Users ON PCSAdmins.admin_email = Users.email
--- 			WHERE Users.email = in_email;
--- 			END IF;
--- 		END IF;
---  	END; 
--- $$ LANGUAGE plpgsql;

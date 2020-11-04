@@ -41,10 +41,10 @@ const Register = ({ setAuth }) => {
                 toast.success("Register Successfully");
             } else {
                 setAuth(false);
-                toast.error(parseResponse);
+                toast.error("You were not assigned an admin but your account has been created");
             }
         } catch (err) {
-            console.error(err.message)
+            toast.error(err.message);
         }
     }
 
@@ -68,7 +68,7 @@ const Register = ({ setAuth }) => {
                                             {/* <option value="pcsadmin">PCSAdmin</option> */}
                                         </select>
                                     </div>
-                                    {(acc_type === "caretaker" || acc_type === "both") &&
+                                    {(acc_type === "caretaker" ||   acc_type === "both") &&
                                         <div className="form-group">
                                             <label>Part-time or Full-time?</label>
                                             <select className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>
