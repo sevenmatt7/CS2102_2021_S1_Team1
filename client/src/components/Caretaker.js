@@ -368,8 +368,14 @@ const Caretaker = () => {
                             <div className="card mb-3">
                                 <div className="card-body">
                                     <h2 className="mb-3">My reviews:</h2>
+<<<<<<< HEAD
                                     {reviews.map((review, i) => (
                                         <div key={i} className='card-deck'>
+=======
+
+                                    {reviews.map((review, i) => (
+                                        <div className='card-deck'>
+>>>>>>> fee0529acbcf87f3226ebf086ced8ca8f9fae9e1
                                             <div className="card mb-3">
                                                 <div className="card-body">
                                                     <h2>Review from: {review.full_name}</h2>
@@ -378,6 +384,10 @@ const Caretaker = () => {
                                                 </div>
                                             </div>
                                         </div>))}
+<<<<<<< HEAD
+=======
+
+>>>>>>> fee0529acbcf87f3226ebf086ced8ca8f9fae9e1
                                 </div>
                             </div>
 

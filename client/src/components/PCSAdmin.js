@@ -11,6 +11,7 @@ const PCSAdmin = () => {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const [yearOptions, setYearOptions] = useState([])
   const [yearDisplayed, setYearDisplayed] = useState('')
+  const [underPerformingCaretakers, setunderPerformingCaretakers] = useState([])
   const [pieState, setPieState] = useState({
     monthDisplayed: '',
     data: {
@@ -18,7 +19,7 @@ const PCSAdmin = () => {
       series: []
     },
     options: {
-      chartPadding: 10,
+      chartPadding: 15,
       labelOffset: 50,
       labelDirection: 'explode',
     }
@@ -33,6 +34,20 @@ const PCSAdmin = () => {
       plugins: [
         Chartist.plugins.legend({
           legendNames: ['Full-Time', 'Part-Time', 'Total']
+        })
+      ]
+    }
+  })
+
+  const [lineChart2, setLineChart2] = useState({
+    data: {
+      labels: monthNames,
+      series: []
+    },
+    options: {
+      plugins: [
+        Chartist.plugins.legend({
+          legendNames: ['Accepted', 'Rejected', 'Pending']
         })
       ]
     }
@@ -110,7 +125,6 @@ const PCSAdmin = () => {
           }
         })
         for (let i = 0; i < numTotal.length; i++) {
-          console.log(numFulltime[i])
           numTotal[i] = numFulltime[i] + numParttime[i]
         }
         setLineState(prevState => {
@@ -122,6 +136,52 @@ const PCSAdmin = () => {
                 numFulltime,
                 numParttime,
                 numTotal
+              ]
+            }
+          };
+        });
+
+      } catch (err) {
+        console.error(err.message)
+      }
+    }
+  }
+
+  const getLineChart2Data = async () => {
+    if (yearDisplayed != '') {
+      try {
+        const year = yearDisplayed.toString()
+        const response = await fetch('http://localhost:5000/pcsline2?' + new URLSearchParams({
+          year: year
+        }), {
+          method: "GET"
+        });
+        const data = await response.json()
+        let numAccepted = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let numRejected = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        let numPending = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        data.map(datum => {
+          let month = datum.startyearmonth.substring(5)
+          if (month.includes('-')) {
+            month = month.substring(0, 1)
+          }
+          if (datum.status === 'accepted') {
+            numAccepted[parseInt(month) - 1] += parseInt(datum.count)
+          } else if (datum.status === 'rejected') {
+            numRejected[parseInt(month) - 1] += parseInt(datum.count)
+          } else if (datum.status === 'pending') {
+            numPending[parseInt(month) - 1] += parseInt(datum.count)
+          }
+        })
+        setLineChart2(prevState => {
+          return {
+            ...prevState,
+            data: {
+              labels: monthNames,
+              series: [
+                numAccepted,
+                numRejected,
+                numPending
               ]
             }
           };
@@ -189,14 +249,40 @@ const PCSAdmin = () => {
     }
   }
 
+  const getunderPerformingCaretakers = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/underperformingcaretakers', {
+        method: "GET"
+      });
+      const data = await response.json()
+      console.log(data)
+      // received data format: 
+      // caretaker , num_pet_days , avg_rating , num_rating_5 , num_rating_4 , num_rating_3 , num_rating_2 , num_rating_1 , num_rating_0 
+      let arr = [];
+      data.map(datum => {
+        const attributes = datum.get_underperforming_caretakers.slice(1, -1)
+        console.log(attributes)
+        arr.push(attributes)
+
+
+      })
+      setunderPerformingCaretakers(arr)
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+
+
   useEffect(() => {
     getCurrMonthYear()
     getManagedCareTakers()
+    getunderPerformingCaretakers()
   }, [])
 
   useEffect(() => {
     getLineData()
     getPieData()
+    getLineChart2Data()
   }, [yearDisplayed])
 
   useEffect(() => {
@@ -234,35 +320,35 @@ const PCSAdmin = () => {
                 }
               </select>
             </div>
+
+
+
             <div className="row">
               <div className="col-md-4">
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">No. of pets taken care of</h4>
-                    <div className="card-category">
-
-                      <div className="input-group mb-3">
-                        <div className="input-group-prepend">
-                          <label className="input-group-text" htmlFor="monthDisplayed">Month</label>
-                        </div>
-                        <select
-                          className="form-control"
-                          value={pieState.monthDisplayed}
-                          onChange={setMonthDisplayed}
-                        >
-                          {
-                            monthNames.map((month, index) => (
-                              <option key={index} value={index}>{month}</option>
-                            ))
-                          }
-                        </select>
+                    <div className="input-group mb-3">
+                      <div className="input-group-prepend">
+                        <label className="input-group-text" htmlFor="monthDisplayed">Month</label>
                       </div>
+                      <select
+                        className="form-control"
+                        value={pieState.monthDisplayed}
+                        onChange={setMonthDisplayed}
+                      >
+                        {
+                          monthNames.map((month, index) => (
+                            <option key={index} value={index}>{month}</option>
+                          ))
+                        }
+                      </select>
                     </div>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={pieState.data} type="Pie" options={pieState.options} />
                     <div className="legend">
-                      <p>Total number of Jobs: {parseInt(pieState.data.series[0]) + parseInt(pieState.data.series[1])}</p>
+                      <p>Total number of Accepted Jobs: {parseInt(pieState.data.series[0]) + parseInt(pieState.data.series[1])}</p>
                       <p>Number of Full-timer Jobs: {pieState.data.series[0]}</p>
                       <p>Number of Part-timer Jobs: {pieState.data.series[1]}</p>
                     </div>
@@ -277,11 +363,142 @@ const PCSAdmin = () => {
               <div className="col-md-8">
                 <div className="card">
                   <div className="card-header ">
-                    <h4 className="card-title">Total Number of Jobs</h4>
+                    <h4 className="card-title">Total Number of Accepted Jobs</h4>
                     <p className="card-category">Year: {yearDisplayed}</p>
                   </div>
                   <div className="card-body ">
                     <ChartistGraph data={lineState.data} type="Line" options={lineState.options} />
+                  </div>
+                  <div className="card-footer ">
+                    <div className="legend">
+                    </div>
+                    <hr />
+                    <div className="stats">
+                      <i className="fa fa-history"></i> Updated {getCurrentDate()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div className="row">
+              <div className="col">
+                <div className="card">
+                  <div className="card-header ">
+                    <h4 className="card-title">Number of jobs accepted, rejected or pending</h4>
+                    <p className="card-category">Year: {yearDisplayed}</p>
+                  </div>
+                  <div className="card-body ">
+                    <ChartistGraph data={lineChart2.data} type="Line" options={lineChart2.options} />
+                  </div>
+                  <div className="card-footer ">
+                    <div className="legend">
+                    </div>
+                    <hr />
+                    <div className="stats">
+                      <i className="fa fa-history"></i> Updated {getCurrentDate()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col">
+                <div className="card">
+                  <div className="card-header ">
+                    <h4 className="card-title">Underperforming Full-time caretakers</h4>
+                    {/* <p className="card-category">Year: {yearDisplayed}</p>
+                    <p className="card-category">Month: {monthNames[pieState.monthDisplayed]}</p> */}
+                  </div>
+                  <div className="card-body ">
+                    <div className="row">
+                      {
+                        underPerformingCaretakers.map(attributes => (
+
+                          <div className="card col-md-6">
+                            <div className="card-header ">
+                              <h5>Caretaker: {attributes.split(',')[0]}</h5>
+                            </div>
+                            <div className="card-body ">
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of Pet Days worked:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[1]}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Average Rating:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{parseFloat(attributes.split(',')[2]).toFixed(2)}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 5 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[3]}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 4 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[4]}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 3 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[5]}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 2 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[6]}</p>
+                                </div>
+                              </div>
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 1 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[7]}</p>
+                                </div>
+                              </div>
+
+                              <div className="row card-text">
+                                <div className="col-md-6">
+                                  <label>Number of rating 0 given:</label>
+                                </div>
+                                <div className="col-md-6">
+                                  <p>{attributes.split(',')[8]}</p>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+
+                        ))
+                      }
+                    </div>
                   </div>
                   <div className="card-footer ">
                     <div className="legend">

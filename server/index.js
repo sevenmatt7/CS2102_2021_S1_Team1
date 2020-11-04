@@ -56,7 +56,6 @@ app.use("/home", require("./routes/homepage"));
 app.use("/profile", require("./routes/profile"));
 
 //admin APIs
-//user profiles
 app.use("/admin", require("./routes/admin"));
 
 //submit enquiry
@@ -117,6 +116,34 @@ app.get("/pcsline", async (req, res) => {
     }
 })
 
+// get total num of accepted vs rejected jobs for each month in a year
+app.get("/pcsline2", async (req, res) => {
+    try {
+        // console.log('enter /pcsline')
+        const year = req.query.year
+        const firstDayOfYear = year + '-01-01'
+        const firstDayOfNextYear = parseInt(year) + 1 + '-01-01'
+        // console.log(`year: ${year}, 1: ${firstDayOfYear}, 2: ${firstDayOfNextYear}`)
+        const data = await pool.query(
+            "SELECT to_char(duration_from, 'YYYY-MM') startYearMonth, \
+                    CASE WHEN t_status = 1 THEN 'pending' \
+                        WHEN t_status = 2 THEN 'rejected' \
+                        ELSE 'accepted' END status, \
+                    COUNT(*) \
+            FROM transactions_details \
+            WHERE duration_from >= $1 \
+            AND duration_from < $2 \
+            GROUP BY (startYearMonth, status);",
+            [firstDayOfYear, firstDayOfNextYear]
+        )
+        // console.log('finish query')
+        // console.log(data)
+        res.json(data.rows)
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
 // get total num of jobs for fulltimer and parttimer in a month
 app.get("/pcspie", async (req, res) => {
     try {
@@ -147,6 +174,19 @@ app.get("/pcspie", async (req, res) => {
         }
     } catch (err) {
         console.error(err.message)
+    }
+})
+
+// get underperforming caretakers of the month
+app.get("/underperformingcaretakers", async (req, res) => {
+    try {
+        const data = await pool.query("SELECT get_underperforming_caretakers()")
+        console.log('finish query')
+        console.log(data)
+        // console.log(data.rows[0].get_worst_caretaker.split(','))
+        res.json(data.rows)
+    } catch (error) {
+        console.log(error.message)
     }
 })
 
