@@ -15,6 +15,8 @@ CREATE TABLE Users (
 	full_name VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
+	-- user_zipcode VARCHAR,
+	-- user_area VARCHAR,
 	user_address VARCHAR,
 	is_deleted BOOLEAN DEFAULT FALSE;
 	PRIMARY KEY (email)
