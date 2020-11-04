@@ -41,10 +41,10 @@ const Register = ({ setAuth }) => {
                 toast.success("Register Successfully");
             } else {
                 setAuth(false);
-                toast.error(parseResponse);
+                toast.error("You were not assigned an admin but your account has been created");
             }
         } catch (err) {
-            console.error(err.message)
+            toast.error(err.message);
         }
     }
 

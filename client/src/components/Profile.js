@@ -114,10 +114,25 @@ const Profile = ({ setAuth }) => {
     <Fragment>
 
       <div className="container emp-profile">
-        <div className="row">
-          <div className="col-md-4">
-            <div className="profile-img mb-5">
-              <img src={profile_pic_URL} alt="You do not have a profile picture!" />
+          <div className="row">
+            <div className="col-md-4">
+              <div className="profile-img mb-5">
+                <img src={profile_pic_URL} alt="Your profile picture goes here!" />
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="profile-head">
+                <h5>
+                  {name}
+                </h5>
+                <h6>
+                  {acc_type}
+                </h6>
+                <p className="profile-rating">RATINGS : <span>8/10</span></p>
+              </div>
+            </div>
+            <div className="col-md-2">
+              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL}/>
             </div>
           </div>
           <div className="col-md-6">
