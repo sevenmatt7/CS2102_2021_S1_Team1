@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 
 const EditPet = ({ search, i }) => {
     const pet_name = search.pet_name;

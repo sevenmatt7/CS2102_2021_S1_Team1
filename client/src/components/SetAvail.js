@@ -31,6 +31,8 @@ const SetAvail = ({ setAuth }) => {
                     return '11';
                 case 'Dec':
                     return '12';
+                default:
+                    return '';
             }
         }
     
@@ -97,10 +99,10 @@ const SetAvail = ({ setAuth }) => {
 
     const updateDateLimit = () => {
         document.getElementById("datefield1").setAttribute("min", today);
-        if (inputs.service_avail_to != "") {
+        if (inputs.service_avail_to !== "") {
             document.getElementById("datefield1").setAttribute("max", inputs.service_avail_to);
         }
-        if (inputs.service_avail_from != "") {
+        if (inputs.service_avail_from !== "") {
             document.getElementById("datefield2").setAttribute("min", inputs.service_avail_from);
         }
         

@@ -1,6 +1,5 @@
-import React, { Fragment, useState, Component } from "react";
-import { Link } from "react-router-dom"
-import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
+import React, { Fragment } from "react";
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { toast } from "react-toastify";
 
 
@@ -27,7 +26,7 @@ export default function NavBar({ isAuth, setAuth }) {
         <Fragment>
             <Navbar variant="dark" expand="md" sticky="top" style={{ padding: "0", backgroundColor: "#b19cd9" }}>
                 <Container>
-                    <Navbar.Brand style={{ paddingTop: "0", marginRight: "2rem" }} href="/home">
+                    <Navbar.Brand style={{ paddingTop: "0", marginRight: "2rem" }} href="/c/home">
                         <img
                             alt=""
                             src={process.env.PUBLIC_URL + '/PetSocietyShadow.png'}
@@ -40,14 +39,14 @@ export default function NavBar({ isAuth, setAuth }) {
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="mr-auto">
                             {acc_type !== "caretaker" && <Nav.Link href="/c/sitters">Caretakers</Nav.Link>}
-                            <Nav.Link href="/contact">Contact Us</Nav.Link>
+                            <Nav.Link href="/c/contact">Contact Us</Nav.Link>
                             {acc_type === "caretaker" && emp_type === "parttime" && <Nav.Link href="/c/setavail">Indicate availabilites</Nav.Link>}
                             {acc_type === "caretaker" && emp_type === "fulltime" && <Nav.Link href="/c/takeleave">Take Leave</Nav.Link>}
                             {acc_type === "petowner" && <Nav.Link href="/c/registerpet">Pet registration</Nav.Link>}
                             {acc_type === "admin" && <Nav.Link href="/c/pcsenquiries">Enquiries</Nav.Link>}
                         </Nav>
                         <Nav>
-                            {!isAuth && <Nav.Link href="/login">Login</Nav.Link>}
+                            {!isAuth && <Nav.Link href="/c/login">Login</Nav.Link>}
                             {!isAuth && <Nav.Link eventKey={2} href="/c/register">Register</Nav.Link>}
                             {isAuth && <Nav.Link eventKey={3} href="/c" onClick={e => logout(e)}>Logout</Nav.Link>}
                             {isAuth && <Nav.Link eventKey={4} href="/c/profile">My Profile</Nav.Link>}

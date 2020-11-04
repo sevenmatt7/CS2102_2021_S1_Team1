@@ -1,8 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Jumbotron as Jumbo } from 'react-bootstrap';
 import imposter from "../Assets/Images/imposter.jpg";
 import { toast } from "react-toastify";
-import AnimatedNumber from 'react-animated-number';
 
 const Caretaker = () => {
     const [name, setName] = useState("");
@@ -131,14 +129,6 @@ const Caretaker = () => {
         }
     };
 
-    const getDays = (start, end) => {
-        let start_date = new Date(start)
-        let end_date = new Date(end)
-
-        let day_in_ms = 1000 * 3600 * 24
-
-        return (end_date - start_date) / day_in_ms
-    }
 
     const getTransactions = async () => {
         try {

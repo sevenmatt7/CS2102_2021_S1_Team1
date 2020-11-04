@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 import ViewReviews from "./ViewReviews";
 
@@ -169,7 +168,7 @@ const Sitters = ({ setAuth }) => {
           <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
             <div className="row no-gutters">
               <div className="col-md-4">
-              <img src={search.profile_pic_address} className="card-img" alt="Your profile picture!" />
+              <img src={search.profile_pic_address} className="card-img" alt="You!" />
               </div>
               <div className="col-md-8">
                 <div className="card-body">

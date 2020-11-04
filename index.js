@@ -18,6 +18,9 @@ if (process.env.NODE_ENV === "production") {
     app.get('/c/*', function(req, res) {
         return res.sendFile(path.resolve( __dirname, 'client/build' , 'index.html'));
     });
+    app.get('/', function(req, res) {
+        return res.sendFile(path.resolve( __dirname, 'client/build' , 'index.html'));
+    });
 }
 
 function parseDate(raw_date) {
