@@ -31,6 +31,7 @@ MARKING SCHEME
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 ![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
+
 Constraints not shown in ER diagram:
 - Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
 

@@ -56,7 +56,6 @@ app.use("/home", require("./routes/homepage"));
 app.use("/profile", require("./routes/profile"));
 
 //admin APIs
-//user profiles
 app.use("/admin", require("./routes/admin"));
 
 //submit enquiry
