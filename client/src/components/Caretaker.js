@@ -145,81 +145,7 @@ const Caretaker = () => {
             console.error(err.message);
         }
     };
-
-    // Calculate salary based on employment type, hourly rate and no. of pet days
-    const calc_salary = (hour_rate, pet_days, employment_type) => {
-        if (employment_type === 'parttime')
-            return hour_rate * pet_days * 0.75;
-        else
-            return hour_rate * pet_days;
-    }
-
-    // Creates Date Object based on input string format
-    const parseDate = (str) => {
-        var mdy = str.split('-');
-        var date = new Date(mdy[0], mdy[1] - 1, mdy[2]);
-        return date;
-    }
-
-    // Finds the total number of days between two dates
-    const datediff = (first, second) => {
-        return Math.round((second - first) / (1000 * 60 * 60 * 24)) + 1;
-    }
-
-    // Creates Date object of first day of month
-    const filterStartDate = (month, startDate) => {
-        var mdy = startDate.split('-');
-        return new Date(mdy[0], month - 1, "1");
-    }
-
-    // Creates Date object of last day of month
-    const filterEndDate = (month, endDate) => {
-        var mdy = endDate.split('-');
-        return new Date(mdy[0], month, "0");
-    }
-
-    // Counts number of pet days from input stringduration
-    const count_pet_days = (fd, sd) => {
-        let first_date = (fd.split('T'))[0];
-        let second_date = (sd.split('T'))[0];
-        return datediff(parseDate(first_date), parseDate(second_date));
-    }
-
-    // Adds additional attributes to user object
-    const countSalary = (user, petdays) => {
-        let calc_days = count_pet_days(user.duration_from, user.duration_to);
-        let base_price = Number(user.cost);
-        let pet_days = (typeof petdays === 'undefined') ? calc_days : petdays;
-        let employment_type = user.employment_type;
-        let salary = calc_salary(base_price, pet_days, employment_type);
-        return salary;
-    }
-
-    const getSalary = async () => {
-        try {
-            const response = await fetch("/salary?" + new URLSearchParams({
-                caretaker_email: localStorage.token,
-            }), {
-                method: "GET"
-            });
-            const salaryData = await response.json();
-            let totalSalary = 0;
-            let totalPetDays = 0;
-            for (let i = 0; i < Object.keys(salaryData).length; i++) {
-                let salary = countSalary(salaryData[i]);
-                let startDate = salaryData[i].duration_from;
-                let endDate = salaryData[i].duration_to;
-                let pet_days = count_pet_days(startDate, endDate);
-                totalPetDays += pet_days;
-                totalSalary += salary;
-            }
-            setSalary(totalSalary);
-            setPetdays(totalPetDays);
-        } catch (err) {
-            console.error(err.message);
-        }
-    }
-
+    
     const getTransactionStatus = (status) => {
         switch (status) {
             case 1:
@@ -250,36 +176,18 @@ const Caretaker = () => {
         }
     }
 
-    // Calculates total working days in a given month
-    const calc_total_days = (userData, month) => {
-        let first_date = (userData.duration_from.split('T'))[0];
-        let second_date = (userData.duration_to.split('T'))[0];
-        let startDate = parseDate(first_date);
-        let endDate = parseDate(second_date);
-        let fsd = filterStartDate(month, first_date);
-        let fed = filterEndDate(month, second_date);
-        if (fsd <= startDate && fed >= endDate) {
-            return datediff(startDate, endDate);
-        } else if (fsd <= startDate && fed < endDate) {
-            return datediff(startDate, fed);
-        } else {
-            return datediff(startDate, endDate) - datediff(startDate, fsd) + 1;
-        }
-    }
-
-    // Updates salary of current_user 
-    const updated_salary = (salaryData, petDays, currentPetDays) => {
-        if (salaryData.employment_type === "parttime")
-            return (salaryData.cost * petDays * 0.75);
-        else { // Full-time
-            if (petDays + currentPetDays >= 30)
-                return petDays * salaryData.cost * 0.8;
-            else if (petDays + currentPetDays > 30) {
-                let daysbefore30 = 30 - petDays;
-                let daysafter30 = petDays - daysbefore30;
-                return (daysbefore30 * salaryData.cost) + (daysafter30 * salaryData.cost * 0.8);
-            } else
-                return salaryData.cost * petDays;
+    const getSalary = async () => {
+        try {
+            const response = await fetch("/salary?" + new URLSearchParams({
+                caretaker_email: localStorage.token,
+            }), {
+                method: "GET"
+            });
+            const data = await response.json();
+            setPetdays(data.pet_days);
+            setSalary(data.salary);
+        } catch (err) {
+            console.error(err.message);
         }
     }
 
@@ -292,17 +200,9 @@ const Caretaker = () => {
             }), {
                 method: "GET"
             });
-            const salaryData = await response.json();
-            let totalSalary = 0;
-            let totalPetDays = 0;
-            for (let i = 0; i < Object.keys(salaryData).length; i++) {
-                let petDay = calc_total_days(salaryData[i], month);
-                let salary = updated_salary(salaryData[i], petDay, totalPetDays);
-                totalSalary += salary;
-                totalPetDays += petDay;
-            }
-            setPetdays(totalPetDays);
-            setSalary(totalSalary);
+            const data = await response.json();
+            setPetdays(data.pet_days);
+            setSalary(data.salary);
         } catch (error) {
             console.log(error.message);
         }
@@ -469,7 +369,6 @@ const Caretaker = () => {
                                                 </div>
                                             </div>
                                         </div>))}
-
                                 </div>
                             </div>
 

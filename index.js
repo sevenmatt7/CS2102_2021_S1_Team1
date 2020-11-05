@@ -273,6 +273,31 @@ app.get("/caretakers", async (req, res) => {
 });
 
 //get all caretaker searches
+app.get("/PCSTable", async (req, res) => {
+    try {
+        const searches = await pool.query("SELECT caretaker_email, full_name, employment_type,\
+                                                     avg_rating, total_pet_days, total_salary \
+                                             FROM calc_salary_for_all()");
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
+//get all caretaker searches
+app.get("/PCSTableFilter", async (req, res) => {
+    try {
+        let month = req.query.month;
+        month = new Date('2020', month-1, 1);
+        const searches = await pool.query("SELECT caretaker_email, full_name, employment_type,\
+                                                      avg_rating, total_pet_days, total_salary \
+                                              FROM calc_salary_for_all_for_a_month($1)",[month]);
+        res.json(searches.rows);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
 app.get("/caretakersadmin", async (req, res) => {
     try {
         const searches = await pool.query("SELECT c.caretaker_email, u.full_name, c.employment_type, c.avg_rating, td.cost, \
@@ -335,7 +360,7 @@ app.put("/editpet", async (req, res) => {
         const { old_pet_name, new_pet_name, special_req, pet_type, gender } = req.body;
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        console.log(user_email);
+        // console.log(user_email);
 
         const editPet = await pool.query(
             "UPDATE Owns_Pets SET (pet_name, special_req, pet_type, gender) = ($3, $4, $5, $6) \
@@ -430,7 +455,6 @@ app.get("/transactions", async (req, res) => {
                                             WHERE Transactions_Details.caretaker_email = '${user_email}';\ 
                                             ` );
         }
-        console.log(searches)
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -447,10 +471,10 @@ app.get("/salary", async (req, res) => {
         } else {
             caretaker_email = req.query.caretaker_email
         }
-        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
-                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
-                                             ORDER BY duration_from", [caretaker_email]);
-        res.json(searches.rows);
+        const searches = await pool.query("SELECT salary, pet_days \
+                                             FROM calc_salary($1) \
+                                            AS (salary NUMERIC, pet_days NUMERIC)", [caretaker_email]);
+        res.json(searches.rows[0]);
     } catch (error) {
         console.log(error.message)
     }
@@ -461,6 +485,7 @@ app.get("/filtersalary", async (req, res) => {
     try {
         let caretaker_email;
         let month = req.query.month;
+        month = new Date('2020', month-1, 1);
         if (req.query.caretaker_email.indexOf("@") === -1) {
             let jwtToken = req.query.caretaker_email;
             caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;;
@@ -468,11 +493,10 @@ app.get("/filtersalary", async (req, res) => {
             caretaker_email = req.query.caretaker_email;
         }
 
-        const searches = await pool.query("SELECT caretaker_email, employment_type, cost, duration_from, duration_to \
-                                             FROM transactions_details WHERE caretaker_email=$1 AND t_status>=3\
-                                             AND (EXTRACT(MONTH FROM duration_to)=$2 OR EXTRACT(MONTH FROM duration_from)=$3)\
-                                         ORDER BY duration_from", [caretaker_email, month, month]);
-        res.json(searches.rows);
+        const searches = await pool.query("SELECT salary, pet_days \
+                                             FROM calc_monthly_salary($1, $2) \
+                                             AS (salary NUMERIC, pet_days NUMERIC);", [caretaker_email, month]);
+        res.json(searches.rows[0]);
     } catch (error) {
         console.log(error.message)
     }
@@ -608,11 +632,11 @@ app.post("/takeleave", async (req, res) => {
         const leave_duration = leave_details[4];
 
         // used to debug
-        console.log("start avail 1: " + avail_from1)
-        console.log("start avail end 1: " + avail_to1)
-        console.log("start avail 2: " + avail_from2)
-        console.log("start avail end 2: " + avail_to2)
-        console.log(leave_duration);
+        // console.log("start avail 1: " + avail_from1)
+        // console.log("start avail end 1: " + avail_to1)
+        // console.log("start avail 2: " + avail_from2)
+        // console.log("start avail end 2: " + avail_to2)
+        // console.log(leave_duration);
         
         //make the old availability set to is_avail = 'False'
         pool.query("UPDATE Offers_services SET is_avail = 'f' \
@@ -798,7 +822,7 @@ app.get('/ownerenquiries', async (req, res) => {
         const data = await pool.query(`SELECT enq_type, submission, enq_message, answer
                                         FROM enquiries
                                         WHERE user_email = '${user_email}'`)
-        console.log(data.rows)
+        // console.log(data.rows)
         res.json(data.rows)
     } catch (error) {
         console.log(error.message)
