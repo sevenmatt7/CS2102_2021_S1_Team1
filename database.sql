@@ -9,6 +9,20 @@ DROP TABLE IF EXISTS Offers_Services CASCADE;
 DROP TABLE IF EXISTS Transactions_Details CASCADE;
 DROP TABLE IF EXISTS Enquiries CASCADE;
 DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
+DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
+DROP FUNCTION IF EXISTS update_fulltime_price() CASCADE;
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
+DROP TYPE IF EXISTS return_type;
+DROP FUNCTION IF EXISTS assign_to_admin();
+DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
+DROP FUNCTION IF EXISTS start_of_month(DATE);
+DROP FUNCTION IF EXISTS user_exists_in_month(startDate DATE, endDate DATE, input_month DATE);
+DROP FUNCTION IF EXISTS calc_salary(input_email VARCHAR);
+DROP FUNCTION IF EXISTS calc_monthly_salary(input_email VARCHAR, input_month DATE);
+DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days, pet_days NUMERIC, cost NUMERIC);
+DROP FUNCTION IF EXISTS calc_salary_for_all();
+DROP FUNCTION IF EXISTS calc_salary_for_all_for_a_month(input_month DATE);
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 
 CREATE TABLE Users (
 	email VARCHAR,
@@ -122,6 +136,7 @@ CREATE TABLE Enquiries (
 -----------------------------------------------------------------------------------------------------------------------
 
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
+DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -164,13 +179,23 @@ RETURNS TRIGGER AS $$
 		pet_limit INTEGER := 2;
 		count BIGINT := 0;
 	BEGIN
+		-- if the status change is to 2 (reject), 4(complete), 5(review submitted),
+		-- the checks do not need to be performed.
+		IF (NEW.t_status = 2 OR NEW.t_status = 4 OR NEW.t_status = 5) THEN
+			RETURN NEW;
+		END IF;
+
+		-- the code below will execute only when the caretaker is about to accept a bid
 		-- get rating of caretaker
 		SELECT avg_rating INTO rating
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF ((emp_type = 'parttime' AND rating > 4) OR emp_type = 'fulltime') THEN
+		
+		-- for a full time caretaker or a part time caretaker with a rating >= 4, the limit is 5
+		IF ((emp_type = 'parttime' AND rating >= 4) OR emp_type = 'fulltime') THEN
 			pet_limit := 5;
 		END IF;
+		
 		-- Loop over the each date of the new bid to be accepted and check if any of the days have
 		-- more than 5 transactions in progress
 		WHILE date_start <= date_end LOOP
@@ -206,13 +231,14 @@ RETURNS TRIGGER AS $$
 	DECLARE 
 		emp_type VARCHAR := NEW.employment_type;
 		rating NUMERIC;
+		reviews INTEGER;
 		new_price INTEGER := 50;
 	BEGIN
 		-- get rating of caretaker
-		SELECT avg_rating INTO rating
+		SELECT avg_rating, no_of_reviews INTO rating, reviews
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF (emp_type = 'fulltime') THEN
+		IF (emp_type = 'fulltime' AND reviews >= 10) THEN
 			IF (rating > 4.2 AND rating < 4.4 ) THEN
 				new_price := 52;
 			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
@@ -445,7 +471,7 @@ RETURNS BOOLEAN AS $$
 $$ LANGUAGE plpgsql;
 
 -- calculate salary
-DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days, pet_days NUMERIC, cost NUMERIC);
+DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days NUMERIC, pet_days NUMERIC, cost NUMERIC);
 CREATE OR REPLACE FUNCTION salary(e_type VARCHAR, total_pet_days NUMERIC, pet_days NUMERIC, cost NUMERIC)
 RETURNS NUMERIC AS $$
 	DECLARE
