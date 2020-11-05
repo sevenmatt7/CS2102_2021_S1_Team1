@@ -253,8 +253,10 @@ app.put("/pcsanswer", async (req, res) => {
 
 //get all caretaker searches
 app.get("/caretakers", async (req, res) => {
+    var today = new Date()
+    var currDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split("T")[0]
     try {
-        const searches = await pool.query("SELECT DISTINCT full_name, user_address, profile_pic_address,\
+        const searches = await pool.query(`SELECT DISTINCT full_name, user_address, profile_pic_address,\
                                             avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
                                             type_pref, service_avail_from, service_avail_to, daily_price \
                                             FROM Offers_services \
@@ -262,7 +264,8 @@ app.get("/caretakers", async (req, res) => {
                                             ON Offers_services.caretaker_email = Users.email \
                                             LEFT JOIN Caretakers \
                                             ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
-                                            ");
+                                            WHERE is_avail != 'f' AND service_avail_to >= '${currDate}'; \
+                                            `);
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -503,18 +506,22 @@ app.get("/filtersalary", async (req, res) => {
 
 //get all filtered searches
 app.get("/caretakersq", async (req, res) => {
+    var today = new Date()
+    var currDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split("T")[0]
     try {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         var sql = `SELECT DISTINCT full_name, user_address, profile_pic_address\
-        avg_rating, Caretakers.caretaker_email, Caretakers.employment_type, \
-        type_pref, daily_price \
+        avg_rating, service_avail_from, service_avail_to, Caretakers.caretaker_email, Caretakers.employment_type, \
+        type_pref, daily_price\
         FROM Offers_services \
         LEFT JOIN Users \
         ON Offers_services.caretaker_email = Users.email \
         LEFT JOIN Caretakers \
         ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
-        WHERE '${user_email}' != Offers_Services.caretaker_email`;
+        WHERE '${user_email}' != Offers_Services.caretaker_email \
+        AND is_avail != 'f' \
+        AND AND service_avail_to >= '${currDate}'`;
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
             sql += " AND Caretakers.employment_type = ";
