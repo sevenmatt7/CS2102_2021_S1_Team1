@@ -34,6 +34,7 @@ const RegisterPet = ({setAuth}) => {
             const successMessage = 'Your pet ' + parseResponse + ' has been succesfully registered!'
             toast.success(successMessage);
             setRedirect(true); 
+            console.log(parseResponse)
             
         } catch (err) {
             console.error(err.message)

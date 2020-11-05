@@ -99,10 +99,17 @@ router.post("/registerpet", validInfo, async (req, res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email)
 
-        const newPet = await pool.query(
-            "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [user_email, pet_name, special_req, pet_type, gender]);
+        var newPet = await pool.query(
+            "UPDATE Owns_Pets SET is_deleted = false WHERE owner_email = $1 AND pet_name = $2 AND pet_type = $3 RETURNING *",
+            [user_email, pet_name, pet_type]);
 
+        if (newPet.rowCount == 0) {
+            newPet = await pool.query(
+                "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                [user_email, pet_name, special_req, pet_type, gender]);
+        }
+
+        
         res.json(newPet.rows[0].pet_name);
 
     } catch (err) {

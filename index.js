@@ -292,7 +292,8 @@ app.get("/pets", async (req, res) => {
         const searches = await pool.query(`SELECT DISTINCT owner_email, pet_name, \
                                             gender, special_req, pet_type \
                                             FROM Owns_Pets \
-                                            WHERE owner_email = '${user_email}'; \ 
+                                            WHERE owner_email = '${user_email}' \
+                                            AND is_deleted = false; \ 
                                             ` );
         res.json(searches.rows);
     } catch (error) {
@@ -301,13 +302,14 @@ app.get("/pets", async (req, res) => {
 });
 
 //delete selected pet
-app.delete("/deletepet/:id", async (req, res) => {
+app.put("/deletepet/:id", async (req, res) => {
     try {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const { id } = req.params;
         const deleteItem = await pool.query(
-            "DELETE FROM Owns_Pets \
+            // Instead of deleting the entry, set the boolean variable to true
+            "UPDATE Owns_Pets SET is_deleted = true \
             WHERE owner_email = $1 \
             AND pet_name = $2 \
             AND \

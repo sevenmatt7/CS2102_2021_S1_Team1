@@ -61,7 +61,7 @@ const PetOwner = () => {
         try {
             const res = await fetch("/deletepet/" + pet_name,
                 {
-                    method: "DELETE",
+                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                         token: localStorage.token
