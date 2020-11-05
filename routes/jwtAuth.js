@@ -21,7 +21,14 @@ router.post("/register", validInfo, async (req, res) => {
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
 
         if (user.rows.length !== 0) {
-            return res.status(401).json("A user with the email is already registered!")
+            if (user.rows[0].is_deleted == true) {
+                const reactivate = await pool.query("UPDATE Users SET is_deleted = false WHERE email = $1", [email]);
+                return res.json("This account has been created before, reactivating...")
+            }
+            else {
+                return res.status(401).json("A user with the email is already registered!")
+            }
+           
         }
 
         //step 3: encrypt the user's password using bcrypt

@@ -70,7 +70,8 @@ const Register = ({ setAuth }) => {
                 toast.success("Register Successfully");
             } else {
                 setAuth(false);
-                toast.error("There was an error in your registration");
+                // toast.error("There was an error in your registration");
+                toast.error(parseResponse);
             }
         } catch (err) {
             toast.error(err.message);
