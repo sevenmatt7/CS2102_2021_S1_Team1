@@ -396,6 +396,203 @@ RETURNS TABLE (new_service_avail_from1 DATE,
  	END; 
 $$ LANGUAGE plpgsql;
 
+-- Returns start day of month
+DROP FUNCTION IF EXISTS start_of_month(DATE);
+CREATE OR REPLACE FUNCTION start_of_month(DATE)
+RETURNS DATE AS $$
+	BEGIN
+		RETURN (SELECT (date_trunc('month', $1)::DATE));
+	END
+$$ LANGUAGE plpgsql;
+
+-- Returns last day of month
+DROP FUNCTION IF EXISTS end_of_month(DATE);
+CREATE OR REPLACE FUNCTION end_of_month(DATE)
+RETURNS DATE AS $$
+	BEGIN
+		RETURN (SELECT (date_trunc('month', $1) + interval '1 month' - interval '1 day')::DATE);
+	END
+$$ LANGUAGE plpgsql;
+
+-- Returns total working days in a given month
+DROP FUNCTION IF EXISTS calc_total_days(startDate DATE, endDate DATE, input_month DATE);
+CREATE OR REPLACE FUNCTION calc_total_days(startDate DATE, endDate DATE, input_month DATE)
+RETURNS NUMERIC AS $$
+	DECLARE
+		firstDayOfMonth DATE := start_of_month(input_month);
+		lastDayOfMonth DATE := end_of_month(input_month);
+	BEGIN
+		IF (firstDayOfMonth <= startDate AND lastDayOfMonth >= endDate) THEN
+			RETURN SUM(endDate - startDate) + 1;
+		ELSIF (firstDayOfMonth <= startDate AND lastDayOfMonth < endDate) THEN
+			RETURN SUM(lastDayOfMonth - startDate) + 1;
+		ELSE
+			RETURN SUM(endDate - startDate) - SUM(firstDayOfMonth - startDate) + 1;
+		END IF;
+	END
+$$ LANGUAGE plpgsql;
+
+-- Checks if user exists in a given month
+DROP FUNCTION IF EXISTS user_exists_in_month(startDate DATE, endDate DATE, input_month DATE);
+CREATE OR REPLACE FUNCTION user_exists_in_month(startDate DATE, endDate DATE, input_month DATE)
+RETURNS BOOLEAN AS $$
+	DECLARE
+		firstDayOfMonth DATE := start_of_month(input_month);
+		lastDayOfMonth DATE := end_of_month(input_month);
+	BEGIN
+		RETURN (startDate <= lastDayOfMonth AND endDate >= firstDayOfMonth);
+	END
+$$ LANGUAGE plpgsql;
+
+-- calculate salary
+DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days, pet_days NUMERIC, cost NUMERIC);
+CREATE OR REPLACE FUNCTION salary(e_type VARCHAR, total_pet_days NUMERIC, pet_days NUMERIC, cost NUMERIC)
+RETURNS NUMERIC AS $$
+	DECLARE
+		daysBefore60 NUMERIC := 0;
+		daysAfter60 NUMERIC := 0;
+	BEGIN
+		IF (e_type= 'parttime') THEN
+			RETURN pet_days * cost * 0.75;
+		ELSE
+			IF (total_pet_days >= 60) THEN
+				RETURN pet_days * cost * 0.8;
+			ELSIF (pet_days + total_pet_days > 60) THEN
+				daysBefore60 := 60 - pet_days;
+				daysAfter60 := pet_days - daysBefore60;
+				RETURN pet_days * cost * 0.8;
+			ELSE
+				RETURN  pet_days * cost;
+			END IF;
+		END IF;
+	END
+$$ LANGUAGE plpgsql;
+
+-- calculates total salary for a single user
+DROP FUNCTION IF EXISTS calc_salary(input_email VARCHAR);
+CREATE OR REPLACE FUNCTION calc_salary(input_email VARCHAR)
+RETURNS RECORD AS $$ 
+	DECLARE 
+		total_pet_days NUMERIC := 0;
+		total_salary NUMERIC := 0;
+		i RECORD;
+		ret RECORD;
+		currPetDays NUMERIC := 0;
+		daysBefore60 NUMERIC := 0;
+		daysAfter60 NUMERIC := 0;
+	BEGIN
+		FOR i IN
+			SELECT cost, duration_from, duration_to, employment_type 
+			FROM transactions_details
+			WHERE caretaker_email=input_email AND t_status>=3
+			ORDER BY duration_from
+			LOOP
+				currPetDays := SUM(i.duration_to::date-i.duration_from::date+1);
+				total_salary := total_salary + salary(i.employment_type, total_pet_days, currPetDays, i.cost);
+				total_pet_days := total_pet_days + currPetDays;
+		END LOOP; 
+		ret := (total_salary, total_pet_days);
+		RETURN ret;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+-- filter salary based on month
+DROP FUNCTION IF EXISTS calc_monthly_salary(input_email VARCHAR, input_month DATE);
+CREATE OR REPLACE FUNCTION calc_monthly_salary(input_email VARCHAR, input_month DATE)
+RETURNS RECORD AS $$ 
+	DECLARE 
+		total_pet_days NUMERIC := 0;
+		total_salary NUMERIC := 0;
+		i RECORD;
+		ret RECORD;
+		currPetDays NUMERIC := 0;
+		daysBefore60 NUMERIC := 0;
+		daysAfter60 NUMERIC := 0;
+	BEGIN
+		FOR i IN
+			SELECT cost, duration_from, duration_to, employment_type 
+			FROM transactions_details
+			WHERE caretaker_email=input_email AND t_status>=3
+			ORDER BY duration_from
+			LOOP
+				IF (NOT user_exists_in_month(i.duration_from, i.duration_to, input_month)) THEN 
+					CONTINUE;
+				END IF;
+				currPetDays := calc_total_days(i.duration_from, i.duration_to, input_month);
+				total_salary := total_salary + salary(i.employment_type, total_pet_days, currPetDays, i.cost);
+				total_pet_days := total_pet_days + currPetDays;
+		END LOOP; 
+		ret := (total_salary, total_pet_days);
+		RETURN ret;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+-- calculates total salary for all single user
+DROP FUNCTION IF EXISTS calc_salary_for_all();
+CREATE OR REPLACE FUNCTION calc_salary_for_all()
+RETURNS TABLE (caretaker_email VARCHAR,
+			         full_name VARCHAR,
+			   employment_type VARCHAR,
+			        avg_rating NUMERIC,
+			    total_pet_days NUMERIC,
+		          total_salary NUMERIC) AS $$ 
+	DECLARE 
+		i RECORD;
+	BEGIN
+		FOR i IN
+			SELECT c.caretaker_email AS caretaker_email, u.full_name AS full_name, 
+			       c.employment_type AS employment_type, ROUND(AVG(c.avg_rating),2) AS avg_rating 
+			  FROM (Transactions_Details AS td JOIN Caretakers AS c 
+				ON td.caretaker_email=c.caretaker_email) JOIN Users AS u 
+				ON c.caretaker_email=u.email WHERE td.t_status>=3
+			GROUP BY c.caretaker_email, u.full_name, c.employment_type						
+			LOOP
+				caretaker_email := i.caretaker_email;
+				full_name := i.caretaker_email;
+				employment_type := i.employment_type;
+				avg_rating := i.avg_rating;
+				SELECT salary, pet_days INTO total_salary, total_pet_days 
+				  FROM calc_salary(i.caretaker_email)
+				    AS (salary NUMERIC, pet_days NUMERIC);
+				RETURN NEXT;
+		END LOOP; 
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+-- calculates total salary for all single user for a single month
+DROP FUNCTION IF EXISTS calc_salary_for_all_for_a_month(input_month DATE);
+CREATE OR REPLACE FUNCTION calc_salary_for_all_for_a_month(input_month DATE)
+RETURNS TABLE (caretaker_email VARCHAR,
+			         full_name VARCHAR,
+			   employment_type VARCHAR,
+			        avg_rating NUMERIC,
+			    total_pet_days NUMERIC,
+		          total_salary NUMERIC) AS $$ 
+	DECLARE 
+		i RECORD;
+	BEGIN
+		FOR i IN
+			SELECT c.caretaker_email AS caretaker_email, u.full_name AS full_name, 
+			       c.employment_type AS employment_type, ROUND(AVG(c.avg_rating),2) AS avg_rating 
+			  FROM (Transactions_Details AS td JOIN Caretakers AS c 
+				ON td.caretaker_email=c.caretaker_email) JOIN Users AS u 
+				ON c.caretaker_email=u.email WHERE td.t_status>=3
+			GROUP BY c.caretaker_email, u.full_name, c.employment_type						
+			LOOP
+				SELECT salary, pet_days INTO total_salary, total_pet_days 
+				  FROM calc_monthly_salary(i.caretaker_email, input_month)
+				    AS (salary NUMERIC, pet_days NUMERIC);
+				IF (total_salary = 0 OR total_pet_days = 0) THEN
+					CONTINUE;
+				END IF;
+				caretaker_email := i.caretaker_email;
+				full_name := i.caretaker_email;
+				employment_type := i.employment_type;
+				avg_rating := i.avg_rating;
+				RETURN NEXT;
+		END LOOP; 
+ 	END; 
+$$ LANGUAGE plpgsql;
 -- function to get underperforming caretakers (rating less than 2)
 DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 DROP TYPE IF EXISTS return_type;
