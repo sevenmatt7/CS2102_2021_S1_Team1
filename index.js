@@ -438,10 +438,10 @@ app.get("/transactions", async (req, res) => {
             AND Transactions_Details.owner_email = '${user_email}'\ 
             `
             if (req.query.t_status != undefined) {
-                if (req.query.t_status == "4") {
+                if (req.query.t_status == "4" || req.query.t_status == "5") {
                     sql += " AND (t_status = 4 OR t_status = 5)";
                 }
-                if (req.query.t_status != "" && req.query.t_status != "4") {
+                else if (req.query.t_status != "") {
                     sql += " AND t_status = ";
                     sql += ("'" + req.query.t_status + "'");
                 }
@@ -449,15 +449,26 @@ app.get("/transactions", async (req, res) => {
 
             searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
-            searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email, \
-                                            Transactions_details.owner_review, Transactions_details.owner_rating \
-                                            FROM Transactions_Details LEFT JOIN Owns_pets  \
-                                            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
-                                            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
-                                            WHERE Users.is_deleted = false \
-                                            AND Transactions_Details.caretaker_email = '${user_email}';\ 
-                                            ` );
+            var sql = (`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email, \
+            Transactions_details.owner_review, Transactions_details.owner_rating \
+            FROM Transactions_Details LEFT JOIN Owns_pets  \
+            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
+            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
+            WHERE Users.is_deleted = false \
+            AND Transactions_Details.caretaker_email = '${user_email}'\ 
+            ` );
+            if (req.query.t_status != undefined) {
+                if (req.query.t_status == "4" || req.query.t_status == "5") {
+                    sql += " AND (t_status = 4 OR t_status = 5)";
+                }
+                else if (req.query.t_status != "") {
+                    sql += " AND t_status = ";
+                    sql += ("'" + req.query.t_status + "'");
+                }
+            }
+
+            searches = await pool.query(sql);
         }
         res.json(searches.rows);
     } catch (error) {

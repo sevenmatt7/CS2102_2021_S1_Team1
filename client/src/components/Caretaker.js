@@ -140,6 +140,7 @@ const Caretaker = () => {
                 headers: { token: localStorage.token, acc_type: acc_type }
             });
             const jsonData = await res.json();
+            console.log(jsonData);
             setTransactions(jsonData);
         } catch (err) {
             console.error(err.message);
@@ -223,16 +224,17 @@ const Caretaker = () => {
     }
 
     useEffect(() => {
+        getTransactions();
+    }, [button])
+
+    useEffect(() => {
         getReviews();
         getTransactions();
         getProfile();
         getSalary();
     }, [])
 
-    useEffect(() => {
-        getTransactions();
 
-    }, [button])
 
     return (
         <Fragment>
