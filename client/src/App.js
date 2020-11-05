@@ -51,6 +51,9 @@ function App() {
 
       <Router>
         <Switch>
+        <Route exact path="/" render={props =>
+            (<LandingPage {...props} setAuth={setAuth} />)} />
+
           <Route exact path="/c" render={props =>
             (<LandingPage {...props} setAuth={setAuth} />)} />
 
