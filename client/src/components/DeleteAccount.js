@@ -26,7 +26,7 @@ const DeleteAccount = ({ setAuth }) => {
                 
                 const parseResponse = await response.json();
                 console.log(parseResponse.rowCount)
-                if (parseResponse.rowCount = 0) {
+                if (parseResponse.rowCount == 0) {
                     toast.error("You cannot delete your account now!");
                 }
                 else {
