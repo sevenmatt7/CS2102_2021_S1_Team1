@@ -434,7 +434,8 @@ app.get("/transactions", async (req, res) => {
             FROM Transactions_Details LEFT JOIN Owns_pets  \
             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
-            WHERE Transactions_Details.owner_email = '${user_email}'\ 
+            WHERE Users.is_deleted = false \
+            AND Transactions_Details.owner_email = '${user_email}'\ 
             `
             if (req.query.t_status != undefined) {
                 if (req.query.t_status == "4") {
@@ -454,7 +455,8 @@ app.get("/transactions", async (req, res) => {
                                             FROM Transactions_Details LEFT JOIN Owns_pets  \
                                             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
                                             LEFT JOIN Users ON users.email = Transactions_Details.owner_email
-                                            WHERE Transactions_Details.caretaker_email = '${user_email}';\ 
+                                            WHERE Users.is_deleted = false \
+                                            AND Transactions_Details.caretaker_email = '${user_email}';\ 
                                             ` );
         }
         res.json(searches.rows);
