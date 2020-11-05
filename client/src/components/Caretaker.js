@@ -445,7 +445,7 @@ const Caretaker = () => {
 
                             <div className="card mb-3">
                                 <div className="card-body">
-                                    <h2>Total salary earned: ${salary}</h2>
+                                    <h2>Estimated salary: ${salary}</h2>
                                 </div>
                             </div>
 

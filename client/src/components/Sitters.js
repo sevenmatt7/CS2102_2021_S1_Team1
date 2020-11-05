@@ -163,6 +163,11 @@ const Sitters = ({ setAuth }) => {
         </div>
       </div>
 
+      <div className="text-center">
+        <h2> Browse for CareTakers!</h2>
+        <br></br>
+      </div>
+      
       
       {acc_type === "petowner" && <div className="table-responsive">
         <table className="table table-stripped table-sm">
