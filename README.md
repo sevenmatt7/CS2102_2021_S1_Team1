@@ -104,7 +104,7 @@ Add additional notes about how to deploy this on a live system.
 - README inspiration from [here](https://github.com/kylelobo/The-Documentation-Compendium)
 
 ## 📖 Project Report <a name = "project_report"></a>
-- The Project Report can be found [here](proj_data/projectReport.md)
+- The Project Report can be found [here](proj_docs/projectReport.md)
 
 <!-- ## Available Scripts
 
