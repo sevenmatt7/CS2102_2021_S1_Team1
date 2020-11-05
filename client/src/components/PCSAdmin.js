@@ -62,7 +62,7 @@ const PCSAdmin = () => {
 
   const getManagedCareTakers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/admin/caretakers", {
+      const res = await fetch("/admin/caretakers", {
         method: "GET",
         headers: { token: localStorage.token }
       });
@@ -80,7 +80,7 @@ const PCSAdmin = () => {
           toast.error("Please enter in a valid base price!")
         } else {
           const body = { baseprice };
-          const response = await fetch("http://localhost:5000/admin/changeprice", {
+          const response = await fetch("/admin/changeprice", {
             method: "PUT",
             headers: { "Content-Type": "application/json",
                         token: localStorage.token },
@@ -104,7 +104,7 @@ const PCSAdmin = () => {
         console.log("enter getLineData")
         console.log(`year = ${yearDisplayed}`)
         const year = yearDisplayed.toString()
-        const response = await fetch('http://localhost:5000/pcsline?' + new URLSearchParams({
+        const response = await fetch('/pcsline?' + new URLSearchParams({
           year: year
         }), {
           method: "GET"
@@ -151,7 +151,7 @@ const PCSAdmin = () => {
     if (yearDisplayed != '') {
       try {
         const year = yearDisplayed.toString()
-        const response = await fetch('http://localhost:5000/pcsline2?' + new URLSearchParams({
+        const response = await fetch('/pcsline2?' + new URLSearchParams({
           year: year
         }), {
           method: "GET"
@@ -228,7 +228,7 @@ const PCSAdmin = () => {
     if (pieState.monthDisplayed != '') {
       try {
         const duration = yearDisplayed + "-" + (parseInt(pieState.monthDisplayed) + 1).toString()
-        const response = await fetch('http://localhost:5000/pcspie?' + new URLSearchParams({
+        const response = await fetch('/pcspie?' + new URLSearchParams({
           duration: duration
         }), {
           method: "GET"
@@ -251,7 +251,7 @@ const PCSAdmin = () => {
 
   const getunderPerformingCaretakers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/underperformingcaretakers', {
+      const response = await fetch('/underperformingcaretakers', {
         method: "GET"
       });
       const data = await response.json()

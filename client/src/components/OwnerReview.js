@@ -19,7 +19,7 @@ const OwnerReview = ({ search, i }) => {
         e.preventDefault();
         try {
             const body = { caretaker_email, employment_type, pet_name, duration_from, duration_to, rating, review };
-            const response = await fetch("http://localhost:5000/submitreview", {
+            const response = await fetch("/submitreview", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json",
                             token: localStorage.token },

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import PCSAdmin from "./PCSAdmin";
 import PetOwner from "./PetOwner";
 import Caretaker from "./Caretaker";
@@ -9,11 +9,9 @@ const Homepage = ({ setAuth }) => {
   return (
     <Fragment>
       {acc_type === "admin" && <PCSAdmin />}
-      {acc_type == "petowner" && <PetOwner/>}
-      {acc_type == "caretaker" && <Caretaker/>}
+      {acc_type === "petowner" && <PetOwner/>}
+      {acc_type === "caretaker" && <Caretaker/>}
     </Fragment>
-
-
   );
 };
 

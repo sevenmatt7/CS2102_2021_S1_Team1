@@ -1,8 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Jumbotron as Jumbo } from 'react-bootstrap';
 import imposter from "../Assets/Images/imposter.jpg";
 import { toast } from "react-toastify";
-import AnimatedNumber from 'react-animated-number';
 
 const Caretaker = () => {
     const [name, setName] = useState("");
@@ -54,7 +52,7 @@ const Caretaker = () => {
 
     const getProfile = async () => {
         try {
-            const res = await fetch("http://localhost:5000/home/", {
+            const res = await fetch("/home/", {
                 method: "GET",
                 headers: { token: localStorage.token }
             });
@@ -85,7 +83,7 @@ const Caretaker = () => {
             //   }
 
             const body = { owner_email, pet_name, duration_to, duration_from, status_update };
-            const response = await fetch("http://localhost:5000/changebid", {
+            const response = await fetch("/changebid", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,7 +115,7 @@ const Caretaker = () => {
 
     const getReviews = async () => {
         try {
-            const response = await fetch("http://localhost:5000/getreview?" + new URLSearchParams({
+            const response = await fetch("/getreview?" + new URLSearchParams({
                 caretaker_email: localStorage.token,
                 employment_type: "",
             }), {
@@ -131,19 +129,11 @@ const Caretaker = () => {
         }
     };
 
-    const getDays = (start, end) => {
-        let start_date = new Date(start)
-        let end_date = new Date(end)
-
-        let day_in_ms = 1000 * 3600 * 24
-
-        return (end_date - start_date) / day_in_ms
-    }
 
     const getTransactions = async () => {
         try {
             const t_value = button['t_status'];
-            const res = await fetch("http://localhost:5000/transactions?" + new URLSearchParams({
+            const res = await fetch("/transactions?" + new URLSearchParams({
                 t_status: t_value
             }), {
                 method: "GET",
@@ -188,7 +178,7 @@ const Caretaker = () => {
 
     const getSalary = async () => {
         try {
-            const response = await fetch("http://localhost:5000/salary?" + new URLSearchParams({
+            const response = await fetch("/salary?" + new URLSearchParams({
                 caretaker_email: localStorage.token,
             }), {
                 method: "GET"
@@ -204,7 +194,7 @@ const Caretaker = () => {
     // Filter salary based on a given month
     const filterSalary = async (month) => {
         try {
-            const response = await fetch("http://localhost:5000/filtersalary?" + new URLSearchParams({
+            const response = await fetch("/filtersalary?" + new URLSearchParams({
                 caretaker_email: localStorage.token,
                 month: month
             }), {

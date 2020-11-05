@@ -17,7 +17,7 @@ const PCSTable = () => {
     // Default method to get all CareTakers earnings
     const getCareTakers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/PCSTable");
+            const response = await fetch("/PCSTable");
             const data = await response.json();
             setCaretakers(data);
         } catch (error) {
@@ -27,7 +27,7 @@ const PCSTable = () => {
     // Filter table based on a given month
     const filterTable = async (month) => {
         try {
-            const response = await fetch("http://localhost:5000/PCSTableFilter?" + new URLSearchParams({
+            const response = await fetch("/PCSTableFilter?" + new URLSearchParams({
                 month: month
             }), {
                 method: "GET"

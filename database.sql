@@ -15,10 +15,9 @@ CREATE TABLE Users (
 	full_name VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
-	-- user_zipcode VARCHAR,
-	-- user_area VARCHAR,
+	user_area VARCHAR,
 	user_address VARCHAR,
-	is_deleted BOOLEAN DEFAULT FALSE;
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (email)
 );
 
@@ -66,7 +65,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	is_deleted BOOLEAN DEFAULT FALSE;
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
@@ -236,7 +235,6 @@ CREATE TRIGGER update_fulltime_price
 	AFTER UPDATE OF avg_rating ON Caretakers
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
-
 
 
 -----------------------------------------------------------------------------------------------------------------------
@@ -683,80 +681,3 @@ RETURNS SETOF return_type AS $$
 
  	END; 
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
-
-
-
-
-
-
-
--- CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
--- 												caretaker_email DATE , type_pref DATE, 
--- 												old_avail_from DATE, old_avail_to DATE )
--- RETURNS INTEGER AS $$ 
--- 	BEGIN
--- 		-- Change the service_avail_from and service_avail_to of the service that we need to split the availability
--- 		-- of
--- 		PERFORM 'UPDATE Offers_Services SET service_avail_from = old_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
--- 		-- Get all transactions that are related to the service offered by the caretaker that we need 
--- 		-- to change the dates to
--- 		PERFORM 'UPDATE TRansactions_Details
--- 				SET service_avail_from = new_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
-		
--- 		RETURN 1;
---  	END; 
--- $$ LANGUAGE plpgsql;
-
---- Trigger to check whether a full time caretaker can take leave
--- DROP FUNCTION IF EXISTS login_user(character varying,character varying);
--- CREATE OR REPLACE FUNCTION login_user(in_email VARCHAR, acc_type VARCHAR)
--- RETURNS TABLE (email VARCHAR, 
--- 				user_password VARCHAR, 
--- 				emp_type VARCHAR) AS $$ 
--- 	BEGIN
--- 		IF (SELECT COUNT(*) from users WHERE Users.email = in_email) = 0 THEN
--- 			RAISE EXCEPTION 'User with email does not exist';
--- 		ELSE
--- 			IF acc_type = 'petowner' THEN
--- 			IF (SELECT COUNT(*) from PetOwners WHERE owner_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PetOwners LEFT JOIN Users ON Petowners.owner_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSIF acc_type = 'caretaker' THEN
--- 			IF (SELECT COUNT(*) from Caretakers WHERE caretaker_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, Caretakers.employment_type as emp_type
--- 			FROM Caretakers LEFT JOIN Users ON Caretakers.caretaker_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSE
--- 			IF (SELECT COUNT(*) from PCSAdmins WHERE admin_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as an admin';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PCSAdmins LEFT JOIN Users ON PCSAdmins.admin_email = Users.email
--- 			WHERE Users.email = in_email;
--- 			END IF;
--- 		END IF;
---  	END; 
--- $$ LANGUAGE plpgsql;
