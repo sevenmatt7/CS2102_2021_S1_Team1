@@ -380,25 +380,6 @@ app.put("/editpet", async (req, res) => {
     }
 });
 
-//edit selected user details
-app.put("/edituser", async (req, res) => {
-    try {
-        const { full_name, user_address, profile_pic_address } = req.body;
-        const jwtToken = req.header("token")
-        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        // console.log(user_email);
-
-        const editedUser = await pool.query(
-            "UPDATE Users SET (full_name, user_address, profile_pic_address) = ($1, $2, $3) \
-            WHERE email = $4 RETURNING *" ,
-            [full_name, user_address, profile_pic_address, user_email]);
-
-        res.json(editedUser.rows);
-    } catch (err) {
-        console.log(err.message);
-    }
-});
-
 //get all bids from petowner for caretaker
 app.get("/bids", async (req, res) => {
     try {
