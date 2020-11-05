@@ -162,7 +162,7 @@ RETURNS TRIGGER AS $$
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_caretaker_rating
-	AFTER INSERT ON Transactions_Details
+	AFTER UPDATE ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE FUNCTION update_caretaker_rating();
 
