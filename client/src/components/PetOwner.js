@@ -13,7 +13,7 @@ const PetOwner = () => {
 
     const getProfile = async () => {
         try {
-          const res = await fetch("http://localhost:5000/home/", {
+          const res = await fetch("/home/", {
             method: "GET",
             headers: { token: localStorage.token }
           });
@@ -28,7 +28,7 @@ const PetOwner = () => {
     const getPets = async () => {
         try {
             if (acc_type === "petowner") {
-                const response = await fetch("http://localhost:5000/pets", {
+                const response = await fetch("/pets", {
                     method: "GET",
                     headers: { token: localStorage.token }
                 });
@@ -43,7 +43,7 @@ const PetOwner = () => {
     const getTransactions = async () => {
         try {
             const t_value = button['t_status'];
-            const res = await fetch("http://localhost:5000/transactions?" + new URLSearchParams({
+            const res = await fetch("/transactions?" + new URLSearchParams({
                 t_status: t_value
             }), {
                 method: "GET",
@@ -59,7 +59,7 @@ const PetOwner = () => {
 
     const deletePet = async (pet_name) => {
         try {
-            const res = await fetch("http://localhost:5000/deletepet/" + pet_name,
+            const res = await fetch("/deletepet/" + pet_name,
                 {
                     method: "DELETE",
                     headers: {

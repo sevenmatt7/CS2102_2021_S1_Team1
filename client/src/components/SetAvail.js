@@ -31,6 +31,8 @@ const SetAvail = ({ setAuth }) => {
                     return '11';
                 case 'Dec':
                     return '12';
+                default:
+                    return '';
             }
         }
     
@@ -59,7 +61,7 @@ const SetAvail = ({ setAuth }) => {
         e.preventDefault();
         try {
             const body = { service_avail_from, service_avail_to, employment_type, daily_price, pet_type }
-            const response = await fetch("http://localhost:5000/setavail", {
+            const response = await fetch("/setavail", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -97,10 +99,10 @@ const SetAvail = ({ setAuth }) => {
 
     const updateDateLimit = () => {
         document.getElementById("datefield1").setAttribute("min", today);
-        if (inputs.service_avail_to != "") {
+        if (inputs.service_avail_to !== "") {
             document.getElementById("datefield1").setAttribute("max", inputs.service_avail_to);
         }
-        if (inputs.service_avail_from != "") {
+        if (inputs.service_avail_from !== "") {
             document.getElementById("datefield2").setAttribute("min", inputs.service_avail_from);
         }
         

@@ -1,24 +1,55 @@
-DROP TABLE IF EXISTS Users CASCADE;
-DROP TABLE IF EXISTS PetOwners CASCADE;
-DROP TABLE IF EXISTS Caretakers CASCADE;
-DROP TABLE IF EXISTS PCSAdmins CASCADE;
-DROP TABLE IF EXISTS Manages CASCADE;
-DROP TABLE IF EXISTS Categories CASCADE;
-DROP TABLE IF EXISTS Owns_Pets CASCADE;
-DROP TABLE IF EXISTS Offers_Services CASCADE;
-DROP TABLE IF EXISTS Transactions_Details CASCADE;
-DROP TABLE IF EXISTS Enquiries CASCADE;
-DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
+# CS2102 AY20/21 Team 1 Project Report
+<!--  For reference
+MARKING SCHEME
+- ER Data Model
+- Relational Schema
+- Interesting queries (3 most interesting to how application can improve business decision)
+- Triggers for complex constraints
+- User interface design
+-->
+## 📝 Table of Contents
+-  [Team](#info)
+-  [Application's data requirements and functionalities](#application_description)
+-  [Entity Relationship Model](#er_diagram)
+-  [Database schema](#schema)
+-  [Normalization](#normalization)
+-  [Interesting triggers](#triggers)
+-  [Tools and frameworks used](#tools_used)
+-  [Screenshots of app](#screenshots)
+-  [Conclusion](#conclusion)
 
+## 👨‍💻  Team <a name = "info"></a>
+| Name | Student Number | Responsibilities
+|------------ | ------------- | -------------
+| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API development, Deployment
+| Joshua Tam | A0190309H | Frontend, 
+| Tan Guan Yew | A0183464Y | Frontend, 
+| Sean Lim | A0187123H | Admin features,
+| Glen Wong | A0188100N | Frontend, 
+
+## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
+
+## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
+![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
+
+Constraints not shown in ER diagram:
+- Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
+
+
+## Database schema <a name = "schema"></a>
+**Insert final schema.sql code here**
+**Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
+
+#### Users ISA PetOwners, Caretakers, PCSAdmins schema
+```sql
 CREATE TABLE Users (
 	email VARCHAR,
 	full_name VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
-	-- user_zipcode VARCHAR,
-	-- user_area VARCHAR,
+	user_area VARCHAR,
 	user_address VARCHAR,
-	is_deleted BOOLEAN DEFAULT FALSE;
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (email)
 );
 
@@ -45,7 +76,10 @@ CREATE TABLE PCSAdmins (
 	ON DELETE cascade,
 	PRIMARY KEY (admin_email)
 );
+```
 
+#### Manages and Categories schema
+```sql
 CREATE TABLE Manages (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email) ON DELETE cascade,
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email) ON DELETE cascade,
@@ -56,9 +90,10 @@ CREATE TABLE Manages (
 CREATE TABLE Categories (
 	pet_type VARCHAR PRIMARY KEY
 );
+```
 
-INSERT INTO Categories (pet_type) VALUES ('dog'), ('cat'), ('fish'), ('rabbit'), ('bird'), ('reptile');
-
+#### Owns_Pets and Offers_Services schema
+```sql
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
 	ON DELETE cascade,
@@ -66,7 +101,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
-	is_deleted BOOLEAN DEFAULT FALSE;
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
@@ -81,8 +116,10 @@ CREATE TABLE Offers_Services (
 	is_avail BOOLEAN DEFAULT TRUE,
 	PRIMARY KEY (caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
+```
 
--- t_status as integer (1: submitted, 2: rejected, 3: accepted, 4: completed, 5: review has been submitted)
+#### Transactions and transactions_details schema
+```sql
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
 	employment_type VARCHAR,
@@ -107,7 +144,10 @@ CREATE TABLE Transactions_Details (
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
 	REFERENCES Offers_Services(caretaker_email, type_pref, service_avail_from, service_avail_to)
 );
+```
 
+#### Enquiries schema
+```sql
 CREATE TABLE Enquiries (
 	user_email VARCHAR REFERENCES Users(email),
 	enq_type VARCHAR,
@@ -117,13 +157,17 @@ CREATE TABLE Enquiries (
 	admin_email VARCHAR REFERENCES PCSAdmins(admin_email),
 	PRIMARY KEY (user_email, enq_message)
 );
+```
 
------------------------------------------------------------------------------------------------------------------------
--- SQL TRIGGERS IMPLEMENTED
------------------------------------------------------------------------------------------------------------------------
+## Normalization level of database <a name = "normalization"></a>
+<!-- 3NF or BCNF -->
+All our tables are in BCNF format to eliminate data redundancies and anomalies.
 
---- Trigger to update caretaker avg_rating after every review is submitted by the owner
-CREATE OR REPLACE FUNCTION update_caretaker_rating()
+
+## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
+**Must show code and write description for each trigger**
+#### Trigger to update the average rating of the caretaker and the number of reviews for the caretaker after every new review submission by a pet owner
+```sql
 RETURNS TRIGGER AS $$ 
 	DECLARE 
 		rating NUMERIC := 0;
@@ -151,10 +195,10 @@ CREATE TRIGGER update_caretaker_rating
 	AFTER UPDATE ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE FUNCTION update_caretaker_rating();
+```
 
-
---- Trigger to check whether caretaker already reached the max amount of pets in his care 
-DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
+#### Trigger to check whether the caretaker has already reached the maximum amount of pets he can care for when he accepts a bid by a pet owner
+```sql
 CREATE OR REPLACE FUNCTION check_caretaker_limit()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -199,9 +243,10 @@ CREATE TRIGGER check_caretaker_limit
 	BEFORE UPDATE ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE PROCEDURE check_caretaker_limit();
+```
 
--- Trigger to update the price of the fulltime caretaker's services after the avg_rating is computed, 
-DROP FUNCTION IF EXISTS update_fulltime_price() CASCADE;
+##### Trigger to update the daily price of a full time caretaker's services when his rating is updated after every new review submission
+```sql
 CREATE OR REPLACE FUNCTION update_fulltime_price()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -236,13 +281,17 @@ CREATE TRIGGER update_fulltime_price
 	AFTER UPDATE OF avg_rating ON Caretakers
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
+```
 
 
+## 🎉 Three most complex queries implemented in apllication <a name = "queries"></a>
+**Show code and write description**
+A cool SQL query would be to aggregate the number of pets in each category (dog, cat, lizard)
+and then compare it to the the number of caretakers that can take care od the different types of pets then the business can see what kind of caretakers they should advertise to join their website
+(For example, there are more lizards then lizard caretakers so more lizard caretakers should be recruited)
 
------------------------------------------------------------------------------------------------------------------------
--- SQL FUNCTIONS USED 
------------------------------------------------------------------------------------------------------------------------
-
+### Advanced SQL Functions used
+```sql
 -- function to assign admin to user at registration
 DROP FUNCTION IF EXISTS assign_to_admin();
 CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
@@ -486,80 +535,14 @@ RETURNS SETOF return_type AS $$
 
  	END; 
 $$ LANGUAGE plpgsql;
+```
 
+## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
+- [PostgreSQL](https://www.postgresql.org/) - Database
+- [Express](https://expressjs.com/) - Server Framework
+- [ReactJS](https://reactjs.org/) - Frontend 
+- [NodeJS](https://nodejs.org/en/) - Server Environment
 
+## 🎈 Screenshots of application <a name = "screenshots"></a>
 
-
-
-
-
-
-
-
-
-
-
--- CREATE OR REPLACE FUNCTION update_availability(new_avail_from DATE, new_avail_to DATE, 
--- 												caretaker_email DATE , type_pref DATE, 
--- 												old_avail_from DATE, old_avail_to DATE )
--- RETURNS INTEGER AS $$ 
--- 	BEGIN
--- 		-- Change the service_avail_from and service_avail_to of the service that we need to split the availability
--- 		-- of
--- 		PERFORM 'UPDATE Offers_Services SET service_avail_from = old_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
--- 		-- Get all transactions that are related to the service offered by the caretaker that we need 
--- 		-- to change the dates to
--- 		PERFORM 'UPDATE TRansactions_Details
--- 				SET service_avail_from = new_avail_from, service_avail_to = new_avail_to
--- 				WHERE (caretaker_email = caretaker_email AND type_pref = type_pref AND service_avail_to = old_avail_to
--- 				AND service_avail_from = old_avail_from)';
-		
--- 		RETURN 1;
---  	END; 
--- $$ LANGUAGE plpgsql;
-
---- Trigger to check whether a full time caretaker can take leave
--- DROP FUNCTION IF EXISTS login_user(character varying,character varying);
--- CREATE OR REPLACE FUNCTION login_user(in_email VARCHAR, acc_type VARCHAR)
--- RETURNS TABLE (email VARCHAR, 
--- 				user_password VARCHAR, 
--- 				emp_type VARCHAR) AS $$ 
--- 	BEGIN
--- 		IF (SELECT COUNT(*) from users WHERE Users.email = in_email) = 0 THEN
--- 			RAISE EXCEPTION 'User with email does not exist';
--- 		ELSE
--- 			IF acc_type = 'petowner' THEN
--- 			IF (SELECT COUNT(*) from PetOwners WHERE owner_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PetOwners LEFT JOIN Users ON Petowners.owner_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSIF acc_type = 'caretaker' THEN
--- 			IF (SELECT COUNT(*) from Caretakers WHERE caretaker_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as a pet owner';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, Caretakers.employment_type as emp_type
--- 			FROM Caretakers LEFT JOIN Users ON Caretakers.caretaker_email = Users.email
--- 			WHERE Users.email = in_email;
-
--- 			ELSE
--- 			IF (SELECT COUNT(*) from PCSAdmins WHERE admin_email = in_email) = 0 THEN
--- 				RAISE EXCEPTION 'User is not registered as an admin';
--- 			END IF;
-			
--- 			RETURN QUERY 
--- 			SELECT Users.email, Users.user_password, 'trash' AS emp_type
--- 			FROM PCSAdmins LEFT JOIN Users ON PCSAdmins.admin_email = Users.email
--- 			WHERE Users.email = in_email;
--- 			END IF;
--- 		END IF;
---  	END; 
--- $$ LANGUAGE plpgsql;
+## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>

@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import imposter from "../Assets/Images/imposter.jpg";
 import RequestService from "./RequestService";
 import ViewReviews from "./ViewReviews";
 
@@ -33,7 +32,7 @@ const Sitters = ({ setAuth }) => {
 
   const getAll = async () => {
     try {
-      const response = await fetch("http://localhost:5000/caretakers");
+      const response = await fetch("/caretakers");
       const jsonData = await response.json();
       setSearches(jsonData);
     } catch (error) {
@@ -49,7 +48,7 @@ const Sitters = ({ setAuth }) => {
     const e_date = filters["end_date"];
     const namesearch = filters["form"];
     try {
-      const response = await fetch('http://localhost:5000/caretakersq?' + new URLSearchParams({
+      const response = await fetch('/caretakersq?' + new URLSearchParams({
         employment_type: e_type,
         avg_rating: r_type,
         type_pref: p_type,
@@ -169,7 +168,7 @@ const Sitters = ({ setAuth }) => {
           <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
             <div className="row no-gutters">
               <div className="col-md-4">
-              <img src={search.profile_pic_address} className="card-img" alt="Your profile picture!" />
+              <img src={search.profile_pic_address} className="card-img" alt="You!" />
               </div>
               <div className="col-md-8">
                 <div className="card-body">

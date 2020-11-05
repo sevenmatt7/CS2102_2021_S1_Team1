@@ -7,7 +7,7 @@ const ViewReviews = ({ search, i }) => {
 
     const getReviews= async () => {
         try {
-            const response = await fetch("http://localhost:5000/getreview?" + new URLSearchParams({
+            const response = await fetch("/getreview?" + new URLSearchParams({
                 caretaker_email: caretaker_email,
                 employment_type: employment_type,
             }), {

@@ -61,7 +61,7 @@ const TakeLeave = ({ setAuth }) => {
         e.preventDefault();
         try {
             const body = { apply_leave_from, apply_leave_to }
-            const response = await fetch("http://localhost:5000/takeleave", {
+            const response = await fetch("/takeleave", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -91,7 +91,7 @@ const TakeLeave = ({ setAuth }) => {
     // Get the current working periods from Database
     const getWorkdays = async () => {
         try {
-            const response = await fetch("http://localhost:5000/checkworkdays", {
+            const response = await fetch("/checkworkdays", {
                 method: "GET",
                 headers: { token: localStorage.token }
             });

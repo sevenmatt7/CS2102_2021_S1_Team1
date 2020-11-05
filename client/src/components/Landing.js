@@ -25,32 +25,32 @@ const LandingPage = () => {
                     <div className="col-md-4 mb-5">
                         <div className="card h-100">
                             <div className="card-body">
-                                <img src={mag} style={{ padding: 10 }} />
+                                <img src={mag} style={{ padding: 10 }} alt = 'book'/>
                                 <h2 className="card-title">Search</h2>
                                 <p className="card-text">Read verified reviews and search for your perfect sitter.</p>
                             </div>
-                            <a href="/sitters" className="btn btn-primary btn-sm">Begin Search</a>
+                            <a href="/c/sitters" className="btn btn-primary btn-sm">Begin Search</a>
 
                         </div>
                     </div>
                     <div className="col-md-4 mb-5">
                         <div className="card h-100">
                             <div className="card-body">
-                                <img src={book} style={{ padding: 10 }} />
+                                <img src={book} style={{ padding: 10 }} alt='book'/>
                                 <h2 className="card-title">Book</h2>
                                 <p className="card-text">Book a sitter based on your pet's requirements.</p>
                             </div>
-                            <a href="/login" className="btn btn-primary btn-sm">Login To Book</a>
+                            <a href="/c/login" className="btn btn-primary btn-sm">Login To Book</a>
                         </div>
                     </div>
                     <div className="col-md-4 mb-5">
                         <div className="card h-100">
                             <div className="card-body">
-                                <img src={dog} style={{ padding: 10 }} />
+                                <img src={dog} style={{ padding: 10 }} alt='puppy'/>
                                 <h2 className="card-title">Register</h2>
-                                <p className="card-text">Sign up as one of our trusted sitters!</p>
+                                <p className="card-text">Sign up to be one of our trusted sitters!</p>
                             </div>
-                            <a href="/register" className="btn btn-primary btn-sm">Register As Caretaker</a>
+                            <a href="/c/register" className="btn btn-primary btn-sm">Register As Caretaker</a>
                         </div>
                     </div>
                 </div>

@@ -11,7 +11,7 @@ const authorize = require("../middleware/authorize");
 router.post("/register", validInfo, async (req, res) => {
     try {
         //step 1: destructure req.body to get name, email, password, address, profile pic
-        let { name, email, password, address, acc_type, emp_type, type_pref } = req.body;
+        let { name, email, password, address, acc_type, emp_type, type_pref, area} = req.body;
         let assigned_result;
         let base_price;
 
@@ -31,8 +31,8 @@ router.post("/register", validInfo, async (req, res) => {
 
         //step 4: enter new user into database
         const newUser = await pool.query(
-            "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [name, email, encryptedPassword, default_profile_pic, address]);
+            "INSERT INTO Users (full_name, email, user_password, profile_pic_address, user_address, user_area) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [name, email, encryptedPassword, default_profile_pic, address, area]);
         
         // This block of code executes when there are no admins registered in the system
         // It will register an admin with email admin@mail.com with password 123

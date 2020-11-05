@@ -25,7 +25,7 @@ const ContactUs = () => {
             const body = { subject: subject, message: message, date: date }
             // console.log(body)
             const response = await fetch(
-                "http://localhost:5000/submitenquiry",
+                "/submitenquiry",
                 {
                     method: "POST",
                     headers: {
@@ -49,7 +49,7 @@ const ContactUs = () => {
 
     const getEnquiries = async () => {
         try {
-            const response = await fetch("http://localhost:5000/contact?" + new URLSearchParams({
+            const response = await fetch("/contact?" + new URLSearchParams({
                 enq_type: filter
             }), {
                 method: "GET"

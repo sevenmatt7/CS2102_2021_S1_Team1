@@ -22,7 +22,7 @@ const Login = ({ setAuth }) => {
         e.preventDefault()
         try {
             const body = {email, password, acc_type}
-            const response = await fetch("http://localhost:5000/auth/login", {
+            const response = await fetch("/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify(body)
@@ -105,7 +105,7 @@ const Login = ({ setAuth }) => {
                                 <button className="btn btn-success btn-block">Submit</button>
                                 </form>
                                 <p className="forgot-password text-right">
-                                    New User? Click here to <Link to="/register">Register</Link>
+                                    New User? Click here to <Link to="/c/register">Register</Link>
                                 </p>
                             </div>
                         </div>

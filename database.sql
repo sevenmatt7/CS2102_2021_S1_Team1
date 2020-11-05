@@ -1,45 +1,3 @@
-# CS2102 AY20/21 Team 1 Project Report
-<!--  For reference
-MARKING SCHEME
-- ER Data Model
-- Relational Schema
-- Interesting queries (3 most interesting to how application can improve business decision)
-- Triggers for complex constraints
-- User interface design
--->
-## 📝 Table of Contents
--  [Team](#info)
--  [Application's data requirements and functionalities](#application_description)
--  [Entity Relationship Model](#er_diagram)
--  [Database schema](#schema)
--  [Normalization](#normalization)
--  [Interesting triggers](#triggers)
--  [Tools and frameworks used](#tools_used)
--  [Screenshots of app](#screenshots)
--  [Conclusion](#conclusion)
-
-## 👨‍💻  Team <a name = "info"></a>
-| Name | Student Number | Responsibilities
-|------------ | ------------- | -------------
-| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API development, Deployment
-| Joshua Tam | A0190309H | Frontend, 
-| Tan Guan Yew | A0183464Y | Frontend, 
-| Sean Lim | A0187123H | Admin features,
-| Glen Wong | A0188100N | Frontend, 
-
-## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
-
-## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
-![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
-
-Constraints not shown in ER diagram:
-- Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
-
-
-## Database schema <a name = "schema"></a>
-**Insert final schema.sql code here**
-**Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
-```sql
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS PetOwners CASCADE;
 DROP TABLE IF EXISTS Caretakers CASCADE;
@@ -57,9 +15,9 @@ CREATE TABLE Users (
 	full_name VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
-	-- user_address VARCHAR,
-	-- user_zipcode VARCHAR,
-	user_area VARCHAR
+	user_area VARCHAR,
+	user_address VARCHAR,
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (email)
 );
 
@@ -107,6 +65,7 @@ CREATE TABLE Owns_Pets (
 	pet_name VARCHAR NOT NULL,
 	special_req VARCHAR,
 	pet_type VARCHAR REFERENCES Categories(pet_type),
+	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 
@@ -140,10 +99,8 @@ CREATE TABLE Transactions_Details (
 	service_avail_to DATE NOT NULL,
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
-	-- CHECK the start of the service must be same day or days later than the start of the availability period
-    CHECK (duration_from >= service_avail_from), 
-    -- CHECK the end of the service must be same day or earlier than the end date of the availability period
-	CHECK (duration_to <= service_avail_to), 
+	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
+	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
 	CHECK (caretaker_email != owner_email),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
@@ -268,10 +225,8 @@ RETURNS TRIGGER AS $$
 				new_price := 70;
 			END IF;
 		END IF;
-		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' 
-            USING new_price, NEW.caretaker_email;
-		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' 
-            USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Manages SET base_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
+		EXECUTE 'UPDATE Offers_Services SET daily_price = $1 WHERE caretaker_email = $2' USING new_price, NEW.caretaker_email;
 		RETURN NEW;
  	END; 
 $$ LANGUAGE plpgsql;
@@ -280,6 +235,7 @@ CREATE TRIGGER update_fulltime_price
 	AFTER UPDATE OF avg_rating ON Caretakers
 	FOR EACH ROW
 	EXECUTE PROCEDURE update_fulltime_price();
+
 
 -----------------------------------------------------------------------------------------------------------------------
 -- SQL FUNCTIONS USED 
@@ -332,8 +288,7 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		-- First, get the service period of the caretaker that contains the leave period from the Offers_services table
 		SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to
 		FROM Offers_Services 
-		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND 
-        leave_end <= service_avail_to AND is_avail = 't';
+		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to AND is_avail = 't';
 		
 		-- Then, check if there are any transactions accepted within the leave period, if yes return 0
 		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND 
@@ -357,14 +312,12 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		new_service_avail_to_1 := leave_start - 1;
 		new_service_avail_from_2 := leave_end + 1;
 		
-		-- case when the start of the leave == service_avail_from date 
-        -- (e.g 1/1/2020 start leave and 1/1/2020 start availability)
+		-- case when the start of the leave == service_avail_from date (e.g 1/1/2020 start leave and 1/1/2020 start availability)
 		IF (leave_start = old_service_avail_from) THEN
 			new_service_avail_to_1 := old_service_avail_from;
 		END IF;
 
-		-- case when end of leave ==  service_avail_to date 
-        -- (e.g 31/10/2020 end leave and 31/10/2020 end availability)
+		-- case when end of leave ==  service_avail_to date (e.g 31/10/2020 end leave and 31/10/2020 end availability)
 		IF (leave_end = old_service_avail_to) THEN
 			new_service_avail_from_2 := old_service_avail_to;
 		END IF;
@@ -378,10 +331,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
 			-- if can split up, return true
 			IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
-				-- case when caretaker wants to take leave on is on the same day 
-                -- the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date
-                -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 					old_service_avail_from := old_service_avail_from + 1;
 					new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -392,18 +343,13 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 					new_service_avail_from_2 := new_service_avail_from_2 + 1;
 				END IF;
 
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, 
-                new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, 
-                old_service_avail_to::DATE AS new_service_avail_to2, 
-                leave_period AS leave_duration;
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
 
 
 			ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
-				-- case when caretaker wants to take leave on is on the same day 
-                -- the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date
-                -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 					old_service_avail_from := old_service_avail_from + 1;
 					new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -414,11 +360,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 					new_service_avail_from_2 := new_service_avail_from_2 + 1;
 				END IF;
 
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1,
-                new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, 
-                old_service_avail_to::DATE AS new_service_avail_to2, 
-                leave_period AS leave_duration;
+				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
 
 			ELSE 
 				RAISE EXCEPTION 'You cannot take leave during this period!';
@@ -429,10 +372,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
 				-- if can split up, return true
 				IF (leave_start - old_service_avail_from > 150 OR old_service_avail_to - leave_end > 150) THEN
-					-- case when caretaker wants to take leave on is on the same day 
-                    -- the availability starts when he takes a one day leave
-					-- so need to add 1 day to the date
-                    -- (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+					-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+					-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 					IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
 						old_service_avail_from := old_service_avail_from + 1;
 						new_service_avail_to_1 := new_service_avail_to_1 + 1;
@@ -443,11 +384,8 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 						new_service_avail_from_2 := new_service_avail_from_2 + 1;
 					END IF;
 
-					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, 
-                    new_service_avail_to_1::DATE AS new_service_avail_to1, 
-                    new_service_avail_from_2::DATE AS new_service_avail_from2, 
-                    old_service_avail_to::DATE AS new_service_avail_to2, 
-                    leave_period AS leave_duration;
+					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
+					new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
                 ELSE
                     RAISE EXCEPTION 'You cannot take leave during this period!';
 				END IF;
@@ -457,29 +395,92 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		END IF;
  	END; 
 $$ LANGUAGE plpgsql;
-```
-## Normalization level of database <a name = "normalization"></a>
-**3NF or CNF?**
 
-## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
-**Must show code and write description for each trigger**
-Trigger to update the average rating of the caretaker and the number of reviews for the caretaker
-Trigger to update the availability of the caretaker 
-Trigger to update the employee/caretaker of the month
+-- function to get underperforming caretakers (rating less than 2)
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
+DROP TYPE IF EXISTS return_type;
+CREATE TYPE return_type AS
+    		( caretaker VARCHAR, num_pet_days NUMERIC, avg_rating NUMERIC, num_rating_5 NUMERIC, num_rating_4 NUMERIC, num_rating_3 NUMERIC, num_rating_2 NUMERIC, num_rating_1 NUMERIC, num_rating_0 NUMERIC );
+CREATE OR REPLACE FUNCTION get_underperforming_caretakers()
+RETURNS SETOF return_type AS $$ 
+	DECLARE 
+		caretakers_arr VARCHAR [] := '{}';
+		caretaker VARCHAR;
+		avg_rating_arr NUMERIC [] := '{}';
+		transactions_duration_to DATE [] := '{}';
+		transactions_duration_from DATE [] := '{}';
+		duration NUMERIC;
+		num_pet_days NUMERIC;
+		num_ratings NUMERIC;
+		val return_type;
+		rec RECORD;
+	BEGIN
+		caretakers_arr := ARRAY (SELECT caretaker_email
+		FROM caretakers
+		WHERE employment_type = 'fulltime'
+		AND avg_rating <= 2
+		ORDER BY avg_rating ASC);
 
-## 🎉 Three most complex queries implemented in apllication <a name = "queries"></a>
-**Show code and write description**
-A cool SQL query would be to aggregate the number of pets in each category (dog, cat, lizard)
-and then compare it to the the number of caretakers that can take care od the different types of pets then the business can see what kind of caretakers they should advertise to join their website
-(For example, there are more lizards then lizard caretakers so more lizard caretakers should be recruited)
+		avg_rating_arr := ARRAY (SELECT avg_rating
+		FROM caretakers
+		WHERE employment_type = 'fulltime'
+		AND avg_rating <= 2
+		ORDER BY avg_rating ASC);
 
+		FOR index IN array_lower(caretakers_arr, 1) .. array_upper(caretakers_arr, 1) LOOP 
 
-## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
-- [PostgreSQL](https://www.postgresql.org/) - Database
-- [Express](https://expressjs.com/) - Server Framework
-- [ReactJS](https://reactjs.org/) - Frontend 
-- [NodeJS](https://nodejs.org/en/) - Server Environment
+			transactions_duration_from := ARRAY (SELECT duration_from
+													FROM transactions_details
+													WHERE caretaker_email = caretakers_arr[index]);
+			transactions_duration_to := ARRAY (SELECT duration_to
+													FROM transactions_details
+													WHERE caretaker_email = caretakers_arr[index]);
+			IF array_length(transactions_duration_from, 1) IS NULL OR array_length(transactions_duration_from, 1) = 0 THEN
+				CONTINUE;
+			END IF;
+			num_ratings := (SELECT COUNT(*)
+							FROM transactions_details
+							WHERE caretaker_email = caretakers_arr[index]
+							AND owner_rating IS NOT NULL);
+			IF num_ratings = 0 THEN
+				CONTINUE;
+			END IF;
+			num_pet_days := 0;
+			FOR i IN array_lower(transactions_duration_from, 1) .. array_upper(transactions_duration_from, 1) LOOP
+				duration := transactions_duration_to[i] - transactions_duration_from[i] + 1;
+				num_pet_days := num_pet_days + duration;
+			END LOOP;
+			val.caretaker := caretakers_arr[index];
+			val.num_pet_days := num_pet_days;
+			val.avg_rating := avg_rating_arr[index];
+			val.num_rating_5 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 5);
+			val.num_rating_4 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 4);
+			val.num_rating_3 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 3);
+			val.num_rating_2 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 2);
+			val.num_rating_1 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 1);
+			val.num_rating_0 := (SELECT COUNT(*)
+									FROM transactions_details
+									WHERE caretaker_email = caretakers_arr[index]
+									AND owner_rating = 0);
+			RETURN NEXT val;
+		END LOOP;
+		
+		RETURN;
 
-## 🎈 Screenshots of application <a name = "screenshots"></a>
-
-## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
+ 	END; 
+$$ LANGUAGE plpgsql;
