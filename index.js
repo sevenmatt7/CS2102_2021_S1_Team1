@@ -517,7 +517,7 @@ app.get("/caretakersq", async (req, res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         var sql = `SELECT DISTINCT full_name, user_address, profile_pic_address\
         avg_rating, service_avail_from, service_avail_to, Caretakers.caretaker_email, Caretakers.employment_type, \
-        type_pref, daily_price\
+        type_pref, daily_price, Users.user_area\
         FROM Offers_services \
         LEFT JOIN Users \
         ON Offers_services.caretaker_email = Users.email \
@@ -553,6 +553,10 @@ app.get("/caretakersq", async (req, res) => {
             sql += ("'" + req.query.end_date + "'");
             sql += " AND split_part(service_avail, ',', 2) >=";
             sql += ("'" + req.query.end_date + "'");
+        }
+        if (req.query.user_area != undefined && req.query.user_area != "") {
+            sql += " AND Users.user_area = ";
+            sql += ("'" + req.query.user_area + "'");
         }
         if (req.query.form != undefined && req.query.form != "") {
             sql += " AND LOWER(full_name) LIKE LOWER(";

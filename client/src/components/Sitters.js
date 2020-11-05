@@ -27,6 +27,7 @@ const Sitters = ({ setAuth }) => {
     type_pref: "",
     start_date: "",
     end_date: "",
+    user_area: "",
     form: ""
   });
 
@@ -46,6 +47,7 @@ const Sitters = ({ setAuth }) => {
     const p_type = filters["type_pref"];
     const s_date = filters["start_date"];
     const e_date = filters["end_date"];
+    const area = filters["user_area"];
     const namesearch = filters["form"];
     try {
       const response = await fetch('/caretakersq?' + new URLSearchParams({
@@ -54,6 +56,7 @@ const Sitters = ({ setAuth }) => {
         type_pref: p_type,
         start_date: s_date,
         end_date: e_date,
+        user_area: area,
         form: namesearch
       }), {
         method: "GET",
@@ -77,6 +80,7 @@ const Sitters = ({ setAuth }) => {
       type_pref: "",
       start_date: "",
       end_date: "",
+      user_area: "",
       form: ""
     });
   }
@@ -95,7 +99,7 @@ const Sitters = ({ setAuth }) => {
       <div className="card mx-auto">
         <div className="card-body">
           <div className="form-row">
-            <div className="form-group col-md-4">
+            <div className="form-group col">
               <label htmlFor="emp_type">Employment Type</label>
               <select id="emp_type" name="employment_type" className="form-control" value={filters.employment_type} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
@@ -103,7 +107,7 @@ const Sitters = ({ setAuth }) => {
                 <option value="parttime">Part-Time</option>
               </select>
             </div>
-            <div className="form-group col-md-4">
+            <div className="form-group col">
               <label htmlFor="rating">Rating</label>
               <select id="rating" name="avg_rating" className="form-control" value={filters.avg_rating} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
@@ -114,7 +118,7 @@ const Sitters = ({ setAuth }) => {
                 <option value="1">1</option>
               </select>
             </div>
-            <div className="form-group col-md-4">
+            <div className="form-group col">
               <label htmlFor="inputPet">Pet</label>
               <select id="inputPet" name="type_pref" className="form-control" value={filters.type_pref} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
@@ -125,6 +129,20 @@ const Sitters = ({ setAuth }) => {
                 <option value="reptile">Reptile</option>
               </select>
             </div>
+
+            <div className="form-group col">
+              <label htmlFor="area">Area</label>
+              <select id="area" name="user_area" className="form-control" value={filters.user_area} onChange={(e) => onSelect(e)}>
+                <option selected value="">Choose...</option>
+                <option value="Central">Central</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="East">East</option>
+                <option value="West">West</option>
+              </select>
+            </div>
+
+
           </div>
           <div className="form-row">
             <div className="form-group col-md-4">
@@ -158,10 +176,16 @@ const Sitters = ({ setAuth }) => {
               <input className="form-control" name="form" type="text" placeholder="Enter name..." id="searchname"
                 aria-label="Search" value={filters.form} onChange={(e) => onSelect(e)} />
             </div>
+           
           </div>
+
+
           <button type="submit" className="btn btn-info" onClick={onReset}>Reset</button>
+
         </div>
       </div>
+
+      
 
       <div className="text-center">
         <h2> Browse for CareTakers!</h2>
@@ -176,6 +200,7 @@ const Sitters = ({ setAuth }) => {
               {/* <th className="text-center" scope="col">Profile Pic</th> */}
               <th className="text-center" scope="col">Full Name</th>
               <th className="text-center" scope="col">Address</th>
+              <th className="text-center" scope="col">Area</th>
               <th className="text-center" scope="col">Employment Type</th>
               <th className="text-center" scope="col">Available</th>
               <th className="text-center" scope="col">Price/day</th>
@@ -190,6 +215,7 @@ const Sitters = ({ setAuth }) => {
               <tr>
                 {/* <th className="text-center" scope="row"><img src={search.profile_pic_address} className="img" alt="You!" /></th> */}
                 <th className="text-center" scope="row">{search.full_name}</th>
+                <td className="text-center" >{search.user_area}</td>
                 <td className="text-center" >{search.user_address}</td>
                 <td className="text-center" >{search.employment_type}</td>
                 <td className="text-center" >{ `${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}` }</td>
