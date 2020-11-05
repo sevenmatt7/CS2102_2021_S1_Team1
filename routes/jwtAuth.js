@@ -105,12 +105,12 @@ router.post("/registerpet", validInfo, async (req, res) => {
 
         if (newPet.rowCount == 0) {
             newPet = await pool.query(
-                "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING pet_name",
                 [user_email, pet_name, special_req, pet_type, gender]);
         }
 
         
-        res.json(newPet.rows[0].pet_name);
+        res.json(newPet.rows[0]);
 
     } catch (err) {
         console.error(err.message);
