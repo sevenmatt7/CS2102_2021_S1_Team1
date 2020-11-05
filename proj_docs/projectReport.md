@@ -322,18 +322,24 @@ $$ LANGUAGE plpgsql;
 This trigger will execute to enable the feature that a 'full time caretaker's price for his services will increase as his rating increases'
 
 ```sql
+CREATE TRIGGER update_fulltime_price
+	AFTER UPDATE OF avg_rating ON Caretakers
+	FOR EACH ROW
+	EXECUTE PROCEDURE update_fulltime_price();
+
 CREATE OR REPLACE FUNCTION update_fulltime_price()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
 		emp_type VARCHAR := NEW.employment_type;
 		rating NUMERIC;
+		reviews INTEGER;
 		new_price INTEGER := 50;
 	BEGIN
 		-- get rating of caretaker
-		SELECT avg_rating INTO rating
+		SELECT avg_rating, no_of_reviews INTO rating, reviews
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF (emp_type = 'fulltime') THEN
+		IF (emp_type = 'fulltime' AND reviews >= 10) THEN
 			IF (rating > 4.2 AND rating < 4.4 ) THEN
 				new_price := 52;
 			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
@@ -352,10 +358,6 @@ RETURNS TRIGGER AS $$
  	END; 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_fulltime_price
-	AFTER UPDATE OF avg_rating ON Caretakers
-	FOR EACH ROW
-	EXECUTE PROCEDURE update_fulltime_price();
 ```
 
 

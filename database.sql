@@ -216,13 +216,14 @@ RETURNS TRIGGER AS $$
 	DECLARE 
 		emp_type VARCHAR := NEW.employment_type;
 		rating NUMERIC;
+		reviews INTEGER;
 		new_price INTEGER := 50;
 	BEGIN
 		-- get rating of caretaker
-		SELECT avg_rating INTO rating
+		SELECT avg_rating, no_of_reviews INTO rating, reviews
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF (emp_type = 'fulltime') THEN
+		IF (emp_type = 'fulltime' AND reviews >= 10) THEN
 			IF (rating > 4.2 AND rating < 4.4 ) THEN
 				new_price := 52;
 			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN

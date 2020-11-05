@@ -4,6 +4,41 @@ import ViewReviews from "./ViewReviews";
 
 const Sitters = ({ setAuth }) => {
 
+  // helper function to parse date
+  function parseDate(raw_date) {
+    function parseMonth(month) {
+        switch (month) {
+            case 'Jan':
+                return '01';
+            case 'Feb':
+                return '02';
+            case 'Mar':
+                return '03';
+            case 'Apr':
+                return '04';
+            case 'May':
+                return '05';
+            case 'Jun':
+                return '06';
+            case 'Jul':
+                return '07';
+            case 'Aug':
+                return '08';
+            case 'Sep':
+                return '09';
+            case 'Oct':
+                return '10';
+            case 'Nov':
+                return '11';
+            case 'Dec':
+                return '12';
+        }
+    }
+
+    let date_string = new Date(raw_date).toDateString();
+    let date_tokens = date_string.split(" ");
+    return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`
+  }
   var starting = document.getElementById('from');
   var ending = document.getElementById('to');
   if (starting) {
@@ -175,7 +210,7 @@ const Sitters = ({ setAuth }) => {
                   <h5 className="card-title mx-2">{search.full_name}</h5>
                   <p className="card-text" >Address: {search.user_address}</p>
                   <p className="card-text">Employment Type: {search.employment_type}</p>
-                  <p className="card-text">Available: { `${new Date(search.service_avail_from).toDateString()} TO ${new Date(search.service_avail_to).toDateString()}` }</p>
+                  <p className="card-text">Available: { `${parseDate(search.service_avail_from)} TO ${parseDate(search.service_avail_to)}` }</p>
                   <p className="card-text" >Price/day: {search.daily_price}</p>
                   <p className="card-text">Pet type: {search.type_pref}</p>
                   <p className="card-text">Average Rating: {parseFloat(search.avg_rating).toFixed(2)}</p>

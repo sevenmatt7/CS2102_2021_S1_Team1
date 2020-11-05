@@ -352,8 +352,6 @@ app.put("/editpet", async (req, res) => {
     }
 });
 
-
-
 //get all bids from petowner for caretaker
 app.get("/bids", async (req, res) => {
     try {

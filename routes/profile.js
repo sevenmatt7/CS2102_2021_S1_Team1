@@ -31,43 +31,5 @@ router.put("/edituser", async (req, res) => {
         console.log(err.message);
     }
 });
-// router.delete("/delete", async (req, res) => {
-//     try {
-//         const jwtToken = req.header("token");
-//         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-//         const acc_type = req.header("acc_type");
-        
-//         let deleteUser;
-//         if (acc_type === "petowner") {
-//             deleteUser = await pool.query(
-//                 "DELETE FROM Users \
-//                 WHERE email = $1 \
-//                 AND pet_name = $2 \
-//                 AND \
-//                 (SELECT 1 FROM Transactions_Details \
-//                 WHERE (owner_email = $1 AND (t_status = 1 OR t_status = 3)) \
-//                 IS NULL \
-//                 ",
-//                 [user_email]
-//             );
-//         } else if (acc_type === "caretaker") {
-//             deleteUser = await pool.query(
-//                 "DELETE FROM Users \
-//                 WHERE email = $1 \
-//                 AND pet_name = $2 \
-//                 AND \
-//                 (SELECT 1 FROM Transactions_Details \
-//                 WHERE (caretaker_email = $1 AND (t_status = 1 OR t_status = 3)) \
-//                 IS NULL \
-//                 ",
-//                 [user_email]
-//             );
-//         }
 
-//         res.json("Deleted item!");
-//     } catch (err) {
-//         console.log(err.message);
-//         res.json(err.message);
-//     }
-// });
 module.exports = router;
