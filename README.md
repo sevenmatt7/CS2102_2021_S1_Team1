@@ -19,7 +19,7 @@
 - Glen Wong *A0188100N*
 
 ## 🧐 About <a name = "about"></a>
-Please find the preliminary constraints [here](prelim_constraints.md) and the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
+Please find the preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/'Final ER Diagram')
 
  ## 🏁 Getting Started <a name = "getting_started"></a>
 The instructions below will help to get you set up to develop the project on your local machine.
