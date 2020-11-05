@@ -19,7 +19,7 @@
 - Glen Wong *A0188100N*
 
 ## 🧐 About <a name = "about"></a>
-Please find the preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/'Final ER Diagram.pdf')
+Please find the preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/Final ER Diagram.pdf)
 
  ## 🏁 Getting Started <a name = "getting_started"></a>
 The instructions below will help to get you set up to develop the project on your local machine.
