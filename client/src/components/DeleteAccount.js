@@ -3,9 +3,8 @@ import { toast } from "react-toastify";
 
 const DeleteAccount = ({ setAuth }) => {
 
-    const acc_type = localStorage.acc_type;
-    const employment_type = localStorage.employment_type;
-    
+    // const acc_type = localStorage.acc_type;
+    // const employment_type = localStorage.employment_type;
 
     const [deletion, setDeletion] = useState({
         delete_text: "",
@@ -26,16 +25,22 @@ const DeleteAccount = ({ setAuth }) => {
                 });
                 
                 const parseResponse = await response.json();
-                console.log(parseResponse)
-                const successMessage = 'You have successfully deleted your account!';
-                toast.success(successMessage);
-                localStorage.removeItem("token");
-                localStorage.removeItem("acc_type");
-                if (localStorage.emp_type) {
-                    localStorage.removeItem("emp_type");
+                console.log(parseResponse.rowCount)
+                if (parseResponse.rowCount = 0) {
+                    toast.error("You cannot delete your account now!");
                 }
-                setAuth(false);
-                //window.location.reload();
+                else {
+                    const successMessage = 'You have successfully deleted your account!';
+                    toast.success(successMessage);
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("acc_type");
+                    if (localStorage.emp_type) {
+                        localStorage.removeItem("emp_type");
+                    }
+                    setAuth(false);
+                    //window.location.reload();
+                }
+                
             } catch (err) {
                 console.error(err.message);
             }

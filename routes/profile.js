@@ -39,12 +39,18 @@ router.put("/deleteuser", async (req, res) => {
         const jwtToken = req.header("token")
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
 
-        const editedUser = await pool.query(
+        const deletedUser = await pool.query(
             "UPDATE Users SET is_deleted = true \
-            WHERE email = $1 RETURNING *" ,
+            WHERE email = $1 \
+            AND \
+            (SELECT 1 FROM Transactions_Details \
+            WHERE (owner_email = $1 \
+            OR caretaker_email = $1)\
+            AND t_status = 3) IS NULL \
+            RETURNING *",
             [user_email]);
 
-        res.json(editedUser.rows);
+        res.json(deletedUser);
     } catch (err) {
         console.log(err.message);
     }

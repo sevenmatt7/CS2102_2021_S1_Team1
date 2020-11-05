@@ -213,7 +213,7 @@ const PetOwner = () => {
                                                         <p className="card-text">Pet Type: {search.pet_type}</p>
                                                         <p className="card-text">Special Requirement: {search.special_req}</p>
                                                         <EditPet search={search} i={i}/>
-                                                        <button className="btn btn-danger"
+                                                        <button className="btn btn-danger ml-1"
                                                             onClick={() => deletePet(search.pet_name)}>Delete</button>
                                                     </div>
                                                 </div>
