@@ -89,10 +89,4 @@ router.put("/deleteuser", async (req, res) => {
 //             );
 //         }
 
-//         res.json("Deleted item!");
-//     } catch (err) {
-//         console.log(err.message);
-//         res.json(err.message);
-//     }
-// });
 module.exports = router;

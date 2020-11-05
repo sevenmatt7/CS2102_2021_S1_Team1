@@ -1,8 +1,11 @@
 import React, { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 
+
 const RequestService = ({ search, i }) => {
     
+    
+
     // const pet_type = search.type_pref;
     const caretaker_email = search.caretaker_email;
     const employment_type = search.employment_type;
@@ -51,6 +54,37 @@ const RequestService = ({ search, i }) => {
       };
 
     const submitBid = async (e) => {
+        // helper function to parse date
+        function parseDate(raw_date) {
+            function parseMonth(month) {
+                switch (month) {
+                    case 'Jan':
+                        return '01';
+                    case 'Feb':
+                        return '02';
+                    case 'Mar':
+                        return '03';
+                    case 'Apr':
+                        return '04';
+                    case 'May':
+                        return '05';
+                    case 'Jun':
+                        return '06';
+                    case 'Jul':
+                        return '07';
+                    case 'Aug':
+                        return '08';
+                    case 'Sep':
+                        return '09';
+                    case 'Oct':
+                        return '10';
+                    case 'Nov':
+                        return '11';
+                    case 'Dec':
+                        return '12';
+                }
+            }
+        }
         e.preventDefault();
         try {
            
@@ -70,8 +104,8 @@ const RequestService = ({ search, i }) => {
             if (submittedData.duration_from) {
                 const start_date = submittedData.duration_from;
                 const end_date = submittedData.duration_to;
-                const successMessage = 'You have submitted your offer for ' + start_date + ' to ' +
-                                    end_date + '!';
+                const successMessage = 'You have submitted your offer for ' + parseDate(start_date) + ' to ' +
+                                    parseDate(end_date) + '!';
                 toast.success(successMessage);
             } else {
                 switch (submittedData) {

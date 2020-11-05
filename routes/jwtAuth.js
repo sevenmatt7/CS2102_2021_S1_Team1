@@ -74,6 +74,8 @@ router.post("/register", validInfo, async (req, res) => {
         const year = yyyy.toString();
         const default_start_date = year + "-01-01";
         const default_end_date = year + "-12-31";
+        console.log(default_end_date);
+        console.log(default_start_date);
         if (acc_type === 'caretaker' && emp_type === "fulltime") {
             console.log(type_pref)
             base_price = assigned_result.rows[0]['assign_to_admin'];
