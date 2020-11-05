@@ -9,6 +9,20 @@ DROP TABLE IF EXISTS Offers_Services CASCADE;
 DROP TABLE IF EXISTS Transactions_Details CASCADE;
 DROP TABLE IF EXISTS Enquiries CASCADE;
 DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
+DROP FUNCTION IF EXISTS check_caretaker_limit() CASCADE;
+DROP FUNCTION IF EXISTS update_fulltime_price() CASCADE;
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
+DROP TYPE IF EXISTS return_type;
+DROP FUNCTION IF EXISTS assign_to_admin();
+DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
+DROP FUNCTION IF EXISTS start_of_month(DATE);
+DROP FUNCTION IF EXISTS user_exists_in_month(startDate DATE, endDate DATE, input_month DATE);
+DROP FUNCTION IF EXISTS calc_salary(input_email VARCHAR);
+DROP FUNCTION IF EXISTS calc_monthly_salary(input_email VARCHAR, input_month DATE);
+DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days, pet_days NUMERIC, cost NUMERIC);
+DROP FUNCTION IF EXISTS calc_salary_for_all();
+DROP FUNCTION IF EXISTS calc_salary_for_all_for_a_month(input_month DATE);
+DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 
 CREATE TABLE Users (
 	email VARCHAR,
@@ -122,6 +136,7 @@ CREATE TABLE Enquiries (
 -----------------------------------------------------------------------------------------------------------------------
 
 --- Trigger to update caretaker avg_rating after every review is submitted by the owner
+DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
 CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -147,7 +162,7 @@ RETURNS TRIGGER AS $$
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_caretaker_rating
-	AFTER UPDATE ON Transactions_Details
+	AFTER INSERT ON Transactions_Details
 	FOR EACH ROW
 	EXECUTE FUNCTION update_caretaker_rating();
 
@@ -456,7 +471,7 @@ RETURNS BOOLEAN AS $$
 $$ LANGUAGE plpgsql;
 
 -- calculate salary
-DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days, pet_days NUMERIC, cost NUMERIC);
+DROP FUNCTION IF EXISTS salary(e_type VARCHAR, total_pet_days NUMERIC, pet_days NUMERIC, cost NUMERIC);
 CREATE OR REPLACE FUNCTION salary(e_type VARCHAR, total_pet_days NUMERIC, pet_days NUMERIC, cost NUMERIC)
 RETURNS NUMERIC AS $$
 	DECLARE
