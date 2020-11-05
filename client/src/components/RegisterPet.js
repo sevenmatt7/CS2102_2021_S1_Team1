@@ -43,7 +43,7 @@ const RegisterPet = ({setAuth}) => {
             toast.success(successMessage);
             setRedirect(true); 
 
-            console.log(Object.keys(parseResponse).length);
+            // console.log(Object.keys(parseResponse).length);
             //console.log(parseResponse);
 
         } catch (err) {

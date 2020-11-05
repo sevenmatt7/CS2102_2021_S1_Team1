@@ -492,7 +492,8 @@ app.get("/caretakersq", async (req, res) => {
         ON Offers_services.caretaker_email = Users.email \
         LEFT JOIN Caretakers \
         ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
-        WHERE '${user_email}' != Offers_Services.caretaker_email`;
+        WHERE '${user_email}' != Offers_Services.caretaker_email \
+        AND Users.is_deleted = false`;
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
             sql += " AND Caretakers.employment_type = ";

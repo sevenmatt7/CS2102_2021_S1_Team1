@@ -124,7 +124,7 @@ router.post("/login", validInfo, async (req, res) => {
         const {email, password, acc_type} = req.body;
         let user_in_category;
         let emp_type = "";
-        const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
+        const user = await pool.query("SELECT * from users WHERE email = $1 AND is_deleted = false", [email]);
         if (user.rows.length === 0) {
             return res.status(401).json("You are not registered!")
         }

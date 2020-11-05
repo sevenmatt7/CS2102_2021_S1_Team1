@@ -31,6 +31,25 @@ router.put("/edituser", async (req, res) => {
         console.log(err.message);
     }
 });
+
+//delete selected user
+router.put("/deleteuser", async (req, res) => {
+    try {
+        // const { acc_type, employment_type } = req.body;
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+        const editedUser = await pool.query(
+            "UPDATE Users SET is_deleted = true \
+            WHERE email = $1 RETURNING *" ,
+            [user_email]);
+
+        res.json(editedUser.rows);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
 // router.delete("/delete", async (req, res) => {
 //     try {
 //         const jwtToken = req.header("token");
