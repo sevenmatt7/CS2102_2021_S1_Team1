@@ -96,7 +96,7 @@ const Sitters = ({ setAuth }) => {
         <div className="card-body">
           <div className="form-row">
             <div className="form-group col-md-4">
-              <label htmlFor="emp_type">Employment Type</label >
+              <label htmlFor="emp_type">Employment Type</label>
               <select id="emp_type" name="employment_type" className="form-control" value={filters.employment_type} onChange={(e) => onSelect(e)}>
                 <option selected value="">Choose...</option>
                 <option value="fulltime">Full-Time</option>
@@ -137,7 +137,7 @@ const Sitters = ({ setAuth }) => {
                 className="form-control validate"
                 min="2020-01-01"
                 max="2099-12-31"
-                required="required"/>
+                required="required" />
             </div>
 
             <div className="form-group col-md-4">
@@ -150,7 +150,7 @@ const Sitters = ({ setAuth }) => {
                 className="form-control validate"
                 min="2020-01-01"
                 max="2099-12-31"
-                required="required"/>
+                required="required" />
             </div>
 
             <div className="form-group col-md-4">
@@ -163,36 +163,49 @@ const Sitters = ({ setAuth }) => {
         </div>
       </div>
 
-      {acc_type === "petowner" && <div className="card-deck">
-        {searches.map((search, i) => (
-          <div key={i} className="card mb-3" style={{ minWidth: 540, maxWidth: 540 }}>
-            <div className="row no-gutters">
-              <div className="col-md-4">
-              <img src={search.profile_pic_address} className="card-img" alt="You!" />
-              </div>
-              <div className="col-md-8">
-                <div className="card-body">
-                  <h5 className="card-title mx-2">{search.full_name}</h5>
-                  <p className="card-text" >Address: {search.user_address}</p>
-                  <p className="card-text">Employment Type: {search.employment_type}</p>
-                  <p className="card-text">Available: { `${new Date(search.service_avail_from).toDateString()} TO ${new Date(search.service_avail_to).toDateString()}` }</p>
-                  <p className="card-text" >Price/day: {search.daily_price}</p>
-                  <p className="card-text">Pet type: {search.type_pref}</p>
-                  <p className="card-text">Average Rating: {parseFloat(search.avg_rating).toFixed(2)}</p>
-                  <div className="row">
-                    <div className="col-md-5 col-sm-5 col-12"><RequestService search={search} i={i}/></div>
-                    <div className="col-md-1 col-sm-1 col-12" />
-                    <div className="col-md-5 col-sm-5 col-12"><ViewReviews search={search} i={i}/></div>
-                  </div>                  
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="text-center">
+        <h2> Browse for CareTakers!</h2>
+        <br></br>
+      </div>
+      
+      
+      {acc_type === "petowner" && <div className="table-responsive">
+        <table className="table table-stripped table-sm">
+          <thead>
+            <tr>
+              {/* <th className="text-center" scope="col">Profile Pic</th> */}
+              <th className="text-center" scope="col">Full Name</th>
+              <th className="text-center" scope="col">Address</th>
+              <th className="text-center" scope="col">Employment Type</th>
+              <th className="text-center" scope="col">Available</th>
+              <th className="text-center" scope="col">Price/day</th>
+              <th className="text-center" scope="col">Pet Type</th>
+              <th className="text-center" scope="col">Average Rating</th>
+              <th className="text-center" scope="col">Request Service</th>
+              <th className="text-center" scope="col">View Reviews</th>
+            </tr>
+          </thead>
+          {searches.map((search, i) => (
+            <tbody key={i}>
+              <tr>
+                {/* <th className="text-center" scope="row"><img src={search.profile_pic_address} className="img" alt="You!" /></th> */}
+                <th className="text-center" scope="row">{search.full_name}</th>
+                <td className="text-center" >{search.user_address}</td>
+                <td className="text-center" >{search.employment_type}</td>
+                <td className="text-center" >{ `${new Date(search.service_avail_from).toDateString()} TO ${new Date(search.service_avail_to).toDateString()}` }</td>
+                <td className="text-center" >{search.daily_price}</td>
+                <td className="text-center" >{search.type_pref}</td>
+                <td className="text-center" >{parseFloat(search.avg_rating).toFixed(2)}</td>
+                <td className="text-center" ><RequestService search={search} i={i} /></td>
+                <td className="text-center" ><ViewReviews search={search} i={i} /></td>
+
+              </tr>
+            </tbody>
+          ))}
+        </table>
       </div>}
 
-
-    </Fragment >
+    </Fragment>
 
   );
 };
