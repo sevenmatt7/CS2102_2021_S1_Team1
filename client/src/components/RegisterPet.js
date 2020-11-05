@@ -53,7 +53,7 @@ const RegisterPet = ({setAuth}) => {
     }
 
     if (redirect) {
-        return <Redirect to="/c/profile" /> //Go to profile page after pet is registered
+        return <Redirect to="/c/home" /> //Go to home page after pet is registered
     }
     return (
         <Fragment>
