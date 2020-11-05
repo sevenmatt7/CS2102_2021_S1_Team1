@@ -1,5 +1,5 @@
 # Preliminary constraints
-Please find the ER diagram [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/ER%20Diagram.pdf)
+Please find the ER diagram [here](Final_ER_Diagram.pdf)
 
 1. Each user is identified by his/her user_id. Their full name, email, password and address must be recorded.
 2. Users ISA relationship satisfies overlap and covering constraints (a user cannot be anything other than Caretaker, Pet Owner or PCS Admin

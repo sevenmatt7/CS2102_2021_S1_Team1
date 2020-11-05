@@ -6,7 +6,7 @@
 - [Getting Started](#getting_started)
 - [Built Using](#built_using)
 - [Acknowledgments](#acknowledgement)
-- [Project_Report](#project_report)
+- [Project Report](#project_report)
 <!-- - [Deployment](#deployment)
 -   [Usage](#usage)
 -   [TODO](../TODO.md)
@@ -104,7 +104,7 @@ Add additional notes about how to deploy this on a live system.
 - README inspiration from [here](https://github.com/kylelobo/The-Documentation-Compendium)
 
 ## 📖 Project Report <a name = "project_report"></a>
-- The Project Report can be found [here](proj_data/projectReport)
+- The Project Report can be found [here](proj_data/projectReport.md)
 
 <!-- ## Available Scripts
 
