@@ -27,18 +27,57 @@ MARKING SCHEME
 | Sean Lim | A0187123H | Admin features,
 | Glen Wong | A0188100N | Frontend, 
 
-## 🧐 Application's data requirements and functionalities <a name = "application_description"></a>
+## 🧐 Application's functionalities <a name = "application_description"></a>
+Our web application, Pet Society, allows pet owners to find caretakers who are able to take care of their pets when they are unable to (for example, on vacation, sick .etc).
+It can be viewed as a marketplace for pet caring services. 
+Pet owners can:
+- sign up for an account and register the pets that they want to find a caretaker to care for.
+- bid for a caretaker's services when he/she browses through the available caretakers page
+- search through all the available services offered. They can also the filter the results of their search using a few different parameters (average rating, availability date, area of the caretaker .etc)
+- edit the details of their profile on the profile page after they have signed up (e.g update their address and area, the pets they have .etc)
+- submit a review for the caretaker on any completed service/transaction that they were involved in
+- view all the past reviews and average rating of the caretaker when they are browsing the services offered
+- submit an enquiry to the administrators of thr website in the case of any doubts or disputes
+- view the answers to the enquiries that they have previously submitted to the administrator
+- view their past and current transactions
+
+Caretakers can:
+- sign up for an account as either a full timer or part timer but NOT BOTH.
+- part timers can indicate their availabilities, there is no minimum number of days they are to be available every month
+- part timers can indicate the daily price for their periods of availability
+- full timers can take leave by indicating the period they want to take leave in and the system will check whether they 
+are able to do so
+- full timers can increase the price of the services if they perform well and the pet owners give them good ratings
+- accept or reject bids offered by the pet owners for their services
+- view the ratings and reviews that the caretakers have given them for the transactions they have been involved in
+- view their expected salaries by month 
+- view their past and current transactions
+
+Administrators can:
+- view who are the underperforming caretakers
+- see the total number of jobs that have been completed/in progress for the month/year
+- see the total earnings that the website has made through the commissions that it takes
+- see which category of pets need more caretakers for
+- see the distribution of their users islandwide (split up by the five areas, Central, North, Northeast, East and West)
+- see the total salaries that need to be paid to the caretakers every month
+- see the caretakers that they are managing
+- see other relevant statistics in the admin dashboard
+- change the base price of the full time caretakers under their management
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 ![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
 
 Constraints not shown in ER diagram:
-- Duration_to and duration_from of transaction_details must be in between the service_avail_from and service_avail_to attributes
+- **Duration_to**  and **duration_from** of transaction_details must be IN BETWEEN the **service_avail_from** and **service_avail_to** attributes.
+- Full time caretakers and part time caretakers with a rating of 4/5 and higher can only participate in 5 transactions at any given time. In the ER diagram, this means that the number of transactions which have a t_status = 3 at any point in time <= 5. This constraint is enforced by a SQL Trigger.
+- Part time caretakers with a rating lower than a 4/5 can only participate in 2 transactions at any point in time. In the ER diagram, this means that the number of transactions which have a t_status = 4 at any point in time <= 2. This constraint is enforced by a SQL Trigger.
+- A full time caretaker must work for a minimum of 2 x 150 consecutive days a year. This constraint is enforced by a check performed by a SQL Function.
+- Caretakers cannot apply for leave if they are taking care of 1 or more pets in the leave period. This constraint is enforced by a check performed by a SQL Function.
 
 
 ## Database schema <a name = "schema"></a>
-**Insert final schema.sql code here**
-**Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
+The constraints that cannot be enforced using table constraints/checks are enforced using SQL Triggers.
+The primary and foreign keys of the tables are indicated in the creation of each table.
 
 #### Users ISA PetOwners, Caretakers, PCSAdmins schema
 ```sql
@@ -92,7 +131,7 @@ CREATE TABLE Categories (
 );
 ```
 
-#### Owns_Pets and Offers_Services schema
+#### Owns_Pets schema
 ```sql
 CREATE TABLE Owns_Pets (
 	owner_email VARCHAR REFERENCES PetOwners(owner_email)
@@ -104,7 +143,10 @@ CREATE TABLE Owns_Pets (
 	is_deleted BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
-
+```
+#### Owns_Pets schema
+The **is_avail** attribute denotes whether the service is valid and can be advertised to the pet owners on the website.
+```sql
 CREATE TABLE Offers_Services (  
 	caretaker_email VARCHAR REFERENCES Caretakers(caretaker_email)
 	ON DELETE cascade,
@@ -119,6 +161,14 @@ CREATE TABLE Offers_Services (
 ```
 
 #### Transactions and transactions_details schema
+The **t_status** attribute indicates the status of the transaction using integers.
+- a **1** denotes that the transaction has just been SUBMITTED (it is a bid submitted by a pet owner to a care taker). The caretaker has 
+not taken any action.
+- a **2** denotes that the transaction is REJECTED by the caretaker (the bid from the petowner was rejected by the caretaker)
+- a **3** denotes that the transaction is IN PROGRESS/ACCEPTED by the caretaker (the bid is accepted so the transaction will be performed)
+- a **4** denotes that the transaction has been COMPLETED (the service has been completed by the caretaker and the pet has been returned to the pet owner)
+- a **5** denotes that a review for the caretaker has been submitted, written by the petowner, for the transaction after the completion of the transaction
+
 ```sql
 CREATE TABLE Transactions_Details (
 	caretaker_email VARCHAR,
@@ -137,8 +187,10 @@ CREATE TABLE Transactions_Details (
 	service_avail_to DATE NOT NULL,
 	t_status INTEGER DEFAULT 1,
 	PRIMARY KEY (caretaker_email, pet_name, owner_email, duration_to, duration_from),
-	CHECK (duration_from >= service_avail_from), -- the start of the service must be same day or days later than the start of the availability period
-	CHECK (duration_to <= service_avail_to), -- the end of the service must be same day or earlier than the end date of the availability period
+	-- the start of the service must be same day or days later than the start of the availability period
+	CHECK (duration_from >= service_avail_from), 
+	-- the end of the service must be same day or earlier than the end date of the availability period
+	CHECK (duration_to <= service_avail_to), 
 	CHECK (caretaker_email != owner_email),
 	FOREIGN KEY (owner_email, pet_name, pet_type) REFERENCES Owns_Pets(owner_email, pet_name, pet_type),
 	FOREIGN KEY (caretaker_email, pet_type, service_avail_from, service_avail_to) 
@@ -165,9 +217,23 @@ All our tables are in BCNF format to eliminate data redundancies and anomalies.
 
 
 ## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
-**Must show code and write description for each trigger**
+
 #### Trigger to update the average rating of the caretaker and the number of reviews for the caretaker after every new review submission by a pet owner
+This trigger is executed every time a new review is submitted by a pet owner for a transaction that is complete.
+
+First, it will count the number of reviews that the caretaker has in the Transactions_details table and the **no_of_reviews** attribute 
+of the caretaker in the Caretakers table will be updated accordingly.
+
+Then, it will compute the average of all the ratings that the caretaker has received from the pet owners and the **avg_rating** attribute 
+of the caretaker in the Caretakers table will be updated accordingly.
+
 ```sql
+CREATE TRIGGER update_caretaker_rating
+	AFTER UPDATE ON Transactions_Details
+	FOR EACH ROW
+	EXECUTE FUNCTION update_caretaker_rating();
+
+CREATE OR REPLACE FUNCTION update_caretaker_rating()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
 		rating NUMERIC := 0;
@@ -190,15 +256,17 @@ RETURNS TRIGGER AS $$
 	RETURN NULL;
  	END; 
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_caretaker_rating
-	AFTER UPDATE ON Transactions_Details
-	FOR EACH ROW
-	EXECUTE FUNCTION update_caretaker_rating();
 ```
 
 #### Trigger to check whether the caretaker has already reached the maximum amount of pets he can care for when he accepts a bid by a pet owner
+This trigger is implemented to ensure that a caretaker does not exceed the maximum number of pets that he can take care for.
+
 ```sql
+CREATE TRIGGER check_caretaker_limit
+	BEFORE UPDATE ON Transactions_Details
+	FOR EACH ROW
+	EXECUTE PROCEDURE check_caretaker_limit();
+
 CREATE OR REPLACE FUNCTION check_caretaker_limit()
 RETURNS TRIGGER AS $$ 
 	DECLARE 
@@ -209,13 +277,23 @@ RETURNS TRIGGER AS $$
 		pet_limit INTEGER := 2;
 		count BIGINT := 0;
 	BEGIN
+		-- if the status change is to 2 (reject), 4(complete), 5(review submitted),
+		-- the checks do not need to be performed.
+		IF (NEW.t_status = 2 OR NEW.t_status = 4 OR NEW.t_status = 5) THEN
+			RETURN NEW;
+		END IF;
+
+		-- the code below will execute only when the caretaker is about to accept a bid
 		-- get rating of caretaker
 		SELECT avg_rating INTO rating
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF ((emp_type = 'parttime' AND rating > 4) OR emp_type = 'fulltime') THEN
+		
+		-- for a full time caretaker or a part time caretaker with a rating >= 4, the limit is 5
+		IF ((emp_type = 'parttime' AND rating >= 4) OR emp_type = 'fulltime') THEN
 			pet_limit := 5;
 		END IF;
+
 		-- Loop over the each date of the new bid to be accepted and check if any of the days have
 		-- more than 5 transactions in progress
 		WHILE date_start <= date_end LOOP
@@ -238,14 +316,11 @@ RETURNS TRIGGER AS $$
 		RETURN NEW;
  	END; 
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER check_caretaker_limit
-	BEFORE UPDATE ON Transactions_Details
-	FOR EACH ROW
-	EXECUTE PROCEDURE check_caretaker_limit();
 ```
 
 ##### Trigger to update the daily price of a full time caretaker's services when his rating is updated after every new review submission
+This trigger will execute to enable the feature that a 'full time caretaker's price for his services will increase as his rating increases'
+
 ```sql
 CREATE OR REPLACE FUNCTION update_fulltime_price()
 RETURNS TRIGGER AS $$ 
@@ -538,11 +613,19 @@ $$ LANGUAGE plpgsql;
 ```
 
 ## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
+We used the PERN stack to develop our application.
+
 - [PostgreSQL](https://www.postgresql.org/) - Database
-- [Express](https://expressjs.com/) - Server Framework
-- [ReactJS](https://reactjs.org/) - Frontend 
-- [NodeJS](https://nodejs.org/en/) - Server Environment
+- [Express](https://expressjs.com/) - Server framework
+- [ReactJS](https://reactjs.org/) - Frontend framework
+- [NodeJS](https://nodejs.org/en/) - Server runtime environment
+- [Heroku](https://heroku.com) - Deployment platform
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
+**Put final screenshots here**
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
+- Need to split up workload better
+- Deciding between implementing SQL functions or just doing the logic in the backend
+- How to leverage the power of DBMS to make the application fast and efficient
+- Careful planning at the start is important

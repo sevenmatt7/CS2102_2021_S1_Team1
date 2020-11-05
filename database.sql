@@ -164,13 +164,23 @@ RETURNS TRIGGER AS $$
 		pet_limit INTEGER := 2;
 		count BIGINT := 0;
 	BEGIN
+		-- if the status change is to 2 (reject), 4(complete), 5(review submitted),
+		-- the checks do not need to be performed.
+		IF (NEW.t_status = 2 OR NEW.t_status = 4 OR NEW.t_status = 5) THEN
+			RETURN NEW;
+		END IF;
+
+		-- the code below will execute only when the caretaker is about to accept a bid
 		-- get rating of caretaker
 		SELECT avg_rating INTO rating
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
-		IF ((emp_type = 'parttime' AND rating > 4) OR emp_type = 'fulltime') THEN
+		
+		-- for a full time caretaker or a part time caretaker with a rating >= 4, the limit is 5
+		IF ((emp_type = 'parttime' AND rating >= 4) OR emp_type = 'fulltime') THEN
 			pet_limit := 5;
 		END IF;
+		
 		-- Loop over the each date of the new bid to be accepted and check if any of the days have
 		-- more than 5 transactions in progress
 		WHILE date_start <= date_end LOOP
