@@ -6,6 +6,7 @@ const Profile = ({ setAuth }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [user_address, setAddress] = useState("");
+  const [user_area, setArea] = useState("");
   const [profile_pic_URL, setProfilepic] = useState("");
   const [transactions, setTransactions] = useState([]);
   const acc_type = localStorage.acc_type;
@@ -39,6 +40,7 @@ const Profile = ({ setAuth }) => {
       setEmail(jsonData.email);
       setAddress(jsonData.user_address)
       setProfilepic(jsonData.profile_pic_address)
+      setArea(jsonData.user_area);
     } catch (err) {
       console.error(err.message);
     }
@@ -138,7 +140,7 @@ const Profile = ({ setAuth }) => {
             </div>
             </div>
             <div className="col-md-2">
-              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL}/>
+              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL} area={user_area}/>
             </div>
           </div>
         </div>
@@ -199,6 +201,14 @@ const Profile = ({ setAuth }) => {
                   </div>
                   <div className="col-md-6">
                     <p>{user_address}</p>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <label>Region/Area</label>
+                  </div>
+                  <div className="col-md-6">
+                    <p>{user_area}</p>
                   </div>
                 </div>
                 <div className="row">

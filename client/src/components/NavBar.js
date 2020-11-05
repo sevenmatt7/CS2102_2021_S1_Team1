@@ -46,10 +46,10 @@ export default function NavBar({ isAuth, setAuth }) {
                             {acc_type === "admin" && <Nav.Link href="/c/pcsenquiries">Enquiries</Nav.Link>}
                         </Nav>
                         <Nav>
-                            {!isAuth && <Nav.Link href="/c/login">Login</Nav.Link>}
-                            {!isAuth && <Nav.Link eventKey={2} href="/c/register">Register</Nav.Link>}
-                            {isAuth && <Nav.Link eventKey={3} href="/c" onClick={e => logout(e)}>Logout</Nav.Link>}
-                            {isAuth && <Nav.Link eventKey={4} href="/c/profile">My Profile</Nav.Link>}
+                            {!isAuth && <Nav.Link id="login" href="/c/login">Login</Nav.Link>}
+                            {!isAuth && <Nav.Link id="register" eventKey={2} href="/c/register">Register</Nav.Link>}
+                            {isAuth && <Nav.Link id="logout" eventKey={3} href="/c" onClick={e => logout(e)}>Logout</Nav.Link>}
+                            {isAuth && <Nav.Link id="profile" eventKey={4} href="/c/profile">My Profile</Nav.Link>}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const pool = require("../db");
 const authorize = require("../middleware/authorize");
+const jwt = require("jsonwebtoken");
 
 router.get("/", authorize, async (req, res) => {
     try {
@@ -13,6 +14,23 @@ router.get("/", authorize, async (req, res) => {
     }
 });
 
+//edit selected user details
+router.put("/edituser", async (req, res) => {
+    try {
+        const { full_name, user_address, profile_pic_address, user_area } = req.body;
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+        const editedUser = await pool.query(
+            "UPDATE Users SET (full_name, user_address, profile_pic_address, user_area) = ($1, $2, $3, $4) \
+            WHERE email = $5 RETURNING *" ,
+            [full_name, user_address, profile_pic_address, user_area, user_email]);
+
+        res.json(editedUser.rows);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
 // router.delete("/delete", async (req, res) => {
 //     try {
 //         const jwtToken = req.header("token");

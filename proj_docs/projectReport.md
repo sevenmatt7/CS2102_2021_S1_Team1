@@ -40,36 +40,26 @@ Constraints not shown in ER diagram:
 **Insert final schema.sql code here**
 **Also need to list down app constraints not captured by schema aka the constraints reinforced by triggers**
 ```sql
-DROP TABLE IF EXISTS Users CASCADE;
-DROP TABLE IF EXISTS PetOwners CASCADE;
-DROP TABLE IF EXISTS Caretakers CASCADE;
-DROP TABLE IF EXISTS PCSAdmins CASCADE;
-DROP TABLE IF EXISTS Manages CASCADE;
-DROP TABLE IF EXISTS Categories CASCADE;
-DROP TABLE IF EXISTS Owns_Pets CASCADE;
-DROP TABLE IF EXISTS Offers_Services CASCADE;
-DROP TABLE IF EXISTS Transactions_Details CASCADE;
-DROP TABLE IF EXISTS Enquiries CASCADE;
-DROP FUNCTION IF EXISTS update_caretaker_rating() CASCADE;
-
 CREATE TABLE Users (
 	email VARCHAR,
 	full_name VARCHAR NOT NULL,
 	user_password VARCHAR NOT NULL,
 	profile_pic_address VARCHAR,
-	-- user_address VARCHAR,
-	-- user_zipcode VARCHAR,
+	gender CHAR,
+	user_zipcode VARCHAR,
 	user_area VARCHAR
 	PRIMARY KEY (email)
 );
-
+```
+```sql
 CREATE TABLE PetOwners (
 	owner_email VARCHAR
 	REFERENCES Users(email)
 	ON DELETE cascade,
 	PRIMARY KEY (owner_email)
 );
-
+```
+```sql
 CREATE TABLE Caretakers(
 	caretaker_email VARCHAR
 	REFERENCES Users(email)

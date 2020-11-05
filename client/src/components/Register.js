@@ -43,6 +43,7 @@ const Register = ({ setAuth }) => {
 
     const [acc_type, setAcctype] = useState("petowner");
     const [emp_type, setEmployment] = useState("fulltime");
+    const [area, setArea] = useState("Central");
 
     const { email, password, name, address } = inputs;
 
@@ -53,7 +54,7 @@ const Register = ({ setAuth }) => {
     const onSubmitForm = async (e) => {
         e.preventDefault();
         try {
-            const body = { name, email, password, address, acc_type, emp_type, type_pref }
+            const body = { name, email, password, address, acc_type, emp_type, type_pref, area }
             const response = await fetch("/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -69,7 +70,7 @@ const Register = ({ setAuth }) => {
                 toast.success("Register Successfully");
             } else {
                 setAuth(false);
-                toast.error("You were not assigned an admin but your account has been created");
+                toast.error("There was an error in your registration");
             }
         } catch (err) {
             toast.error(err.message);
@@ -89,7 +90,7 @@ const Register = ({ setAuth }) => {
                                 <form onSubmit={onSubmitForm}>
                                     <div className="form-group">
                                         <label>What would you like to register as?</label>
-                                        <select className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
+                                        <select id="acc_select" className="form-control" value={acc_type} onChange={e => setAcctype(e.target.value)}>
                                             <option value="petowner">Pet Owner</option>
                                             <option value="caretaker">Caretaker</option>
                                             <option value="both">Pet Owner & Caretaker</option>
@@ -99,7 +100,7 @@ const Register = ({ setAuth }) => {
                                     {(acc_type === "caretaker" || acc_type === "both") &&
                                         <div className="form-group">
                                             <label>Part-time or Full-time?</label>
-                                            <select className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>
+                                            <select id="emp_select" className="form-control" value={emp_type} onChange={e => setEmployment(e.target.value)}>
                                                 <option value="fulltime">Full-time</option>
                                                 <option value="parttime">Part-time</option>
                                             </select>
@@ -133,6 +134,7 @@ const Register = ({ setAuth }) => {
                                             value={name}
                                             onChange={e => onChange(e)} />
                                     </div>
+                                    
                                     <div className="form-group">
                                         <label>Address</label>
                                         <input type="text"
@@ -141,6 +143,17 @@ const Register = ({ setAuth }) => {
                                             className="form-control"
                                             value={address}
                                             onChange={e => onChange(e)} />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Region/Area</label>
+                                        <select id="area_select" className="form-control" value={area} onChange={e => setArea(e.target.value)}>
+                                            <option value="Central">Central</option>
+                                            <option value="East">East</option>
+                                            <option value="North">North</option>
+                                            <option value="Northeast">Northeast</option>
+                                            <option value="West">West</option>
+                                        </select>
                                     </div>
 
                                     {(acc_type === "caretaker" || acc_type === "both") && emp_type === "fulltime" &&
@@ -175,10 +188,10 @@ const Register = ({ setAuth }) => {
                                         </div>
                                     }
                                     <br></br>
-                                    <button className="btn btn-success btn-block">Submit</button>
+                                    <button id="submitBtn" className="btn btn-success btn-block">Submit</button>
                                 </form>
                                 <p className="forgot-password text-right">
-                                    Got an account?  <Link to="/login">Login</Link>
+                                    Got an account?  <Link to="/c/login">Login</Link>
                                 </p>
                             </div>
                         </div>
