@@ -32,4 +32,61 @@ router.put("/edituser", async (req, res) => {
     }
 });
 
+//delete selected user
+router.put("/deleteuser", async (req, res) => {
+    try {
+        // const { acc_type, employment_type } = req.body;
+        const jwtToken = req.header("token")
+        const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+
+        const deletedUser = await pool.query(
+            "UPDATE Users SET is_deleted = true \
+            WHERE email = $1 \
+            AND \
+            (SELECT 1 FROM Transactions_Details \
+            WHERE (owner_email = $1 \
+            OR caretaker_email = $1)\
+            AND t_status = 3) IS NULL \
+            RETURNING *",
+            [user_email]);
+
+        res.json(deletedUser);
+    } catch (err) {
+        console.log(err.message);
+    }
+});
+
+// router.delete("/delete", async (req, res) => {
+//     try {
+//         const jwtToken = req.header("token");
+//         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
+//         const acc_type = req.header("acc_type");
+        
+//         let deleteUser;
+//         if (acc_type === "petowner") {
+//             deleteUser = await pool.query(
+//                 "DELETE FROM Users \
+//                 WHERE email = $1 \
+//                 AND pet_name = $2 \
+//                 AND \
+//                 (SELECT 1 FROM Transactions_Details \
+//                 WHERE (owner_email = $1 AND (t_status = 1 OR t_status = 3)) \
+//                 IS NULL \
+//                 ",
+//                 [user_email]
+//             );
+//         } else if (acc_type === "caretaker") {
+//             deleteUser = await pool.query(
+//                 "DELETE FROM Users \
+//                 WHERE email = $1 \
+//                 AND pet_name = $2 \
+//                 AND \
+//                 (SELECT 1 FROM Transactions_Details \
+//                 WHERE (caretaker_email = $1 AND (t_status = 1 OR t_status = 3)) \
+//                 IS NULL \
+//                 ",
+//                 [user_email]
+//             );
+//         }
+
 module.exports = router;

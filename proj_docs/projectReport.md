@@ -21,9 +21,9 @@ MARKING SCHEME
 ## 👨‍💻  Team <a name = "info"></a>
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
-| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API development, Deployment
+| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API Development, Deployment
 | Joshua Tam | A0190309H | Frontend, 
-| Tan Guan Yew | A0183464Y | Frontend,
+| Tan Guan Yew | A0183464Y | Frontend, Petowner Features, API Development
 | Sean Lim | A0187123H | Admin features,
 | Glen Wong | A0188100N | Frontend, 
 

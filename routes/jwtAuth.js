@@ -21,7 +21,14 @@ router.post("/register", validInfo, async (req, res) => {
         const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
 
         if (user.rows.length !== 0) {
-            return res.status(401).json("A user with the email is already registered!")
+            if (user.rows[0].is_deleted == true) {
+                const reactivate = await pool.query("UPDATE Users SET is_deleted = false WHERE email = $1", [email]);
+                return res.json("This account has been created before, reactivating...")
+            }
+            else {
+                return res.status(401).json("A user with the email is already registered!")
+            }
+           
         }
 
         //step 3: encrypt the user's password using bcrypt
@@ -101,11 +108,18 @@ router.post("/registerpet", validInfo, async (req, res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         console.log(user_email)
 
-        const newPet = await pool.query(
-            "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [user_email, pet_name, special_req, pet_type, gender]);
+        var newPet = await pool.query(
+            "UPDATE Owns_Pets SET is_deleted = false WHERE owner_email = $1 AND pet_name = $2 AND pet_type = $3 RETURNING *",
+            [user_email, pet_name, pet_type]);
 
-        res.json(newPet.rows[0].pet_name);
+        if (newPet.rowCount == 0) {
+            newPet = await pool.query(
+                "INSERT INTO Owns_Pets (owner_email, pet_name, special_req, pet_type, gender) VALUES ($1, $2, $3, $4, $5) RETURNING pet_name",
+                [user_email, pet_name, special_req, pet_type, gender]);
+        }
+
+        
+        res.json(newPet.rows[0]);
 
     } catch (err) {
         console.error(err.message);
@@ -119,7 +133,7 @@ router.post("/login", validInfo, async (req, res) => {
         const {email, password, acc_type} = req.body;
         let user_in_category;
         let emp_type = "";
-        const user = await pool.query("SELECT * from users WHERE email = $1", [email]);
+        const user = await pool.query("SELECT * from users WHERE email = $1 AND is_deleted = false", [email]);
         if (user.rows.length === 0) {
             return res.status(401).json("You are not registered!")
         }
