@@ -22,7 +22,7 @@ MARKING SCHEME
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
 | Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API Development, Deployment
-| Joshua Tam | A0190309H | Frontend, 
+| Joshua Tam | A0190309H | Frontend, CareTaker Features, API Development
 | Tan Guan Yew | A0183464Y | Frontend, Petowner Features, API Development
 | Sean Lim | A0187123H | Admin features,
 | Glen Wong | A0188100N | Frontend, 
@@ -69,10 +69,13 @@ Administrators can:
 
 Constraints not shown in ER diagram:
 - **Duration_to**  and **duration_from** of transaction_details must be IN BETWEEN the **service_avail_from** and **service_avail_to** attributes.
-- Full time caretakers and part time caretakers with a rating of 4/5 and higher can only participate in 5 transactions at any given time. In the ER diagram, this means that the number of transactions which have a t_status = 3 at any point in time <= 5. This constraint is enforced by a SQL Trigger.
-- Part time caretakers with a rating lower than a 4/5 can only participate in 2 transactions at any point in time. In the ER diagram, this means that the number of transactions which have a t_status = 4 at any point in time <= 2. This constraint is enforced by a SQL Trigger.
-- A full time caretaker must work for a minimum of 2 x 150 consecutive days a year. This constraint is enforced by a check performed by a SQL Function.
-- Caretakers cannot apply for leave if they are taking care of 1 or more pets in the leave period. This constraint is enforced by a check performed by a SQL Function.
+- All caretakers have a limit of up to 5 Pets at any one time. 
+	- Full time caretakers and part time caretakers with a rating of 4/5 and higher can only participate in 5 transactions at any given time. In the ER diagram, this means that the number of transactions which have a t_status = 3 at any point in time <= 5. This constraint is enforced by a SQL Trigger.
+	- Part time caretakers with a rating lower than a 4/5 can only participate in 2 transactions at any point in time. In the ER diagram, this means that the number of transactions which have a t_status = 4 at any point in time <= 2. This constraint is enforced by a SQL Trigger.
+- A full time caretaker must work for a minimum of 2 x 150 consecutive days a year AND a full time caretaker is treated as available until they apply for leave. These constraints are enforced by a check performed by a SQL Function.
+- A full time caretakers cannot apply for leave if there is at least one Pet under their care. This constraint is enforced by a check performed by a SQL Function.
+- A caretaker should not take care of pets they cannot care for. This constraint is enforced by the foreign key in Transactions_Details onto Offers_Services.  
+- The daily price for a full time caretaker increases with the rating of the caretaker but will never be below the base price. This constraint is enforced by a SQL Trigger "update_fulltime_price".
 
 
 ## Database schema <a name = "schema"></a>
@@ -627,7 +630,8 @@ We used the PERN stack to develop our application.
 **Put final screenshots here**
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
-- Need to split up workload better
-- Deciding between implementing SQL functions or just doing the logic in the backend
-- How to leverage the power of DBMS to make the application fast and efficient
-- Careful planning at the start is important
+- Leveraging the power of DBMS to make the application fast and efficient was a problem faced in the early stages of our project. After we realised the importance of normalisation as we saw certain redundancies that appeared in our database, we were able to remove some redundant tables. This showed us the importance of a proper ER diagram. 
+- With careful planning at the start, we could have avoided some issues due to data parsing. In our initial implementation, we stored durations in our database as a string, with start and end dates concatenation together and delimited by a comma. We faced difficulties parsing the string into dates for calculations, and had to re-implement our schema halfway through the project to store dates as DATE format in the database instead. 
+- Creating complex queries was challenging with the knowledge and SQL constructs exposed to us from the module and we had to search online for methods to achieve what we want. We were able to find better ways to make our existing queries better and more efficient, such as the usage of LOOP in a PLPGSQL triggers/functions. We were able to make efficient queries with the usage of SQL transactions as well. 
+- Lack of experience in the field of web developement technologies, such as React and NodeJS posed an initial steep learning curve for some of the group members to keep up with the overall development pace of the team.  
+- Splitting the workload was a problem faced throughout the project, as progress can be slow without consistent meetings and sprints. Developement could be more efficient with better allocation of task, as well as a issue/task tracker. 
