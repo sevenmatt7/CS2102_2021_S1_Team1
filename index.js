@@ -473,10 +473,36 @@ app.get("/filtersalary", async (req, res) => {
         } else {
             caretaker_email = req.query.caretaker_email;
         }
-
+        
         const searches = await pool.query("SELECT salary, pet_days \
                                              FROM calc_monthly_salary($1, $2) \
                                              AS (salary NUMERIC, pet_days NUMERIC);", [caretaker_email, month]);
+        res.json(searches.rows[0]);
+    } catch (error) {
+        console.log(error.message)
+    }
+});
+
+// get commission of admin
+app.get("/commission", async (req, res) => {
+    try {
+        let admin_email;
+        if (req.query.admin_email.indexOf("@") === -1) {
+            let jwtToken = req.query.admin_email;
+            admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;;
+        } else {
+            admin_email = req.query.admin_email;
+        }
+        const searches = await pool.query("SELECT m1.admin_email, SUM(m2.commission) \
+                                            FROM pcsadmins AS m1, \
+                                            (SELECT m.admin_email AS admin_email, \
+                                                    td.caretaker_email as caretaker_email, \
+                                                    td.cost*SUM(td.duration_to::date-td.duration_from::date+1)*0.25 AS commission \
+                                               FROM manages m JOIN transactions_details td ON m.caretaker_email=td.caretaker_email \
+                                            WHERE td.employment_type='parttime' AND td.t_status>= 3 \
+                                            GROUP BY m.admin_email, td.caretaker_email, td.cost, td.duration_from, td.duration_to) AS m2 \
+                                            WHERE m1.admin_email=m2.admin_email AND m1.admin_email=$1\
+                                            GROUP BY m1.admin_email", [admin_email]);
         res.json(searches.rows[0]);
     } catch (error) {
         console.log(error.message)

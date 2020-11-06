@@ -208,6 +208,12 @@ body, html, .App, #root, .auth-wrapper {
   margin-bottom: 3rem;
 }
 
+.card-new {
+  /* background-color: #f4ddf7; */
+  background: white;
+  margin-bottom: 3rem;
+}
+
 #register-pet-banner,
 #register-banner,
 #login-banner {

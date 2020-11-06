@@ -5,6 +5,7 @@ import Chartist from 'chartist';
 import MyLegend from 'chartist-plugin-legend';
 import PCSTable from "./PCSTable"
 import { toast } from "react-toastify";
+import PCSCommission from "./PCSCommission";
 
 
 const PCSAdmin = () => {
@@ -75,23 +76,25 @@ const PCSAdmin = () => {
 
   const changeBasePrice = async (e) => {
     try {
-        console.log(baseprice)
-        if (baseprice === undefined) {
-          toast.error("Please enter in a valid base price!")
-        } else {
-          const body = { baseprice };
-          const response = await fetch("/admin/changeprice", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json",
-                        token: localStorage.token },
-            body: JSON.stringify(body)
-          });
-        
-          const submittedData = await response.json();
-        
-          window.location.reload();
-          toast.success("You have changed the base price to $" + submittedData.base_price);
-        }
+      console.log(baseprice)
+      if (baseprice === undefined) {
+        toast.error("Please enter in a valid base price!")
+      } else {
+        const body = { baseprice };
+        const response = await fetch("/admin/changeprice", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: localStorage.token
+          },
+          body: JSON.stringify(body)
+        });
+
+        const submittedData = await response.json();
+
+        window.location.reload();
+        toast.success("You have changed the base price to $" + submittedData.base_price);
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -522,15 +525,15 @@ const PCSAdmin = () => {
                     <div className="input-group mb-3">
 
                       <input type="text"
-                       pattern="[0-9]*"
-                       name="baseprice"
-                       placeholder="Enter base price here to change"
-                       className="form-control"
-                      value={baseprice}
-                      onChange={e => onChange(e)} />
-                    <div className="input-group-append">
-                      <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
-                    </div>
+                        pattern="[0-9]*"
+                        name="baseprice"
+                        placeholder="Enter base price here to change"
+                        className="form-control"
+                        value={baseprice}
+                        onChange={e => onChange(e)} />
+                      <div className="input-group-append">
+                        <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
+                      </div>
                     </div>
                   </div>
 
@@ -548,6 +551,7 @@ const PCSAdmin = () => {
                 </div>
               </div>
 
+              <PCSCommission />
 
             </div>
 
