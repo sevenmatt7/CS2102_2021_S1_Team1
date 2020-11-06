@@ -64,21 +64,21 @@ Administrators can:
 - see other relevant statistics in the admin dashboard
 - change the base price of the full time caretakers under their management
 
-### Applications Data Constraints
+### Application's Data Constraints
 1. Pet types are classified into categories (Dog, Cat, Fish, Rabbit, Bird, Reptile).
-2. A User **can** be either a Pet Owner, Care Taker, both a Pet Owner and a Care Taker, or a PCSAdmin and they will have their own profile.
+2. A User **can** be either a Pet Owner, Care Taker, both a Pet Owner and a Care Taker, or a PCSAdmin.
 3. A Pet Owner **can** own more that one Pet. 
 4. A Pet Owner **can opt** to make their payment using Cash or Credit-Cards. 
 5. A Pet Owner **can** decide on how to transfer their pet from 3 methods (Pet owner delivery, Care Taker pick up, Transfer through the physical building of PCS).
-6. Pet Owners **cannot** request for a service if their pet does not match the Type Preference of that service offered. 
-7. A Pet Owners **can** submit multiple review/rating for a Care Taker if the Care Taker has taken care of the Pet Owner's Pet multiple times, including for the same pet. 
+6. A Pet Owner **cannot** request for a service if their pet does not match the Type Preference of that service offered. 
+7. A Pet Owner **can** submit multiple review/rating for a Care Taker if the Care Taker has taken care of the Pet Owner's Pet multiple times, including for the same pet. 
 8. A Pet Owner **can only** submit a review/rating after the care period has ended, for a specific transaction.
 9. A Care Taker **is required** to have the pet under their care for the Entire Day (*24 Hrs*), for all Pet Days in the Transaction in which they accepted.
 10. Care Takers employment types are classified into Full-Time or Part-Time. 
-11. Each full time care taker **can opt** to take up to 65 days of leave, if they satisfy a minimum of 2 x 150 consecutive working days a year. 
-12. Each full time care taker **cannot** take leave if they have at least 1 Pet under their care.
-13. A PCS Admin **must** manage at least one Caretaker.
-14. Each Care Taker **must** be managed by exactly one PCSAdmin, and is **randomly** assigned to a PCSAdmin upon registration. 
+11. A full time care taker **can opt** to take up to 65 days of leave, if they satisfy a minimum of 2 x 150 consecutive working days a year. 
+12. A full time care taker **cannot** take leave if they have at least 1 Pet under their care.
+13. A PCSAdmin **must** manage at least one Caretaker.
+14. A Care Taker **must** be managed by exactly one PCSAdmin, and is **randomly** assigned to a PCSAdmin upon registration. 
 15. A Care Taker's base daily price (**$50**) is determined by a PCSAdmin for each Pet Type upon registration.
 16. A Care Taker **can** only take care of up to 5 Pets at any single point of time. 
 17. A Care Taker **must** manually *accept* or *reject* each bid, regardless if they are full time or part time.
@@ -177,7 +177,7 @@ CREATE TABLE Owns_Pets (
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 ```
-#### Owns_Pets schema
+#### Offers_Services schema
 The **is_avail** attribute denotes whether the service is valid and can be advertised to the pet owners on the website.
 ```sql
 CREATE TABLE Offers_Services (  
