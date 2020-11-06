@@ -25,7 +25,7 @@ MARKING SCHEME
 | Joshua Tam | A0190309H | Frontend, 
 | Tan Guan Yew | A0183464Y | Frontend, Petowner Features, API Development
 | Sean Lim | A0187123H | Admin features,
-| Glen Wong | A0188100N | Frontend, 
+| Glen Wong | A0188100N | Frontend, Backend Salary calculation
 
 ## 🧐 Application's functionalities <a name = "application_description"></a>
 Our web application, Pet Society, allows pet owners to find caretakers who are able to take care of their pets when they are unable to (for example, on vacation, sick .etc).
