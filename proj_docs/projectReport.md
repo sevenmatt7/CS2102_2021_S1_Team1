@@ -711,7 +711,7 @@ Here are some screenshots showcasing a few of our project features:
 
 
 > Accept jobs from Petowners! (Caretaker Dashboard)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>  
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98392039-6a8ef580-2092-11eb-8191-db62e79c8274.png"> </kbd>  
 
 
 > Take a look at the caretaker and petowner statistics! (PCS Admin Dashboard)
