@@ -12,6 +12,7 @@ const RequestService = ({ search, i }) => {
     const avail_from = search.service_avail_from
     const avail_to = search.service_avail_to
     const daily_price = search.daily_price
+    const type_pref = search.type_pref
 
     const[petList, setPets] = useState([]);
     
@@ -149,7 +150,7 @@ const RequestService = ({ search, i }) => {
                             onChange={e => setPetTypes(e.target.value)} required="required">
                                 <option selected >Choose...</option>
                                 {petList.map((pet, i) => (
-                                    <option key={i} value={pet.pet_name}>{pet.pet_name}</option>
+                                    (pet.pet_type === type_pref) && <option key={i} value={pet.pet_name}>{pet.pet_name}</option>
                                 ))}
                             </select>
 
