@@ -663,7 +663,56 @@ We used the PERN stack to develop our application.
 - [Heroku](https://heroku.com) - Deployment platform
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
-**Put final screenshots here**
+<table>
+	<tr>
+		<th>Admins' dashboard</th>
+		<th>Admins' dashboard (continued)</th>
+  	</tr>
+  	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/admin_dashboard.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_earnings.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Caretaker profile page</th>
+		<th>Caretaker homepage</th>
+  	</tr>
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_profile.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_homepage.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+	<tr>
+		<th>Caretakers' earnings page</th>
+		<th>Browsing for caretakers' services page</th>
+  	</tr>
+	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_salary.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretakers_browse.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Looking at a caretaker's reviews</th>
+		<th>Bidding for a caretaker's service</th>
+  	</tr>
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/browse_reviews.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/requesting_service.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+	<tr>
+		<th>Pet owner profile page</th>
+		<th>Pet owner homepage</th>
+  	</tr>
+	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_profile.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_home.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Pet registration page</th>
+		<th>Pet owners' pets page</th>
+  	</tr>  
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/pet_register.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_pets.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+</table>
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
 - Leveraging the power of DBMS to make the application fast and efficient was a problem faced in the early stages of our project. After we realised the importance of normalisation as we saw certain redundancies that appeared in our database, we were able to remove some redundant tables. This showed us the importance of a proper ER diagram. 

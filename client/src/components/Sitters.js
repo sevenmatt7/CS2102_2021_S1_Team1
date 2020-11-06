@@ -256,7 +256,7 @@ const Sitters = ({ setAuth }) => {
                 <td className="text-center" >{ `${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}` }</td>
                 <td className="text-center" >{search.daily_price}</td>
                 <td className="text-center" >{search.type_pref}</td>
-                <td className="text-center" >{parseFloat(search.avg_rating).toFixed(2)}</td>
+                <td className="text-center" >{search.avg_rating.slice(0,3)}</td>
                 <td className="text-center" ><RequestService search={search} i={i} /></td>
                 <td className="text-center" ><ViewReviews search={search} i={i} /></td>
 
