@@ -38,6 +38,7 @@ const Sitters = ({ setAuth }) => {
     let date_tokens = date_string.split(" ");
     return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`;
   }
+  
   var starting = document.getElementById("from");
   var ending = document.getElementById("to");
   if (starting) {
