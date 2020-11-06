@@ -38,7 +38,6 @@ const Sitters = ({ setAuth }) => {
     let date_tokens = date_string.split(" ");
     return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`;
   }
-
   var starting = document.getElementById("from");
   var ending = document.getElementById("to");
   if (starting) {
@@ -221,40 +220,6 @@ const Sitters = ({ setAuth }) => {
         <h2> Browse for CareTakers!</h2>
         <br></br>
       </div>
-      
-      
-      {acc_type === "petowner" && <div className="table-responsive">
-        <table className="table table-stripped table-sm">
-          <thead>
-            <tr>
-              {/* <th className="text-center" scope="col">Profile Pic</th> */}
-              <th className="text-center" scope="col">Full Name</th>
-              <th className="text-center" scope="col">Address</th>
-              <th className="text-center" scope="col">Area</th>
-              <th className="text-center" scope="col">Employment Type</th>
-              <th className="text-center" scope="col">Available</th>
-              <th className="text-center" scope="col">Price/day</th>
-              <th className="text-center" scope="col">Pet Type</th>
-              <th className="text-center" scope="col">Average Rating</th>
-              <th className="text-center" scope="col">Request Service</th>
-              <th className="text-center" scope="col">View Reviews</th>
-            </tr>
-          </thead>
-          {searches.map((search, i) => (
-            <tbody key={i}>
-              <tr>
-                {/* <th className="text-center" scope="row"><img src={search.profile_pic_address} className="img" alt="You!" /></th> */}
-                <th className="text-center" scope="row">{search.full_name}</th>
-                <td className="text-center" >{search.user_area}</td>
-                <td className="text-center" >{search.user_address}</td>
-                <td className="text-center" >{search.employment_type}</td>
-                <td className="text-center" >{ `${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}` }</td>
-                <td className="text-center" >{search.daily_price}</td>
-                <td className="text-center" >{search.type_pref}</td>
-                <td className="text-center" >{search.avg_rating.slice(0,3)}</td>
-                <td className="text-center" ><RequestService search={search} i={i} /></td>
-                <td className="text-center" ><ViewReviews search={search} i={i} /></td>
-
 
       {acc_type === "petowner" && (
         <div className="table-responsive">
@@ -307,7 +272,7 @@ const Sitters = ({ setAuth }) => {
                   <td className="text-center">{`${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}`}</td>
                   <td className="text-center">{search.daily_price}</td>
                   <td className="text-center">{search.type_pref}</td>
-                  <td className="text-center">{parseFloat(search.avg_rating).toFixed(2)}</td>
+                  <td className="text-center">{search.avg_rating.slice(0, 3)}</td>
                   <td className="text-center">
                     <RequestService search={search} i={i} />
                   </td>
