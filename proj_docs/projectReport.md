@@ -663,9 +663,14 @@ We used the PERN stack to develop our application.
 - [Heroku](https://heroku.com) - Deployment platform
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
+
+:-------------------------:|:-------------------------:
+![](/screenshots/admin_dashboard.jpg)  |  ![](outputs/output_Biotouch/18-15_02-02-2018/Identification/BLOCK_LETTERS/BLOCK_LETTERS_movementPoints_cmc.png)
+![](outputs/output_Biotouch/18-15_02-02-2018/Verification/ITALIC/ITALIC_movementPoints_notbalanced_roc.png)  |  ![](outputs/output_Biotouch/18-15_02-02-2018/Verification/BLOCK_LETTERS/BLOCK_LETTERS_movementPoints_notbalanced_roc.png)
+![](outputs/output_Biotouch/18-15_02-02-2018/Verification/ITALIC/ITALIC_movementPoints_notbalanced_frrVSfpr.png)  |  ![](outputs/output_Biotouch/18-15_02-02-2018/Verification/BLOCK_LETTERS/BLOCK_LETTERS_movementPoints_notbalanced_frrVSfpr.png)
 <table>
   <tr>
-    <td> <img src="/screenshots/admin_dashboard"  alt="1" width = 360px height = 640px ></td>
+    <td> <img src=""  alt="1" width = 360px height = 640px ></td>
 
    </tr> 
    <tr>
