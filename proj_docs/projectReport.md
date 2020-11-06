@@ -22,7 +22,7 @@ MARKING SCHEME
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
 | Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API Development, Deployment
-| Joshua Tam | A0190309H | Frontend, 
+| Joshua Tam | A0190309H | Frontend, CareTaker Features, API Development
 | Tan Guan Yew | A0183464Y | Frontend, Petowner Features, API Development
 | Sean Lim | A0187123H | Admin features,
 | Glen Wong | A0188100N | Frontend, Backend Salary calculation
@@ -64,15 +64,48 @@ Administrators can:
 - see other relevant statistics in the admin dashboard
 - change the base price of the full time caretakers under their management
 
+### Application's Data Constraints
+1. Pet types are classified into categories (Dog, Cat, Fish, Rabbit, Bird, Reptile).
+2. A User **can** be either a Pet Owner, Care Taker, both a Pet Owner and a Care Taker, or a PCSAdmin.
+3. A Pet Owner **can** own more that one Pet. 
+4. A Pet Owner **can opt** to make their payment using Cash or Credit-Cards. 
+5. A Pet Owner **can** decide on how to transfer their pet from 3 methods (Pet owner delivery, Care Taker pick up, Transfer through the physical building of PCS).
+6. A Pet Owner **cannot** request for a service if their pet does not match the Type Preference of that service offered. 
+7. A Pet Owner **can** submit multiple review/rating for a Care Taker if the Care Taker has taken care of the Pet Owner's Pet multiple times, including for the same pet. 
+8. A Pet Owner **can only** submit a review/rating after the care period has ended, for a specific transaction.
+9. A Care Taker **is required** to have the pet under their care for the Entire Day (*24 Hrs*), for all Pet Days in the Transaction in which they accepted.
+10. Care Takers employment types are classified into Full-Time or Part-Time. 
+11. A full time care taker **can opt** to take up to 65 days of leave, if they satisfy a minimum of 2 x 150 consecutive working days a year. 
+12. A full time care taker **cannot** take leave if they have at least 1 Pet under their care.
+13. A PCSAdmin **must** manage at least one Caretaker.
+14. A Care Taker **must** be managed by exactly one PCSAdmin, and is **randomly** assigned to a PCSAdmin upon registration. 
+15. A Care Taker's base daily price (**$50**) is determined by a PCSAdmin for each Pet Type upon registration.
+16. A Care Taker **can** only take care of up to 5 Pets at any single point of time. 
+17. A Care Taker **must** manually *accept* or *reject* each bid, regardless if they are full time or part time.
+18. A Care Taker's daily price will increase with their rating:
+	- Rating between **4.0 and 4.2**, Daily Price is **$52**
+	- Rating between **4.2 and 4.4**, Daily Price is **$55**
+	- Rating between **4.4 and 4.6**, Daily Price is **$59**
+	- Rating between **4.6 and 4.8**, Daily Price is **$64**
+	- Rating between **4.8 and 5.0**, Daily Price is **$70**
+19. A full time Care Taker **will** receive a salary of $3000 per month for up to 60 Pet-Day, and receive 80% of their price as bonus for any excess Pet-Day.
+20. A part time Care Taker **can** specify their availability for the current year and the next year.
+21. A part time Care Taker **cannot** take more than 2 Pets at any single point of time, if their rating is below 4. 
+22. A part time Care Taker **will** receive 75% of their price as payment. 
+23. All transactions history **will** be stored, regardless of whether a bid is rejected or accepted, and each transaction will have a status.
+
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 ![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
 
 Constraints not shown in ER diagram:
 - **Duration_to**  and **duration_from** of transaction_details must be IN BETWEEN the **service_avail_from** and **service_avail_to** attributes.
-- Full time caretakers and part time caretakers with a rating of 4/5 and higher can only participate in 5 transactions at any given time. In the ER diagram, this means that the number of transactions which have a t_status = 3 at any point in time <= 5. This constraint is enforced by a SQL Trigger.
-- Part time caretakers with a rating lower than a 4/5 can only participate in 2 transactions at any point in time. In the ER diagram, this means that the number of transactions which have a t_status = 4 at any point in time <= 2. This constraint is enforced by a SQL Trigger.
-- A full time caretaker must work for a minimum of 2 x 150 consecutive days a year. This constraint is enforced by a check performed by a SQL Function.
-- Caretakers cannot apply for leave if they are taking care of 1 or more pets in the leave period. This constraint is enforced by a check performed by a SQL Function.
+- All caretakers have a limit of up to 5 Pets at any one time. 
+	- Full time caretakers and part time caretakers with a rating of 4/5 and higher can only participate in 5 transactions at any given time. In the ER diagram, this means that the number of transactions which have a t_status = 3 at any point in time <= 5. This constraint is enforced by a SQL Trigger.
+	- Part time caretakers with a rating lower than a 4/5 can only participate in 2 transactions at any point in time. In the ER diagram, this means that the number of transactions which have a t_status = 4 at any point in time <= 2. This constraint is enforced by a SQL Trigger.
+- A full time caretaker must work for a minimum of 2 x 150 consecutive days a year AND a full time caretaker is treated as available until they apply for leave. These constraints are enforced by a check performed by a SQL Function.
+- A full time caretakers cannot apply for leave if there is at least one Pet under their care. This constraint is enforced by a check performed by a SQL Function.
+- A caretaker should not take care of pets they cannot care for. This constraint is enforced by the foreign key in Transactions_Details onto Offers_Services.  
+- The daily price for a full time caretaker increases with the rating of the caretaker but will never be below the base price. This constraint is enforced by a SQL Trigger "update_fulltime_price".
 
 
 ## Database schema <a name = "schema"></a>
@@ -144,7 +177,7 @@ CREATE TABLE Owns_Pets (
 	PRIMARY KEY (owner_email, pet_name, pet_type)
 );
 ```
-#### Owns_Pets schema
+#### Offers_Services schema
 The **is_avail** attribute denotes whether the service is valid and can be advertised to the pet owners on the website.
 ```sql
 CREATE TABLE Offers_Services (  
@@ -633,7 +666,8 @@ We used the PERN stack to develop our application.
 **Put final screenshots here**
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
-- Need to split up workload better
-- Deciding between implementing SQL functions or just doing the logic in the backend
-- How to leverage the power of DBMS to make the application fast and efficient
-- Careful planning at the start is important
+- Leveraging the power of DBMS to make the application fast and efficient was a problem faced in the early stages of our project. After we realised the importance of normalisation as we saw certain redundancies that appeared in our database, we were able to remove some redundant tables. This showed us the importance of a proper ER diagram. 
+- With careful planning at the start, we could have avoided some issues due to data parsing. In our initial implementation, we stored durations in our database as a string, with start and end dates concatenation together and delimited by a comma. We faced difficulties parsing the string into dates for calculations, and had to re-implement our schema halfway through the project to store dates as DATE format in the database instead. 
+- Creating complex queries was challenging with the knowledge and SQL constructs exposed to us from the module and we had to search online for methods to achieve what we want. We were able to find better ways to make our existing queries better and more efficient, such as the usage of LOOP in a PLPGSQL triggers/functions. We were able to make efficient queries with the usage of SQL transactions as well. 
+- Lack of experience in the field of web developement technologies, such as React and NodeJS posed an initial steep learning curve for some of the group members to keep up with the overall development pace of the team.  
+- Splitting the workload was a problem faced throughout the project, as progress can be slow without consistent meetings and sprints. Developement could be more efficient with better allocation of task, as well as a issue/task tracker. 
