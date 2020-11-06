@@ -64,6 +64,29 @@ Administrators can:
 - see other relevant statistics in the admin dashboard
 - change the base price of the full time caretakers under their management
 
+### Applications Data Constraints
+1. Each user is identified by his/her email. Their full name and password must be recorded.
+3. Each Caretaker must have employment type (either full or part time). A caretaker's average rating and their number of reviews are computed and updated.
+4. Each Caretaker is managed by exactly one PCS Admin.
+5. Each PCS Admin must manage at least one Caretaker.  
+6. Each Pet is owned by exactly one PetOwner but each PetOwner can own any number of pets.
+7. Each Pet is identified using their name, type and owner's email. A pet's gender must be recorded.
+8. If a PetOwner is deleted, all records of his/her Pets will be deleted. 
+9. A Pet must have a type but it can only be one of the types that is listed in the Categories entity (Dog, Cat, Fish, Rabbit, Bird, Reptile).
+10. The Enquiries entity contains enquiries submitted by any Pet Owner or Caretaker. A user can send any number of these Enquiries.
+11. Each Enquiry is identified by its message and the user email who submitted the enquiry. An enquiry must have a type, which are one of the following: (Getting Started, Account and Profile, Finding Sitter, Bookings, Payments, Safety, Others).
+12. Each Enquiry will be answered by one of the PCS Admins.
+13. A PCS Admin can answer any number of enquiries.
+14. A Pet Owner linked to his/her Pet in the aggregate of Owns and a Caretaker linked to the Service that he/she is offering will participate in a Transaction when a service has been requested by a Pet Owner (Transaction status set to **"1"**: **"Submitted"**).
+15. Each transaction detail will link to exactly one transaction.
+16. Each transaction detail is identified by a Care Taker's email, a pet name, a Pet Owner's email, the Duration From and Duration To. The payment mode (cash or credit card), cost, mode of transfer (pet owner deliver, caretaker pick up or via physical building of PCS), duration of the transaction (from and to), and the period that a Care Taker is offering his services (from and to) that the transaction duration falls in between, must be recorded.
+17. A Caretaker that is also a PetOwner in the system cannot participate in a transaction (e.g you cannot take care of your own pet if you are both a caretaker and a petowner).
+18. When a Caretaker offers Services to the Pet Owners, these Services are categorised into the their type preferences (Dog, Cat, Fish, Rabbit, Bird, Reptile).
+19. Each Service is identified by its Care Taker's email, pet type preference, service available from and service available to. The Care Taker's employment type, and the daily price must be recorded.
+
+
+
+
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 ![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
 
