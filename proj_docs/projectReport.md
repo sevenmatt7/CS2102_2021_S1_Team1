@@ -664,16 +664,30 @@ We used the PERN stack to develop our application.
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
 <table>
-  <tr>
-    <td> <img src="/screenshots/admin_dashboard"  alt="1" width = 360px height = 640px ></td>
-
-   </tr> 
-   <tr>
-      <td><img src="/screenshots/admin_dashboard" alt="3" width = 360px height = 640px></td>
-
-      <td><img src="./Scshot/trip_end.png" align="right" alt="4" width = 360px height = 640px>
-  </td>
-  </tr>
+  	<tr>
+    	<td> <img src="/screenshots/admin_dashboard.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/caretaker_earnings.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+   	</tr> 
+	<tr>
+      	<td> <img src="/screenshots/caretaker_profile.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/caretaker_homepage.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+  	</tr>
+	<tr>
+    	<td> <img src="/screenshots/caretakers_salary.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/caretakers_browse.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+   	</tr> 
+	<tr>
+      	<td> <img src="/screenshots/browse_reviews.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/requesting_service.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+  	</tr>
+	<tr>
+    	<td> <img src="/screenshots/owner_profile.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/owner_home.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+   	</tr> 
+	<tr>
+      	<td> <img src="/screenshots/pet_register.jpg"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
+		<td><img src="/screenshots/onwer_pets.jpg" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+  	</tr>
 </table>
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
