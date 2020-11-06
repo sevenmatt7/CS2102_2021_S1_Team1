@@ -6,6 +6,7 @@ import MyLegend from 'chartist-plugin-legend';
 import PCSTable from "./PCSTable"
 import { toast } from "react-toastify";
 import ViewReviews from "./ViewReviews";
+import PCSCommission from "./PCSCommission";
 
 
 const PCSAdmin = () => {
@@ -76,23 +77,25 @@ const PCSAdmin = () => {
 
   const changeBasePrice = async (e) => {
     try {
-        console.log(baseprice)
-        if (baseprice === undefined) {
-          toast.error("Please enter in a valid base price!")
-        } else {
-          const body = { baseprice };
-          const response = await fetch("/admin/changeprice", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json",
-                        token: localStorage.token },
-            body: JSON.stringify(body)
-          });
-        
-          const submittedData = await response.json();
-        
-          window.location.reload();
-          toast.success("You have changed the base price to $" + submittedData.base_price);
-        }
+      console.log(baseprice)
+      if (baseprice === undefined) {
+        toast.error("Please enter in a valid base price!")
+      } else {
+        const body = { baseprice };
+        const response = await fetch("/admin/changeprice", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: localStorage.token
+          },
+          body: JSON.stringify(body)
+        });
+
+        const submittedData = await response.json();
+
+        window.location.reload();
+        toast.success("You have changed the base price to $" + submittedData.base_price);
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -294,7 +297,6 @@ const PCSAdmin = () => {
     <Fragment>
       <div className="container-fluid">
         <div className="row">
-
           <main role="main" className="col-md-12 ml-sm-auto col-lg-12 px-md-4">
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
               <h1 className="h2">Dashboard</h1>
@@ -321,7 +323,10 @@ const PCSAdmin = () => {
                 }
               </select>
             </div>
-
+            
+            <div className="row">
+              <PCSCommission />
+            </div>
 
 
             <div className="row">
@@ -564,14 +569,8 @@ const PCSAdmin = () => {
                     </div>
                   </div>
                 </div>
-              </div>     
+              </div>
             </div>
-
-
-
-
-
-
             <PCSTable />
           </main>
         </div>

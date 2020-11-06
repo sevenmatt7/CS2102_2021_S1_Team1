@@ -21,11 +21,11 @@ MARKING SCHEME
 ## 👨‍💻  Team <a name = "info"></a>
 | Name | Student Number | Responsibilities
 |------------ | ------------- | -------------
-| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API development, Deployment
+| Matthew Nathanael Sugiri | A0183805B | Triggers, Integration, API Development, Deployment
 | Joshua Tam | A0190309H | Frontend, 
-| Tan Guan Yew | A0183464Y | Frontend,
+| Tan Guan Yew | A0183464Y | Frontend, Petowner Features, API Development
 | Sean Lim | A0187123H | Admin features,
-| Glen Wong | A0188100N | Frontend, 
+| Glen Wong | A0188100N | Frontend, Backend Salary calculation
 
 ## 🧐 Application's functionalities <a name = "application_description"></a>
 Our web application, Pet Society, allows pet owners to find caretakers who are able to take care of their pets when they are unable to (for example, on vacation, sick .etc).
@@ -368,29 +368,35 @@ and then compare it to the the number of caretakers that can take care od the di
 (For example, there are more lizards then lizard caretakers so more lizard caretakers should be recruited)
 
 ### Advanced SQL Functions used
+
+##### Function calculates the total commission earned by a pcsadmin
+This function will returns the pcs admin email and the total commission earned. Detailed explanation of the sql query can be found in the comments within the code block.
+
 ```sql
--- function to assign admin to user at registration
-DROP FUNCTION IF EXISTS assign_to_admin();
-CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
-RETURNS NUMERIC AS $$ 
-	DECLARE 
-		assigned_admin VARCHAR;
-		daily_price NUMERIC;
-	BEGIN
-		SELECT admin_email into assigned_admin
-		FROM PCSAdmins
-		ORDER BY RANDOM()
-		LIMIT 1;
-		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
-      	USING assigned_admin, input_email;  
-		IF emp_type = 'fulltime' THEN
-			RETURN 50;
-		END IF;
-		RETURN 0;
- 	END; 
-$$ LANGUAGE plpgsql;
+-- function calculates total commission earned by admin inserted in $1
+-- returns admin email and the sum of all the commissions earned
+SELECT m1.admin_email, SUM(m2.commission) 
+  FROM pcsadmins AS m1, (SELECT m.admin_email AS admin_email, td.caretaker_email as caretaker_email,
+                                -- calculates the commission earned from a single transaction
+								-- takes the date difference multipled by cost and 25% 
+                                td.cost*SUM(td.duration_to::date-td.duration_from::date+1)*0.25 AS commission
+						   -- commission earned if the caretaker is being managed by the pcsadmin	 
+                           FROM manages m JOIN transactions_details td ON m.caretaker_email=td.caretaker_email 
+						   -- commission earned if employment type is part-time
+                           WHERE td.employment_type='parttime' 
+						   -- commission earned if the transaction is accepted, completed or reviewed
+						   AND td.t_status>= 3
+						-- grouped to get the aggregate 
+                        GROUP BY m.admin_email, td.caretaker_email, td.cost, td.duration_from, td.duration_to) AS m2 
+ WHERE m1.admin_email=m2.admin_email AND m1.admin_email=$1
+-- grouped to get the aggregate
+GROUP BY m1.admin_email
+```
 
+##### Function checks if full time caretaker can leave
+This function will return a table containing all new_service_avail_from1, new_service_avail_to1, new_service_avail_from2 new_service_avail_to2, leave_duration. Detailed explanation of the sql function can be found in the comments within the code block.
 
+```sql
 -- function to check if full time caretaker can take leave
 DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
 CREATE OR REPLACE FUNCTION check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE)
