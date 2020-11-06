@@ -691,34 +691,57 @@ We used the PERN stack to develop our application.
 - [Heroku](https://heroku.com) - Deployment platform
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
+<table>
+	<tr>
+		<th>Admins' dashboard</th>
+		<th>Admins' dashboard (continued)</th>
+  	</tr>
+  	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/admin_dashboard.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_earnings.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Caretaker profile page</th>
+		<th>Caretaker homepage</th>
+  	</tr>
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_profile.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_homepage.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+	<tr>
+		<th>Caretakers' earnings page</th>
+		<th>Browsing for caretakers' services page</th>
+  	</tr>
+	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_salary.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretakers_browse.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Looking at a caretaker's reviews</th>
+		<th>Bidding for a caretaker's service</th>
+  	</tr>
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/browse_reviews.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/requesting_service.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+	<tr>
+		<th>Pet owner profile page</th>
+		<th>Pet owner homepage</th>
+  	</tr>
+	<tr>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_profile.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_home.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+   	</tr> 
+	<tr>
+		<th>Pet registration page</th>
+		<th>Pet owners' pets page</th>
+  	</tr>  
+	<tr>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/pet_register.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_pets.jpg?raw=true" alt="Admin earnings screenshot" ></td>
+  	</tr>
+</table>
 
-Here are some screenshots showcasing a few of our project features:
-
-> Welcome to Pet Society! (Landing Page)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98386855-aa061380-208b-11eb-9454-882124c8cd3c.png"> </kbd>  
-
-
-> Register you account! (Register Page)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98386769-8c38ae80-208b-11eb-858e-5aed4dc925ac.png"> </kbd>  
-
-
-> Check out your lovely pets! (Petowner Dashboard)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98387841-e6863f00-208c-11eb-9ce1-094c586ebb0d.png"> </kbd>  
-
-
-> Search for caretakers and bid their services! (Caretaker Search Page)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>  
-
-
-> Accept jobs from Petowners! (Caretaker Dashboard)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98392039-6a8ef580-2092-11eb-8191-db62e79c8274.png"> </kbd>  
-
-
-> Take a look at the caretaker and petowner statistics! (PCS Admin Dashboard)
-> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98390201-01a67e00-2090-11eb-9f2d-0b14a306fc32.png"> </kbd>  
-
-
-To see more of these features, be sure to check out Pet Society!
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
 

@@ -116,6 +116,7 @@ const PetOwner = () => {
     useEffect(() => {
         getPets();
         getTransactions();
+        getProfile();
     }, [])
 
     useEffect(() => {
@@ -200,8 +201,8 @@ const PetOwner = () => {
                         <div className="row">
                             <div className="card-deck">
                                 {searches.map((search, i) => (
-                                    <div key={i} className="col-md-6 mb-4">
-                                        <div className="card mb-3">
+                                    
+                                        <div key={i} className="card mb-3">
                                             <div className="row no-gutters">
                                                 <div className="col-md-4">
                                                     <img src={imposter} alt="" className="card-img" />
@@ -220,7 +221,7 @@ const PetOwner = () => {
                                             </div>
 
                                         </div>
-                                    </div>
+                                    
                                 ))}
                             </div>
 
