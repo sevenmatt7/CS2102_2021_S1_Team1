@@ -5,6 +5,7 @@ import Chartist from 'chartist';
 import MyLegend from 'chartist-plugin-legend';
 import PCSTable from "./PCSTable"
 import { toast } from "react-toastify";
+import ViewReviews from "./ViewReviews";
 
 
 const PCSAdmin = () => {
@@ -405,19 +406,73 @@ const PCSAdmin = () => {
             </div>
 
             <div className="row">
-              <div className="col">
+              
+            </div>
+
+
+            <div className="row">
+
+              <div className="col-md-6">
+                <div className="card ">
+                  <div className="card-header ">
+                    <h4 className="card-title">Caretakers under management</h4>
+                    <div className="input-group mb-3">
+
+                      <input type="text"
+                       pattern="[0-9]*"
+                       name="baseprice"
+                       placeholder="Enter base price here to change"
+                       className="form-control"
+                      value={baseprice}
+                      onChange={e => onChange(e)} />
+                    <div className="input-group-append">
+                      <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
+                    </div>
+                    </div>
+                  </div>
+                  
+                  <div className="card-body">
+                    <div className="overflow-auto" Style="max-height: 400px;" >
+                    {managed.map((caretaker, i) => (
+                      <div key={i} className="card mb-3">
+                        <div className="card-body">
+                          <div className = "row">
+                          <div className="col-10">
+                          <h5>Name: {caretaker.full_name}</h5>
+                          <p>Rating: {caretaker.avg_rating.slice(0,3)}</p>
+                          <p>Base price/day: ${caretaker.base_price}</p>
+                          </div>
+                          <div className="col-2">
+                            <ViewReviews search={caretaker} i={i} />
+                          </div>
+                          </div>
+                        </div>
+                      </div>)
+                    )}
+                    </div>
+                  </div>
+                  <div className="card-footer ">
+                    <div className="legend">
+                    </div>
+                    <hr />
+                    <div className="stats">
+                      <i className="fa fa-history"></i> Updated {getCurrentDate()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-6">
                 <div className="card">
                   <div className="card-header ">
                     <h4 className="card-title">Underperforming Full-time caretakers</h4>
-                    {/* <p className="card-category">Year: {yearDisplayed}</p>
-                    <p className="card-category">Month: {monthNames[pieState.monthDisplayed]}</p> */}
                   </div>
                   <div className="card-body ">
-                    <div className="row">
+                    <div className="overflow-auto" Style="max-height: 457px;">
                       {
                         underPerformingCaretakers.map(attributes => (
 
-                          <div className="card col-md-6">
+                          <div className="card border-danger">
                             <div className="card-header ">
                               <h5>Caretaker: {attributes.split(',')[0]}</h5>
                             </div>
@@ -509,46 +564,7 @@ const PCSAdmin = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-
-            <div className="row">
-
-              <div className="col-md-6">
-                <div className="card ">
-                  <div className="card-header ">
-                    <h4 className="card-title">Caretakers under management</h4>
-                    <div className="input-group mb-3">
-
-                      <input type="text"
-                       pattern="[0-9]*"
-                       name="baseprice"
-                       placeholder="Enter base price here to change"
-                       className="form-control"
-                      value={baseprice}
-                      onChange={e => onChange(e)} />
-                    <div className="input-group-append">
-                      <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
-                    </div>
-                    </div>
-                  </div>
-
-                  <div className="card-body ">
-                    {managed.map((caretaker, i) => (
-                      <div key={i} className="card mb-3">
-                        <div className="card-body">
-                          <h5>Name: {caretaker.full_name}</h5>
-                          <p>Rating: {caretaker.avg_rating}</p>
-                          <p>Base price/day: ${caretaker.base_price}</p>
-                        </div>
-                      </div>)
-                    )}
-                  </div>
-                </div>
-              </div>
-
-
+              </div>     
             </div>
 
 
