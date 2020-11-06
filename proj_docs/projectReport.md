@@ -663,7 +663,18 @@ We used the PERN stack to develop our application.
 - [Heroku](https://heroku.com) - Deployment platform
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
-**Put final screenshots here**
+<table>
+  <tr>
+    <td> <img src="/screenshots/admin_dashboard"  alt="1" width = 360px height = 640px ></td>
+
+   </tr> 
+   <tr>
+      <td><img src="/screenshots/admin_dashboard" alt="3" width = 360px height = 640px></td>
+
+      <td><img src="./Scshot/trip_end.png" align="right" alt="4" width = 360px height = 640px>
+  </td>
+  </tr>
+</table>
 
 ## 🏁 Summary of difficulties encountered and lessons learned from project <a name = "conclusion"></a>
 - Leveraging the power of DBMS to make the application fast and efficient was a problem faced in the early stages of our project. After we realised the importance of normalisation as we saw certain redundancies that appeared in our database, we were able to remove some redundant tables. This showed us the importance of a proper ER diagram. 
