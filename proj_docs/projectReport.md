@@ -108,7 +108,7 @@ Administrators:
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 
-![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
+![Image of final ER diagram](/proj_docs/final_er_diagram.jpg)
 
 Constraints not shown in ER diagram:
 
