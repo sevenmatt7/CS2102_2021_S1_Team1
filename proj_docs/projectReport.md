@@ -602,26 +602,25 @@ DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 DROP TYPE IF EXISTS return_type;
 -- created custom type to hold desired values in a single row
 CREATE TYPE return_type AS
-    		( caretaker VARCHAR, num_pet_days NUMERIC, avg_rating NUMERIC, num_rating_5 NUMERIC, 
-			num_rating_4 NUMERIC, num_rating_3 NUMERIC, num_rating_2 NUMERIC, num_rating_1 NUMERIC, num_rating_0 NUMERIC );
+( caretaker VARCHAR, num_pet_days NUMERIC, avg_rating NUMERIC, num_rating_5 NUMERIC, 
+num_rating_4 NUMERIC, num_rating_3 NUMERIC, num_rating_2 NUMERIC, num_rating_1 NUMERIC, num_rating_0 NUMERIC );
 CREATE OR REPLACE FUNCTION get_underperforming_caretakers()
 RETURNS SETOF return_type AS $$ 
 	DECLARE 
 		val return_type;
 		i RECORD;
 		j RECORD;
-		
 	BEGIN
 		-- get table containing caretaker email, average rating, and total num of pet days of caretakers 
 		-- who have at least 1 transaction that has been given a rating
 		-- and has an average rating of less than 2
 		FOR i IN (SELECT caretakers.caretaker_email, avg_rating, SUM(duration_to::date-duration_from::date+1)
-					FROM caretakers INNER JOIN transactions_details ON caretakers.caretaker_email = transactions_details.caretaker_email
-					WHERE EXISTS (SELECT 1 FROM transactions_details t 
-									WHERE t.caretaker_email = caretakers.caretaker_email 
-									AND t.owner_rating IS NOT NULL)
-					AND avg_rating < 2
-					GROUP BY caretakers.caretaker_email) LOOP
+			FROM caretakers INNER JOIN transactions_details ON caretakers.caretaker_email = transactions_details.caretaker_email
+			WHERE EXISTS (SELECT 1 FROM transactions_details t 
+				WHERE t.caretaker_email = caretakers.caretaker_email 
+				AND t.owner_rating IS NOT NULL)
+			AND avg_rating < 2
+			GROUP BY caretakers.caretaker_email) LOOP
 			val.caretaker := i.caretaker_email;
 			val.num_pet_days := i.sum;
 			val.avg_rating := i.avg_rating;
@@ -633,9 +632,9 @@ RETURNS SETOF return_type AS $$
 			val.num_rating_0 := 0;
 			-- find number of ratings for each value for each caretaker
 			FOR j IN (SELECT owner_rating, COUNT(*)
-						FROM transactions_details
-						WHERE caretaker_email = i.caretaker_email
-						GROUP BY owner_rating) LOOP
+				FROM transactions_details
+				WHERE caretaker_email = i.caretaker_email
+				GROUP BY owner_rating) LOOP
 				IF j.owner_rating = 0 THEN
 					val.num_rating_0 := j.count;
 				ELSIF j.owner_rating = 1 THEN
@@ -652,9 +651,7 @@ RETURNS SETOF return_type AS $$
 			END LOOP;
 			RETURN NEXT val;
 		END LOOP;
-
 		RETURN;
-
  	END;
 $$ LANGUAGE plpgsql;
 ```
