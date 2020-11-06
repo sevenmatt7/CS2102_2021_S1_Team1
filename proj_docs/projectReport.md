@@ -28,7 +28,7 @@ MARKING SCHEME
 | Matthew Nathanael Sugiri | A0183805B      | Triggers, Integration, API Development, Deployment |
 | Joshua Tam               | A0190309H      | Frontend, CareTaker Features, API Development      |
 | Tan Guan Yew             | A0183464Y      | Frontend, Petowner Features, API Development       |
-| Sean Lim                 | A0187123H      | Admin features,                                    |
+| Sean Lim                 | A0187123H      | Admin features, Enquiries features                 |
 | Glen Wong                | A0188100N      | Frontend, Backend Salary calculation               |
 
 ## 🧐 Application's functionalities <a name = "application_description"></a>
