@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react"
 const PCSTable = () => {
 
     const [caretakers, setCaretakers] = useState([]);
-    const [month, setMonth] = useState("Select Month");
+    const [month, setMonth] = useState("Total");
     const month_conversion = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December', 'Select Month'];
 

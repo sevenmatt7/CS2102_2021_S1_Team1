@@ -199,7 +199,7 @@ app.get("/underperformingcaretakers", async (req, res) => {
     try {
         const data = await pool.query("SELECT get_underperforming_caretakers()")
         console.log('finish query')
-        console.log(data)
+        // console.log(data)
         // console.log(data.rows[0].get_worst_caretaker.split(','))
         res.json(data.rows)
     } catch (error) {

@@ -37,10 +37,21 @@ router.put("/changeprice", async (req, res) => {
             WHERE admin_email = $2 RETURNING *" ,
             [baseprice, admin_email]);
         
-        
-
         res.json(data.rows[0]);
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("A server error has been encountered");
+    }
+});
+
+// admin to get statistics for site
+router.get("/stats", async (req, res) => {
+    try {
+        const jwtToken = req.header("token")
+        const caretakers = await pool.query("SELECT COUNT(*), employment_type FROM Caretakers GROUP BY employment_type");
+        const owners = await pool.query("SELECT COUNT(*), pet_type FROM Petowners NATURAL JOIN Owns_pets GROUP BY pet_type");
+        res.json({caretaker: caretakers.rows, owner: owners.rows});
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
