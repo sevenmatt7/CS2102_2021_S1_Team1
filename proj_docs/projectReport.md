@@ -665,28 +665,28 @@ We used the PERN stack to develop our application.
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
 <table>
   	<tr>
-    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/admin_dashboard.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_earnings.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/admin_dashboard.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_earnings.jpg?raw=true" alt="Admin earnings screenshot" ></td>
    	</tr> 
 	<tr>
-      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_profile.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_homepage.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_profile.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_homepage.jpg?raw=true" alt="Admin earnings screenshot" ></td>
   	</tr>
 	<tr>
-    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_salary.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretakers_browse.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretaker_salary.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/caretakers_browse.jpg?raw=true" alt="Admin earnings screenshot" ></td>
    	</tr> 
 	<tr>
-      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/browse_reviews.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/requesting_service.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/browse_reviews.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/requesting_service.jpg?raw=true" alt="Admin earnings screenshot" ></td>
   	</tr>
 	<tr>
-    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_profile.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_home.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+    	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_profile.jpg?raw=true"  alt="Admin dashboard screenshot" ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_home.jpg?raw=true" alt="Admin earnings screenshot" ></td>
    	</tr> 
 	<tr>
-      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/pet_register.jpg?raw=true"  alt="Admin dashboard screenshot" width = 1280px height = 720px ></td>
-		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_pets.jpg?raw=true" alt="Admin earnings screenshot" width = 1280px height = 720px></td>
+      	<td> <img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/pet_register.jpg?raw=true"  alt="Admin dashboard screenshot"  ></td>
+		<td><img src="https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/matt/proj_docs/screenshots/owner_pets.jpg?raw=true" alt="Admin earnings screenshot" ></td>
   	</tr>
 </table>
 
