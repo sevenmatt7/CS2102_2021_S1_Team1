@@ -34,7 +34,9 @@ MARKING SCHEME
 ## 🧐 Application's functionalities <a name = "application_description"></a>
 
 Our web application, Pet Society, allows pet owners to search for caretakers who are able to take care of their pets, and apply for their services.
-It can be viewed as a 'marketplace' for pet caring services. Here are the functions that different users have access to!\
+It can be viewed as a 'marketplace' for pet caring services. Here are the functions that different users have access to!
+
+### Functions
 
 Pet owners:
 
@@ -682,13 +684,18 @@ $$ LANGUAGE plpgsql;
 
 ## ⛏️ Tools and Frameworks used <a name = "tools_used"></a>
 
-We used the PERN stack to develop our application.
+We used the PERN stack to develop our application:
 
 - [PostgreSQL](https://www.postgresql.org/) - Database
 - [Express](https://expressjs.com/) - Server framework
 - [ReactJS](https://reactjs.org/) - Frontend framework
 - [NodeJS](https://nodejs.org/en/) - Server runtime environment
+
+Deployment was done using Heroku:
 - [Heroku](https://heroku.com) - Deployment platform
+
+Frontend design was done using Bootstrap:
+- [Bootstrap](https://getbootstrap.com/docs/4.5/getting-started/introduction/) - Frontend Framework Design
 
 ## 🎈 Screenshots of application <a name = "screenshots"></a>
 <table>
