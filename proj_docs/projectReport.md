@@ -695,27 +695,27 @@ We used the PERN stack to develop our application.
 Here are some screenshots showcasing a few of our project features:
 
 > Welcome to Pet Society! (Landing Page)
-<kbd> > <img src="https://user-images.githubusercontent.com/42372488/98386855-aa061380-208b-11eb-9454-882124c8cd3c.png"> > </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98386855-aa061380-208b-11eb-9454-882124c8cd3c.png"> </kbd>
 
 
 > Register you account! (Register Page)
-<kbd> <img src="https://user-images.githubusercontent.com/42372488/98386769-8c38ae80-208b-11eb-858e-5aed4dc925ac.png"> </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98386769-8c38ae80-208b-11eb-858e-5aed4dc925ac.png"> </kbd>
 
 
 > Check out your lovely pets! (Petowner Dashboard)
-<kbd> <img src="https://user-images.githubusercontent.com/42372488/98387841-e6863f00-208c-11eb-9ce1-094c586ebb0d.png"> </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98387841-e6863f00-208c-11eb-9ce1-094c586ebb0d.png"> </kbd>
 
 
 > Search for caretakers and bid their services! (Caretaker Search Page)
-<kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>
 
 
 > Accept jobs from Petowners! (Caretaker Dashboard)
-<kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98389601-3ebe4080-208f-11eb-84a7-f952fd5c3f37.png"> </kbd>
 
 
 > Take a look at the caretaker and petowner statistics! (PCS Admin Dashboard)
-<kbd> <img src="https://user-images.githubusercontent.com/42372488/98390201-01a67e00-2090-11eb-9f2d-0b14a306fc32.png"> </kbd>
+> <kbd> <img src="https://user-images.githubusercontent.com/42372488/98390201-01a67e00-2090-11eb-9f2d-0b14a306fc32.png"> </kbd>
 
 
 To see more of these features, be sure to check out Pet Society!
