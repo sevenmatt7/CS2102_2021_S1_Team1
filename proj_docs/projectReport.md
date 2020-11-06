@@ -65,27 +65,34 @@ Administrators can:
 - change the base price of the full time caretakers under their management
 
 ### Applications Data Constraints
-1. Each user is identified by his/her email. Their full name and password must be recorded.
-3. Each Caretaker must have employment type (either full or part time). A caretaker's average rating and their number of reviews are computed and updated.
-4. Each Caretaker is managed by exactly one PCS Admin.
-5. Each PCS Admin must manage at least one Caretaker.  
-6. Each Pet is owned by exactly one PetOwner but each PetOwner can own any number of pets.
-7. Each Pet is identified using their name, type and owner's email. A pet's gender must be recorded.
-8. If a PetOwner is deleted, all records of his/her Pets will be deleted. 
-9. A Pet must have a type but it can only be one of the types that is listed in the Categories entity (Dog, Cat, Fish, Rabbit, Bird, Reptile).
-10. The Enquiries entity contains enquiries submitted by any Pet Owner or Caretaker. A user can send any number of these Enquiries.
-11. Each Enquiry is identified by its message and the user email who submitted the enquiry. An enquiry must have a type, which are one of the following: (Getting Started, Account and Profile, Finding Sitter, Bookings, Payments, Safety, Others).
-12. Each Enquiry will be answered by one of the PCS Admins.
-13. A PCS Admin can answer any number of enquiries.
-14. A Pet Owner linked to his/her Pet in the aggregate of Owns and a Caretaker linked to the Service that he/she is offering will participate in a Transaction when a service has been requested by a Pet Owner (Transaction status set to **"1"**: **"Submitted"**).
-15. Each transaction detail will link to exactly one transaction.
-16. Each transaction detail is identified by a Care Taker's email, a pet name, a Pet Owner's email, the Duration From and Duration To. The payment mode (cash or credit card), cost, mode of transfer (pet owner deliver, caretaker pick up or via physical building of PCS), duration of the transaction (from and to), and the period that a Care Taker is offering his services (from and to) that the transaction duration falls in between, must be recorded.
-17. A Caretaker that is also a PetOwner in the system cannot participate in a transaction (e.g you cannot take care of your own pet if you are both a caretaker and a petowner).
-18. When a Caretaker offers Services to the Pet Owners, these Services are categorised into the their type preferences (Dog, Cat, Fish, Rabbit, Bird, Reptile).
-19. Each Service is identified by its Care Taker's email, pet type preference, service available from and service available to. The Care Taker's employment type, and the daily price must be recorded.
-
-
-
+1. Pet types are classified into categories (Dog, Cat, Fish, Rabbit, Bird, Reptile).
+2. A User **can** be either a Pet Owner, Care Taker, both a Pet Owner and a Care Taker, or a PCSAdmin and they will have their own profile.
+3. A Pet Owner **can** own more that one Pet. 
+4. A Pet Owner **can opt** to make their payment using Cash or Credit-Cards. 
+5. A Pet Owner **can** decide on how to transfer their pet from 3 methods (Pet owner delivery, Care Taker pick up, Transfer through the physical building of PCS).
+6. Pet Owners **cannot** request for a service if their pet does not match the Type Preference of that service offered. 
+7. A Pet Owners **can** submit multiple review/rating for a Care Taker if the Care Taker has taken care of the Pet Owner's Pet multiple times, including for the same pet. 
+8. A Pet Owner **can only** submit a review/rating after the care period has ended, for a specific transaction.
+9. A Care Taker **is required** to have the pet under their care for the Entire Day (*24 Hrs*), for all Pet Days in the Transaction in which they accepted.
+10. Care Takers employment types are classified into Full-Time or Part-Time. 
+11. Each full time care taker **can opt** to take up to 65 days of leave, if they satisfy a minimum of 2 x 150 consecutive working days a year. 
+12. Each full time care taker **cannot** take leave if they have at least 1 Pet under their care.
+13. A PCS Admin **must** manage at least one Caretaker.
+14. Each Care Taker **must** be managed by exactly one PCSAdmin, and is **randomly** assigned to a PCSAdmin upon registration. 
+15. A Care Taker's base daily price (**$50**) is determined by a PCSAdmin for each Pet Type upon registration.
+16. A Care Taker **can** only take care of up to 5 Pets at any single point of time. 
+17. A Care Taker **must** manually *accept* or *reject* each bid, regardless if they are full time or part time.
+18. A Care Taker's daily price will increase with their rating:
+	- Rating between **4.0 and 4.2**, Daily Price is **$52**
+	- Rating between **4.2 and 4.4**, Daily Price is **$55**
+	- Rating between **4.4 and 4.6**, Daily Price is **$59**
+	- Rating between **4.6 and 4.8**, Daily Price is **$64**
+	- Rating between **4.8 and 5.0**, Daily Price is **$70**
+19. A full time Care Taker **will** receive a salary of $3000 per month for up to 60 Pet-Day, and receive 80% of their price as bonus for any excess Pet-Day.
+20. A part time Care Taker **can** specify their availability for the current year and the next year.
+21. A part time Care Taker **cannot** take more than 2 Pets at any single point of time, if their rating is below 4. 
+22. A part time Care Taker **will** receive 75% of their price as payment. 
+23. All transactions history **will** be stored, regardless of whether a bid is rejected or accepted, and each transaction will have a status.
 
 ## 🚀 Entity Relationship Model <a name = "er_diagram"></a>
 ![Image of final ER diagram](https://i.ibb.co/qYYvRHM/ER-diagram-img.jpg)
