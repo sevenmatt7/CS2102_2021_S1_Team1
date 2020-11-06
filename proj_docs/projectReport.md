@@ -213,7 +213,7 @@ CREATE TABLE Enquiries (
 
 ## Normalization level of database <a name = "normalization"></a>
 <!-- 3NF or BCNF -->
-All our tables are in BCNF format to eliminate data redundancies and anomalies.
+All SQL tables have primary keys, which uniquely identify all other attributes within each table. Hence, all our tables are in BCNF format to eliminate data redundancies and anomalies.
 
 
 ## 🎉 Three non-trivial triggers used in the application <a name = "triggers"></a>
@@ -529,10 +529,16 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 		END IF;
  	END; 
 $$ LANGUAGE plpgsql;
+```
 
+##### Function gets all underperforming caretakers
+This function will return a table containing all underperforming caretakers with their average rating, number of pet days works, and the respective number of given ratings for each rating value (0 - 5). An underperforming caretaker is defined as a caretaker with an average rating that is less than 2. Only caretakers who have had at least 1 transaction that has been given a rating will be considered. Detailed explanation of the sql function can be found in the comments within the code block.
+
+```sql
 -- function to get underperforming caretakers (rating less than 2)
 DROP FUNCTION IF EXISTS get_underperforming_caretakers();
 DROP TYPE IF EXISTS return_type;
+-- created custom type to hold desired values in a single row
 CREATE TYPE return_type AS
     		( caretaker VARCHAR, num_pet_days NUMERIC, avg_rating NUMERIC, num_rating_5 NUMERIC, 
 			num_rating_4 NUMERIC, num_rating_3 NUMERIC, num_rating_2 NUMERIC, num_rating_1 NUMERIC, num_rating_0 NUMERIC );
