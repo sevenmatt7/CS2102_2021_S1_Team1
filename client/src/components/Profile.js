@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import EditProfile from "./EditProfile";
+import DeleteAccount from "./DeleteAccount";
 
 const Profile = ({ setAuth }) => {
 
@@ -128,8 +129,8 @@ const Profile = ({ setAuth }) => {
                 {name}
               </h5>
               <h6>
-                {acc_type === 'caretaker' ? acc_type + " (" + employment_type + ")"
-                  : acc_type}
+                {acc_type === 'caretaker' ? "Caretaker" + " (" + employment_type + ")"
+                  : "Pet Owner"}
               </h6>
               <h6>
                 {acc_type === 'caretaker' && <p className="profile-rating">Current average rating : <span>{avg_rating}</span></p>}
@@ -140,7 +141,10 @@ const Profile = ({ setAuth }) => {
             </div>
             </div>
             <div className="col-md-2">
-              <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL} area={user_area}/>
+              <div class="btn-group-vertical">
+                <EditProfile name={name} address={user_address} profile_pic_URL={profile_pic_URL} area={user_area}/>
+                <DeleteAccount setAuth={setAuth}/>
+              </div>
             </div>
           </div>
         </div>

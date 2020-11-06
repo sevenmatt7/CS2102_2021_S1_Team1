@@ -140,6 +140,7 @@ const Caretaker = () => {
                 headers: { token: localStorage.token, acc_type: acc_type }
             });
             const jsonData = await res.json();
+            console.log(jsonData);
             setTransactions(jsonData);
         } catch (err) {
             console.error(err.message);
@@ -223,16 +224,17 @@ const Caretaker = () => {
     }
 
     useEffect(() => {
+        getTransactions();
+    }, [button])
+
+    useEffect(() => {
         getReviews();
         getTransactions();
         getProfile();
         getSalary();
     }, [])
 
-    useEffect(() => {
-        getTransactions();
 
-    }, [button])
 
     return (
         <Fragment>
@@ -290,7 +292,7 @@ const Caretaker = () => {
                                                             <p className="card-text">Type: {search.pet_type}</p>
                                                             <p className="card-text">Special requirements: {search.special_req}</p>
                                                             <p className="card-text"> Offered price/day: {search.cost}</p>
-                                                            <p className="card-text">Requested period: {`${new Date(search.duration_from).toDateString()} TO ${new Date(search.duration_to).toDateString()}`}</p>
+                                                            <p className="card-text">Requested period: {`${new Date(search.duration_from).toDateString()} - ${new Date(search.duration_to).toDateString()}`}</p>
                                                             <p className="card-text">Transfer mode: {getTransferMode(search.mode_of_transfer)}</p>
                                                             {search.t_status === 1 && <div className="row">
                                                                 <button className="btn btn-success col-md-5 col-sm-5 col-12" onClick={(e) => acceptBid(e, search, 3)} >Accept</button>

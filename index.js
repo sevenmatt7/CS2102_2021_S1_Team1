@@ -320,7 +320,8 @@ app.get("/pets", async (req, res) => {
         const searches = await pool.query(`SELECT DISTINCT owner_email, pet_name, \
                                             gender, special_req, pet_type \
                                             FROM Owns_Pets \
-                                            WHERE owner_email = '${user_email}'; \ 
+                                            WHERE owner_email = '${user_email}' \
+                                            AND is_deleted = false; \ 
                                             ` );
         res.json(searches.rows);
     } catch (error) {
@@ -329,13 +330,14 @@ app.get("/pets", async (req, res) => {
 });
 
 //delete selected pet
-app.delete("/deletepet/:id", async (req, res) => {
+app.put("/deletepet/:id", async (req, res) => {
     try {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         const { id } = req.params;
         const deleteItem = await pool.query(
-            "DELETE FROM Owns_Pets \
+            // Instead of deleting the entry, set the boolean variable to true
+            "UPDATE Owns_Pets SET is_deleted = true \
             WHERE owner_email = $1 \
             AND pet_name = $2 \
             AND \
@@ -413,13 +415,14 @@ app.get("/transactions", async (req, res) => {
             FROM Transactions_Details LEFT JOIN Owns_pets  \
             ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
             LEFT JOIN Users ON users.email = Transactions_Details.caretaker_email
-            WHERE Transactions_Details.owner_email = '${user_email}'\ 
+            WHERE Users.is_deleted = false \
+            AND Transactions_Details.owner_email = '${user_email}'\ 
             `
             if (req.query.t_status != undefined) {
-                if (req.query.t_status == "4") {
+                if (req.query.t_status == "4" || req.query.t_status == "5") {
                     sql += " AND (t_status = 4 OR t_status = 5)";
                 }
-                if (req.query.t_status != "" && req.query.t_status != "4") {
+                else if (req.query.t_status != "") {
                     sql += " AND t_status = ";
                     sql += ("'" + req.query.t_status + "'");
                 }
@@ -427,14 +430,26 @@ app.get("/transactions", async (req, res) => {
 
             searches = await pool.query(sql);
         } else if (acc_type === "caretaker") {
-            searches = await pool.query(`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
-                                            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email, \
-                                            Transactions_details.owner_review, Transactions_details.owner_rating \
-                                            FROM Transactions_Details LEFT JOIN Owns_pets  \
-                                            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
-                                            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
-                                            WHERE Transactions_Details.caretaker_email = '${user_email}';\ 
-                                            ` );
+            var sql = (`SELECT users.full_name, users.user_address, Transactions_Details.owner_email, Transactions_Details.pet_name, \
+            gender, Transactions_Details.pet_type, special_req, duration_to, duration_from, cost, mode_of_transfer, t_status, caretaker_email, \
+            Transactions_details.owner_review, Transactions_details.owner_rating \
+            FROM Transactions_Details LEFT JOIN Owns_pets  \
+            ON (Transactions_Details.pet_name = Owns_pets.pet_name AND Owns_pets.owner_email = Transactions_Details.owner_email) \
+            LEFT JOIN Users ON users.email = Transactions_Details.owner_email
+            WHERE Users.is_deleted = false \
+            AND Transactions_Details.caretaker_email = '${user_email}'\ 
+            ` );
+            if (req.query.t_status != undefined) {
+                if (req.query.t_status == "4" || req.query.t_status == "5") {
+                    sql += " AND (t_status = 4 OR t_status = 5)";
+                }
+                else if (req.query.t_status != "") {
+                    sql += " AND t_status = ";
+                    sql += ("'" + req.query.t_status + "'");
+                }
+            }
+
+            searches = await pool.query(sql);
         }
         res.json(searches.rows);
     } catch (error) {
@@ -494,15 +509,16 @@ app.get("/caretakersq", async (req, res) => {
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
         var sql = `SELECT DISTINCT full_name, user_address, profile_pic_address\
         avg_rating, service_avail_from, service_avail_to, Caretakers.caretaker_email, Caretakers.employment_type, \
-        type_pref, daily_price\
+        type_pref, daily_price, Users.user_area\
         FROM Offers_services \
         LEFT JOIN Users \
         ON Offers_services.caretaker_email = Users.email \
         LEFT JOIN Caretakers \
         ON Offers_Services.caretaker_email = Caretakers.caretaker_email \
         WHERE '${user_email}' != Offers_Services.caretaker_email \
+        AND Users.is_deleted = false \
         AND is_avail != 'f' \
-        AND AND service_avail_to >= '${currDate}'`;
+        AND service_avail_to >= '${currDate}'`;
 
         if (req.query.employment_type != undefined && req.query.employment_type != "") {
             sql += " AND Caretakers.employment_type = ";
@@ -529,6 +545,10 @@ app.get("/caretakersq", async (req, res) => {
             sql += ("'" + req.query.end_date + "'");
             sql += " AND split_part(service_avail, ',', 2) >=";
             sql += ("'" + req.query.end_date + "'");
+        }
+        if (req.query.user_area != undefined && req.query.user_area != "") {
+            sql += " AND Users.user_area = ";
+            sql += ("'" + req.query.user_area + "'");
         }
         if (req.query.form != undefined && req.query.form != "") {
             sql += " AND LOWER(full_name) LIKE LOWER(";

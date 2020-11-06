@@ -31,10 +31,21 @@ const RegisterPet = ({setAuth}) => {
             });
             
             const parseResponse = await response.json();
-            const successMessage = 'Your pet ' + parseResponse + ' has been succesfully registered!'
+
+            var successMessage;
+            if (Object.keys(parseResponse).length == 1) {
+                successMessage = 'Your pet ' + parseResponse.pet_name + ' has been succesfully registered!'
+            }
+            else {
+                successMessage = parseResponse.pet_name + ' has been registered before!'
+            }
+
             toast.success(successMessage);
             setRedirect(true); 
-            
+
+            // console.log(Object.keys(parseResponse).length);
+            //console.log(parseResponse);
+
         } catch (err) {
             console.error(err.message)
         }
@@ -42,7 +53,7 @@ const RegisterPet = ({setAuth}) => {
     }
 
     if (redirect) {
-        return <Redirect to="/c/profile" /> //Go to profile page after pet is registered
+        return <Redirect to="/c/home" /> //Go to home page after pet is registered
     }
     return (
         <Fragment>
