@@ -92,15 +92,15 @@ const Sitters = ({ setAuth }) => {
     try {
       const response = await fetch(
         "/caretakersq?" +
-          new URLSearchParams({
-            employment_type: e_type,
-            avg_rating: r_type,
-            type_pref: p_type,
-            start_date: s_date,
-            end_date: e_date,
-            user_area: area,
-            form: namesearch,
-          }),
+        new URLSearchParams({
+          employment_type: e_type,
+          avg_rating: r_type,
+          type_pref: p_type,
+          start_date: s_date,
+          end_date: e_date,
+          user_area: area,
+          form: namesearch,
+        }),
         {
           method: "GET",
           headers: { token: localStorage.token, acc_type: acc_type },
@@ -222,7 +222,7 @@ const Sitters = ({ setAuth }) => {
       </div>
 
       {acc_type === "petowner" && (
-        <div className="table-responsive">
+        <div className="table-responsive tableFixHead">
           <table className="table table-stripped table-sm">
             <thead>
               <tr>
