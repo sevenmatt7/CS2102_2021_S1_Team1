@@ -434,6 +434,27 @@ and then compare it to the the number of caretakers that can take care of the di
 This function will returns the pcs admin email and the total commission earned. Detailed explanation of the sql query can be found in the comments within the code block.
 
 ```sql
+DROP FUNCTION IF EXISTS assign_to_admin();
+CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR)
+RETURNS NUMERIC AS $$ 
+	DECLARE 
+		assigned_admin VARCHAR;
+		daily_price NUMERIC;
+	BEGIN
+		SELECT admin_email into assigned_admin
+		FROM PCSAdmins
+		ORDER BY RANDOM()
+		LIMIT 1;
+		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
+      	USING assigned_admin, input_email;  
+		IF emp_type = 'fulltime' THEN
+			RETURN 50;
+		END IF;
+		RETURN 0;
+ 	END; 
+$$ LANGUAGE plpgsql;
+
+
 -- function calculates total commission earned by admin inserted in $1
 -- returns admin email and the sum of all the commissions earned
 SELECT m1.admin_email, SUM(m2.commission)
