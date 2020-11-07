@@ -273,20 +273,34 @@ CREATE OR REPLACE FUNCTION assign_to_admin(input_email VARCHAR, emp_type VARCHAR
 RETURNS NUMERIC AS $$ 
 	DECLARE 
 		assigned_admin VARCHAR;
-		daily_price NUMERIC;
+		base_price NUMERIC := 50;
 	BEGIN
-		SELECT admin_email into assigned_admin
-		FROM PCSAdmins
-		ORDER BY RANDOM()
-		LIMIT 1;
-		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email) VALUES ($1,$2)'
-      	USING assigned_admin, input_email;  
+	-- if all admins are already in Manages (total participation achieved)
+      IF (SELECT admin_email FROM PCSAdmins EXCEPT SELECT admin_email FROM Manages) = 0     THEN
+  			SELECT admin_email into assigned_admin
+			FROM PCSAdmins
+			ORDER BY RANDOM()
+			LIMIT 1;
+-- select admin by random from admins NOT in the Manages table yet
+ELSE 
+SELECT admin_email into assigned_admin
+			FROM (SELECT admin_email FROM PCSAdmins
+				EXCEPT
+				SELECT admin_email FROM Manages) AS admin_not_in_manages
+			ORDER BY RANDOM()
+			LIMIT 1;
+		END IF;
+		
+		EXECUTE 'INSERT INTO Manages(admin_email, caretaker_email, base_price) VALUES ($1,$2,$3)'
+      	USING assigned_admin, input_email, base_price;  
 		IF emp_type = 'fulltime' THEN
-			RETURN 50;
+			RETURN base_price;
 		END IF;
 		RETURN 0;
  	END; 
 $$ LANGUAGE plpgsql;
+
+
 
 -- function to check if full time caretaker can take leave
 DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
