@@ -267,8 +267,8 @@ const Sitters = ({ setAuth }) => {
                   <th className="text-center" scope="row">
                     {search.full_name}
                   </th>
-                  <td className="text-center">{search.user_area}</td>
                   <td className="text-center">{search.user_address}</td>
+                  <td className="text-center">{search.user_area}</td>
                   <td className="text-center">{search.employment_type}</td>
                   <td className="text-center">{`${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}`}</td>
                   <td className="text-center">{search.daily_price}</td>
