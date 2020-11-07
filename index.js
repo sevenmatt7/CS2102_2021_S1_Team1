@@ -15,13 +15,13 @@ app.use(express.json());
 if (process.env.NODE_ENV === "production") {
     // when on heroku, it will just serve the pages generated, found in client/build
     app.use(express.static(path.join(__dirname, "client/build")))
-    app.get('/', function(req, res) {
-        return res.sendFile(path.resolve( __dirname, 'client/build' , 'index.html'));
+    app.get('/', function (req, res) {
+        return res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
     });
-    app.get('/c/*', function(req, res) {
-        return res.sendFile(path.resolve( __dirname, 'client/build' , 'index.html'));
+    app.get('/c/*', function (req, res) {
+        return res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
     });
-    
+
 }
 
 function parseDate(raw_date) {
@@ -288,10 +288,10 @@ app.get("/PCSTable", async (req, res) => {
 app.get("/PCSTableFilter", async (req, res) => {
     try {
         let month = req.query.month;
-        month = new Date('2020', month-1, 1);
+        month = new Date('2020', month - 1, 1);
         const searches = await pool.query("SELECT caretaker_email, full_name, employment_type,\
                                                       avg_rating, total_pet_days, total_salary \
-                                              FROM calc_salary_for_all_for_a_month($1)",[month]);
+                                              FROM calc_salary_for_all_for_a_month($1)", [month]);
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -481,14 +481,14 @@ app.get("/filtersalary", async (req, res) => {
     try {
         let caretaker_email;
         let month = req.query.month;
-        month = new Date('2020', month-1, 1);
+        month = new Date('2020', month - 1, 1);
         if (req.query.caretaker_email.indexOf("@") === -1) {
             let jwtToken = req.query.caretaker_email;
             caretaker_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;;
         } else {
             caretaker_email = req.query.caretaker_email;
         }
-        
+
         const searches = await pool.query("SELECT salary, pet_days \
                                              FROM calc_monthly_salary($1, $2) \
                                              AS (salary NUMERIC, pet_days NUMERIC);", [caretaker_email, month]);
@@ -643,12 +643,12 @@ app.post("/takeleave", async (req, res) => {
         const price_result = await pool.query("SELECT daily_price FROM Offers_services \
                                             WHERE caretaker_email = $1 AND is_avail = 't' \
                                             LIMIT 1", [user_email]);
-        
+
         const base_price = price_result.rows[0]['daily_price'];
-        
+
         const pet_types = await pool.query("SELECT type_pref FROM Offers_services WHERE caretaker_email = $1 \
                                             AND is_avail = 't'", [user_email]);
-        
+
         // parse the result of the check_for_leave function from database
         const raw_leave_details = applyLeave.rows[0]['check_for_leave']
         const leave_details = raw_leave_details.slice(raw_leave_details.indexOf('(') + 1, raw_leave_details.indexOf(')')).split(',')
@@ -664,12 +664,12 @@ app.post("/takeleave", async (req, res) => {
         // console.log("start avail 2: " + avail_from2)
         // console.log("start avail end 2: " + avail_to2)
         // console.log(leave_duration);
-        
+
         //make the old availability set to is_avail = 'False'
         pool.query("UPDATE Offers_services SET is_avail = 'f' \
                     WHERE caretaker_email = $1 AND service_avail_from <= $2 AND \
                     service_avail_to >= $3 AND is_avail = 't'",
-                    [user_email, apply_leave_from, apply_leave_to]);
+            [user_email, apply_leave_from, apply_leave_to]);
 
         // insert new availabilities for every pet type that the caretaker takes care of
         if (avail_from1 === avail_to1 & avail_from2 === avail_to1) {
@@ -681,7 +681,7 @@ app.post("/takeleave", async (req, res) => {
                     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
                     [user_email, "fulltime", avail_from2, avail_to2, pet_types.rows[i]['type_pref'], base_price]);
             }
-            
+
         } else if (avail_from2 == avail_to2 && avail_from2 === avail_to1) {
             // case 4: leave ends at the end of the availability period and only lasts one day, need to check whether it spills over to the next year
             // case 5: leave ends at the end of the availability period and lasts multiple days, only insert the first availability
@@ -700,7 +700,7 @@ app.post("/takeleave", async (req, res) => {
                     [user_email, "fulltime", avail_from1, avail_to1, pet_types.rows[i]['type_pref'], base_price, avail_from2, avail_to2]);
             }
         }
-        
+
         res.json("Done");
     } catch (err) {
         console.error(err.message);

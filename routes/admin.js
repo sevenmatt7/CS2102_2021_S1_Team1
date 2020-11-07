@@ -56,8 +56,20 @@ router.get("/stats", async (req, res) => {
     try {
         const jwtToken = req.header("token")
         const caretakers = await pool.query("SELECT COUNT(*), employment_type FROM Caretakers GROUP BY employment_type");
-        const owners = await pool.query("SELECT COUNT(*), pet_type FROM Petowners NATURAL JOIN Owns_pets GROUP BY pet_type");
-        res.json({ caretaker: caretakers.rows, owner: owners.rows });
+        const owners = await pool.query("SELECT q4.pet_type, q4.count, q3.sum \
+                                            FROM (SELECT COUNT(DISTINCT p.owner_email) AS sum FROM petowners p) AS q3, \
+                                                (SELECT c.pet_type AS pet_type, COUNT(q1.pet_type) AS COUNT \
+                                                    FROM Categories C, \
+                                                        (SELECT owner_email, pet_type FROM Owns_Pets GROUP BY owner_email, pet_type) AS q1 \
+                                                    WHERE c.pet_type = q1.pet_type \
+                                                    GROUP BY c.pet_type, q1.pet_type) AS q4;")
+        const petownerDistribution = await pool.query("SELECT user_area, COUNT(*) \
+                                                        FROM users INNER JOIN petowners ON users.email = petowners.owner_email \
+                                                        GROUP BY user_area;")
+        const caretakerDistribution = await pool.query("SELECT user_area, COUNT(*) \
+                                                        FROM users INNER JOIN caretakers ON users.email = caretakers.caretaker_email \
+                                                        GROUP BY user_area;")
+        res.json({ caretaker: caretakers.rows, owner: owners.rows, petownerDistribution: petownerDistribution.rows, caretakerDistribution: caretakerDistribution.rows });
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");

@@ -13,15 +13,15 @@ const PetOwner = () => {
 
     const getProfile = async () => {
         try {
-          const res = await fetch("/home/", {
-            method: "GET",
-            headers: { token: localStorage.token }
-          });
-    
-          const jsonData = await res.json();
-          setName(jsonData.full_name);
+            const res = await fetch("/home/", {
+                method: "GET",
+                headers: { token: localStorage.token }
+            });
+
+            const jsonData = await res.json();
+            setName(jsonData.full_name);
         } catch (err) {
-          console.error(err.message);
+            console.error(err.message);
         }
     };
 
@@ -198,32 +198,32 @@ const PetOwner = () => {
 
                     {/* Pet information */}
                     <div class="tab-pane fade" id="pets" role="tabpanel" aria-labelledby="pets-tab">
-                        <div className="row">
-                            <div className="card-deck">
-                                {searches.map((search, i) => (
-                                    
-                                        <div key={i} className="card mb-3">
-                                            <div className="row no-gutters">
-                                                <div className="col-md-4">
-                                                    <img src={imposter} alt="" className="card-img" />
-                                                </div>
-                                                <div className="card-text col-md-8">
-                                                    <div className="card-body">
-                                                        <h5 className="card-title ml-2"> {search.pet_name}</h5>
-                                                        <p className="card-text">Gender: {search.gender}</p>
-                                                        <p className="card-text">Pet Type: {search.pet_type}</p>
-                                                        <p className="card-text">Special Requirement: {search.special_req}</p>
-                                                        <EditPet search={search} i={i}/>
-                                                        <button className="btn btn-danger ml-1"
-                                                            onClick={() => deletePet(search.pet_name)}>Delete</button>
-                                                    </div>
+
+                        <div className="card-deck">
+                            {searches.map((search, i) => (
+                                <div className="row">
+                                    <div key={i} className="card mb-3">
+                                        <div className="row no-gutters">
+                                            <div className="col-md-4">
+                                                <img src={imposter} alt="" className="card-img" />
+                                            </div>
+                                            <div className="card-text col-md-8">
+                                                <div className="card-body">
+                                                    <h5 className="card-title ml-2"> {search.pet_name}</h5>
+                                                    <p className="card-text">Gender: {search.gender}</p>
+                                                    <p className="card-text">Pet Type: {search.pet_type}</p>
+                                                    <p className="card-text">Special Requirement: {search.special_req}</p>
+                                                    <EditPet search={search} i={i} />
+                                                    <button className="btn btn-danger ml-1"
+                                                        onClick={() => deletePet(search.pet_name)}>Delete</button>
                                                 </div>
                                             </div>
-
                                         </div>
-                                    
-                                ))}
-                            </div>
+
+                                    </div>
+                                </div>
+                            ))}
+
 
                         </div>
                     </div>
