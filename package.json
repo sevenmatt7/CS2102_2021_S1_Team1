@@ -17,6 +17,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "markdown-pdf": "^10.0.0",
     "node-pre-gyp": "^0.16.0",
     "nodemon": "^2.0.6",
     "pg": "^8.4.0"

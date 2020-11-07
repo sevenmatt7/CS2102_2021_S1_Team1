@@ -514,7 +514,7 @@ app.get("/commission", async (req, res) => {
                                                     td.caretaker_email as caretaker_email, \
                                                     td.cost*SUM(td.duration_to::date-td.duration_from::date+1)*0.25 AS commission \
                                                FROM manages m JOIN transactions_details td ON m.caretaker_email=td.caretaker_email \
-                                            WHERE td.employment_type='parttime' AND td.t_status>= 3 \
+                                            WHERE td.employment_type='parttime' AND td.t_status >= 3 \
                                             GROUP BY m.admin_email, td.caretaker_email, td.cost, td.duration_from, td.duration_to) AS m2 \
                                             WHERE m1.admin_email=m2.admin_email AND m1.admin_email=$1\
                                             GROUP BY m1.admin_email", [admin_email]);
@@ -659,11 +659,11 @@ app.post("/takeleave", async (req, res) => {
         const leave_duration = leave_details[4];
 
         // used to debug
-        // console.log("start avail 1: " + avail_from1)
-        // console.log("start avail end 1: " + avail_to1)
-        // console.log("start avail 2: " + avail_from2)
-        // console.log("start avail end 2: " + avail_to2)
-        // console.log(leave_duration);
+        console.log("start avail 1: " + avail_from1)
+        console.log("start avail end 1: " + avail_to1)
+        console.log("start avail 2: " + avail_from2)
+        console.log("start avail end 2: " + avail_to2)
+        console.log(leave_duration);
 
         //make the old availability set to is_avail = 'False'
         pool.query("UPDATE Offers_services SET is_avail = 'f' \
@@ -685,6 +685,14 @@ app.post("/takeleave", async (req, res) => {
         } else if (avail_from2 == avail_to2 && avail_from2 === avail_to1) {
             // case 4: leave ends at the end of the availability period and only lasts one day, need to check whether it spills over to the next year
             // case 5: leave ends at the end of the availability period and lasts multiple days, only insert the first availability
+            for (i = 0; i < pet_types.rows.length; i++) {
+                pool.query(
+                    "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+                    [user_email, "fulltime", avail_from1, avail_to1, pet_types.rows[i]['type_pref'], base_price]);
+            }
+        } else if (avail_from2.slice(0, 4) === String(parseInt(avail_to1.slice(0, 4)) + 1)) {
+            // if the second availability is for the next year, only insert the current availability
             for (i = 0; i < pet_types.rows.length; i++) {
                 pool.query(
                     "INSERT INTO Offers_Services (caretaker_email, employment_type, service_avail_from, service_avail_to, type_pref, daily_price) \
