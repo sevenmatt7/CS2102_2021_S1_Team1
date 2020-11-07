@@ -78,11 +78,6 @@ const PCSAdmin = () => {
     }
   };
 
-  const getCurrBasePrice = () => {
-    if (managed.length === 0) return null
-    return managed[0].base_price
-  }
-
   const changeBasePrice = async (e) => {
     try {
       console.log(baseprice)
@@ -432,7 +427,7 @@ const PCSAdmin = () => {
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">Caretakers under management</h4>
-                    <p>Base price/day: {getCurrBasePrice()}</p>
+
                     <div className="input-group mb-3">
                       <input type="text"
                         pattern="[0-9]*"
@@ -470,6 +465,7 @@ const PCSAdmin = () => {
                               <div className="col-10">
                                 <h5>Name: {caretaker.full_name}</h5>
                                 <p>Rating: {caretaker.avg_rating.slice(0, 3)}</p>
+                                {caretaker.employment_type === 'fulltime' && <p>Base price/day: ${caretaker.base_price}</p>}
                               </div>
                               <div className="col-2">
                                 <ViewReviews search={caretaker} i={i} />
