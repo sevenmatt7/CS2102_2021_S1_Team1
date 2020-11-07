@@ -13,11 +13,17 @@ router.get("/caretakers", async (req, res) => {
         // get user_email from jwt token
         const jwtToken = req.header("token")
         const admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        const searches = await pool.query("SELECT DISTINCT full_name, avg_rating, Caretakers.caretaker_email, employment_type, base_price \
-                                            FROM Manages LEFT JOIN Users ON Manages.caretaker_email = Users.email \
-                                            LEFT JOIN Caretakers ON users.email = Caretakers.caretaker_email \
-                                            WHERE admin_email = $1", [admin_email]
-                                            );
+        const emp_type = req.query.employment_type;
+        let query = "SELECT DISTINCT full_name, avg_rating, Caretakers.caretaker_email, employment_type, base_price \
+                    FROM Manages LEFT JOIN Users ON Manages.caretaker_email = Users.email \
+                    LEFT JOIN Caretakers ON users.email = Caretakers.caretaker_email \
+                    WHERE admin_email = $1";
+        if (emp_type === 'fulltime') {
+            query += "AND employment_type = 'fulltime'"
+        } else if (emp_type === 'parttime') {
+            query += "AND employment_type = 'parttime'"
+        }
+        const searches = await pool.query(query, [admin_email]);
         res.json(searches.rows);
     } catch (error) {
         console.log(error.message)
@@ -36,7 +42,7 @@ router.put("/changeprice", async (req, res) => {
             "UPDATE Manages SET base_price = $1\
             WHERE admin_email = $2 RETURNING *" ,
             [baseprice, admin_email]);
-        
+
         res.json(data.rows[0]);
 
     } catch (err) {
@@ -51,7 +57,7 @@ router.get("/stats", async (req, res) => {
         const jwtToken = req.header("token")
         const caretakers = await pool.query("SELECT COUNT(*), employment_type FROM Caretakers GROUP BY employment_type");
         const owners = await pool.query("SELECT COUNT(*), pet_type FROM Petowners NATURAL JOIN Owns_pets GROUP BY pet_type");
-        res.json({caretaker: caretakers.rows, owner: owners.rows});
+        res.json({ caretaker: caretakers.rows, owner: owners.rows });
     } catch (err) {
         console.error(err.message);
         res.status(500).send("A server error has been encountered");
