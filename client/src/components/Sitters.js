@@ -38,7 +38,7 @@ const Sitters = ({ setAuth }) => {
     let date_tokens = date_string.split(" ");
     return `${date_tokens[3]}-${parseMonth(date_tokens[1])}-${date_tokens[2]}`;
   }
-  
+
   var starting = document.getElementById("from");
   var ending = document.getElementById("to");
   if (starting) {
@@ -273,7 +273,7 @@ const Sitters = ({ setAuth }) => {
                   <td className="text-center">{`${new Date(search.service_avail_from).toDateString()} - ${new Date(search.service_avail_to).toDateString()}`}</td>
                   <td className="text-center">{search.daily_price}</td>
                   <td className="text-center">{search.type_pref}</td>
-                  <td className="text-center">{search.avg_rating.slice(0, 3)}</td>
+                  <td className="text-center">{search.avg_rating}</td>
                   <td className="text-center">
                     <RequestService search={search} i={i} />
                   </td>

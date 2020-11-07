@@ -257,7 +257,7 @@ app.get("/caretakers", async (req, res) => {
     var currDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split("T")[0]
     try {
         const searches = await pool.query(`SELECT DISTINCT full_name, user_address, profile_pic_address,\
-                                            avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
+                                            ROUND(avg_rating, 2) avg_rating, Caretakers.caretaker_email, offers_services.employment_type, \
                                             type_pref, service_avail_from, service_avail_to, daily_price \
                                             FROM Offers_services \
                                             LEFT JOIN Users \
@@ -533,8 +533,8 @@ app.get("/caretakersq", async (req, res) => {
     try {
         const jwtToken = req.header("token");
         const user_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        var sql = `SELECT DISTINCT full_name, user_address, profile_pic_address\
-        avg_rating, service_avail_from, service_avail_to, Caretakers.caretaker_email, Caretakers.employment_type, \
+        var sql = `SELECT DISTINCT full_name, user_address, profile_pic_address, \
+        ROUND(avg_rating, 2) avg_rating, service_avail_from, service_avail_to, Caretakers.caretaker_email, Caretakers.employment_type, \
         type_pref, daily_price, Users.user_area\
         FROM Offers_services \
         LEFT JOIN Users \
