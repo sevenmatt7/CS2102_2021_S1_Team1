@@ -78,6 +78,11 @@ const PCSAdmin = () => {
     }
   };
 
+  const getCurrBasePrice = () => {
+    if (managed.length === 0) return null
+    return managed[0].base_price
+  }
+
   const changeBasePrice = async (e) => {
     try {
       console.log(baseprice)
@@ -427,6 +432,7 @@ const PCSAdmin = () => {
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">Caretakers under management</h4>
+                    <p>Base price/day: {getCurrBasePrice()}</p>
                     <div className="input-group mb-3">
                       <input type="text"
                         pattern="[0-9]*"
@@ -461,10 +467,9 @@ const PCSAdmin = () => {
                         <div key={i} className="card mb-3">
                           <div className="card-body">
                             <div className="row">
-                              <div className="col-9">
+                              <div className="col-10">
                                 <h5>Name: {caretaker.full_name}</h5>
                                 <p>Rating: {caretaker.avg_rating.slice(0, 3)}</p>
-                                <p>Base price/day: ${caretaker.base_price}</p>
                               </div>
                               <div className="col-2">
                                 <ViewReviews search={caretaker} i={i} />
@@ -494,9 +499,9 @@ const PCSAdmin = () => {
                   <div className="card-body ">
                     <div className="overflow-auto" Style="max-height: 457px;">
                       {
-                        underPerformingCaretakers.map(attributes => (
+                        underPerformingCaretakers.map((attributes, i) => (
 
-                          <div className="card border-danger">
+                          <div key={i} className="card border-danger">
                             <div className="card-header ">
                               <h5>Caretaker: {attributes.split(',')[0]}</h5>
                             </div>
