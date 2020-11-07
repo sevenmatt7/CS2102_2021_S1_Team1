@@ -460,48 +460,32 @@ This function will return a table containing all new_service_avail_from1, new_se
 
 ```sql
 -- function to check if full time caretaker can take leave
-DROP FUNCTION IF EXISTS check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE);
-CREATE OR REPLACE FUNCTION check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE)
-RETURNS TABLE (new_service_avail_from1 DATE,
-			    new_service_avail_to1 DATE,
-				new_service_avail_from2 DATE,
-				new_service_avail_to2 DATE,
-				leave_duration INTEGER) AS $$
+CREATE OR REPLACE FUNCTION check_for_leave(input_email VARCHAR, leave_start DATE, leave_end DATE) RETURNS TABLE (new_service_avail_from1 DATE, new_service_avail_to1 DATE, new_service_avail_from2 DATE, new_service_avail_to2 DATE, leave_duration INTEGER) AS $$
 	DECLARE
-		old_service_avail_from DATE;
-		old_service_avail_to DATE;
-		previous_150_start DATE;
-		previous_150_end DATE;
-		new_service_avail_to_1 DATE;
-		new_service_avail_from_2 DATE;
+		old_service_avail_from DATE; old_service_avail_to DATE; prev_150_start DATE;
+		prev_150_end DATE; new_service_avail_to_1 DATE; new_service_avail_from_2 DATE;
 		leave_period INTEGER;
 	BEGIN
-		-- Check for valid input
+		-- Check if the leave period specified is valid, if not just return exception
 		IF leave_end < leave_start THEN
 			RAISE EXCEPTION 'You cannot take leave during this period!';
 		END IF;
 
-		-- First, get the service period of the caretaker that contains the leave period from the Offers_services table
-		SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to
-		FROM Offers_Services
-		WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to AND is_avail = 't';
+		-- First, get the service period of the caretaker that CONTAINS the leave period from the Offers_services table
+SELECT service_avail_from, service_avail_to INTO old_service_avail_from, old_service_avail_to FROM Offers_Services WHERE caretaker_email = input_email AND leave_start >= service_avail_from AND leave_end <= service_avail_to AND is_avail = 't';
 
-		-- Then, check if there are any transactions accepted within the leave period, if yes return 0
-		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND
-			service_avail_from = old_service_avail_from AND service_avail_to = old_service_avail_to AND
-			leave_start >= duration_from AND leave_end <= duration_to AND t_status = 3) > 0 THEN
+		-- Then, check if there are any transactions accepted within the leave period, if yes return exception since you cannot take leave when you are taking care of a pet
+		IF (SELECT COUNT(*) FROM Transactions_Details WHERE caretaker_email = input_email AND service_avail_from = old_service_avail_from AND service_avail_to = old_service_avail_to AND leave_start >= duration_from AND leave_end <= duration_to AND t_status = 3) > 0 THEN
 			RAISE EXCEPTION 'You cannot take leave during this period!';
 		END IF;
 
-		-- proceed to check whether the caretaker has already had a 150 consecutive day period IN THE SAME YEAR
-		-- if they do not have a 150 day period served,
-		SELECT service_avail_from, service_avail_to INTO previous_150_start, previous_150_end
-		FROM Offers_services WHERE caretaker_email = input_email AND (service_avail_to - service_avail_from >= 150)
-		AND service_avail_to < old_service_avail_from;
+		-- Check whether the caretaker has already had a 150 consecutive day period IN THE SAME YEAR. If they do, assign these values to the variables to be checked later
+		SELECT service_avail_from, service_avail_to INTO prev_150_start, prev_150_end FROM Offers_services WHERE caretaker_email = input_email AND (service_avail_to - service_avail_from >= 150) AND service_avail_to < old_service_avail_from;
 
-		-- check if the previous 150 day shift was completed in the same year. If not, return false
-		IF (SELECT extract(year from previous_150_end)) != (SELECT extract(year from old_service_avail_from)) THEN
-			RAISE EXCEPTION 'You cannot take leave during this period!';
+		-- check if the previous 150 day shift was completed in the same year. If it is not, invalidate the variables containing the dates of the 150 day shift so OVERLAPS will always be true
+ 		IF (SELECT extract(year from prev_150_end)) != (SELECT extract(year from old_service_avail_from)) THEN
+			prev_150_start := old_service_avail_from;
+			prev_150_end := old_service_avail_to;
 		END IF;
 
 		leave_period := leave_end - leave_start + 1;
@@ -513,61 +497,18 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 			new_service_avail_to_1 := old_service_avail_from;
 		END IF;
 
-		-- case when end of leave ==  service_avail_to date (e.g 31/10/2020 end leave and 31/10/2020 end availability)
+		-- case when end of leave == service_avail_to date (e.g 31/10/2020 end leave and 31/10/2020 end availability)
 		IF (leave_end = old_service_avail_to) THEN
 			new_service_avail_from_2 := old_service_avail_to;
 		END IF;
 
-		-- check whether the previous 150 day shift has an overlap with the current one we are looking at
-		IF (previous_150_start, previous_150_end) OVERLAPS (old_service_avail_from, old_service_avail_to)  THEN
-			RAISE EXCEPTION 'You cannot take leave during this period!';
-		END IF;
-
+-- check whether the previous 150 day shift has an overlap with the current one we are looking at using the OVERLAP operator, 
+-- if there is an overlap, we need to check whether the curr availability period >= 300 days after subtracting the leave period
+		IF (prev_150_start, prev_150_end+1) OVERLAPS (old_service_avail_from, old_service_avail_to)  THEN	
         -- check if the curr period has at least 300 days since we need to split up into 2 consecutive 150 days
-		IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
-			-- if can split up, return true
-			IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
-				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
-				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
-					old_service_avail_from := old_service_avail_from + 1;
-					new_service_avail_to_1 := new_service_avail_to_1 + 1;
-				END IF;
-
-				IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
-					old_service_avail_to := old_service_avail_to + 1;
-					new_service_avail_from_2 := new_service_avail_from_2 + 1;
-				END IF;
-
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
-
-
-			ELSIF (leave_start - old_service_avail_from > 300 OR old_service_avail_to - leave_end > 300) THEN
-				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
-				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
-				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
-					old_service_avail_from := old_service_avail_from + 1;
-					new_service_avail_to_1 := new_service_avail_to_1 + 1;
-				END IF;
-
-				IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
-					old_service_avail_to := old_service_avail_to + 1;
-					new_service_avail_from_2 := new_service_avail_from_2 + 1;
-				END IF;
-
-				RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-				new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
-
-			ELSE
-				RAISE EXCEPTION 'You cannot take leave during this period!';
-			END IF;
-
-		-- this means that there was already a 150 day consecutive period worked in the past
-		ELSE
-			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
-				-- if can split up, return true
-				IF (leave_start - old_service_avail_from > 150 OR old_service_avail_to - leave_end > 150) THEN
+			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 300) THEN
+				-- this is the case when the leave period is in the middle of the availability, need to split up into 2 new availabilities
+				IF (leave_start - old_service_avail_from > 150 AND old_service_avail_to - leave_end > 150) THEN
 					-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
 					-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
 					IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
@@ -580,12 +521,48 @@ RETURNS TABLE (new_service_avail_from1 DATE,
 						new_service_avail_from_2 := new_service_avail_from_2 + 1;
 					END IF;
 
-					RETURN QUERY SELECT old_service_avail_from::DATE AS new_service_avail_from1, new_service_avail_to_1::DATE AS new_service_avail_to1,
-					new_service_avail_from_2::DATE AS new_service_avail_from2, old_service_avail_to::DATE AS new_service_avail_to2, leave_period AS leave_duration;
-                ELSE
-                    RAISE EXCEPTION 'You cannot take leave during this period!';
+					RETURN QUERY SELECT old_service_avail_from AS new_service_avail_from1, new_service_avail_to_1 AS new_service_avail_to1,
+					new_service_avail_from_2 AS new_service_avail_from2, old_service_avail_to AS new_service_avail_to2, leave_period AS leave_duration;
+
+				ELSE -- when the leave near the start or the end of the availibility period
+					-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+					-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+					IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
+						old_service_avail_from := old_service_avail_from + 1;
+						new_service_avail_to_1 := new_service_avail_to_1 + 1;
+					END IF;
+
+					IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
+						old_service_avail_to := old_service_avail_to + 1;
+						new_service_avail_from_2 := new_service_avail_from_2 + 1;
+					END IF;
+
+					RETURN QUERY SELECT old_service_avail_from AS new_service_avail_from1, new_service_avail_to_1 AS new_service_avail_to1,
+					new_service_avail_from_2 AS new_service_avail_from2, old_service_avail_to AS new_service_avail_to2, leave_period AS leave_duration;
 				END IF;
-			ELSE-- if cannot split up to 150 days, return false
+			ELSE 
+				RAISE EXCEPTION 'You cannot take leave during this period!';
+			END IF;
+		-- this ELSE means that there was already a 150 day consecutive period worked in the past in the same year by the caretaker, so just look for another 150 consecutive days
+		ELSE
+			IF (old_service_avail_to - old_service_avail_from - (leave_end - leave_start) > 150) THEN
+				-- if can split up, return true
+
+				-- this is when the date that the caretaker wants to take leave on is on the same day the availability starts when he takes a one day leave
+				-- so need to add 1 day to the date (e.g availability starts on 1/1/2020 so the new availability should start on 2/1/2020)
+				IF (old_service_avail_from = leave_start AND leave_period = 1) THEN
+					old_service_avail_from := old_service_avail_from + 1;
+					new_service_avail_to_1 := new_service_avail_to_1 + 1;
+				END IF;
+
+				IF (old_service_avail_to = leave_end AND leave_period = 1) THEN
+					old_service_avail_to := old_service_avail_to + 1;
+					new_service_avail_from_2 := new_service_avail_from_2 + 1;
+				END IF;
+
+				RETURN QUERY SELECT old_service_avail_from AS new_service_avail_from1, new_service_avail_to_1 AS new_service_avail_to1,
+				new_service_avail_from_2 AS new_service_avail_from2, old_service_avail_to AS new_service_avail_to2, leave_period AS leave_duration;
+			ELSE -- if less then 150 days, return false
 				RAISE EXCEPTION 'You cannot take leave during this period!';
 			END IF;
 		END IF;
