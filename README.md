@@ -6,11 +6,6 @@
 - [Getting Started](#getting_started)
 - [Built Using](#built_using)
 - [Acknowledgments](#acknowledgement)
-- [Project Report](#project_report)
-<!-- - [Deployment](#deployment)
--   [Usage](#usage)
--   [TODO](../TODO.md)
--   [Contributing](../CONTRIBUTING.md) -->
 
 ## 👨‍💻  Team <a name = "info"></a>
 - Matthew Nathanael Sugiri *A0183805B*
@@ -20,7 +15,8 @@
 - Glen Wong *A0188100N*
 
 ## 🧐 About <a name = "about"></a>
-Please find the preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/Final_ER_Diagram.pdf)
+THE WEBSITE IS LIVE AT [https://petsocietyof2102.herokuapp.com/] (https://petsocietyof2102.herokuapp.com/)
+Please find the **project report** [here] (https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/CS2102%20Team%201%20Final%20Project%20Report.pdf), preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/Final_ER_Diagram.pdf)
 
  ## 🏁 Getting Started <a name = "getting_started"></a>
 The instructions below will help to get you set up to develop the project on your local machine.
@@ -102,9 +98,6 @@ Add additional notes about how to deploy this on a live system.
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 - README inspiration from [here](https://github.com/kylelobo/The-Documentation-Compendium)
-
-## 📖 Project Report <a name = "project_report"></a>
-- The Project Report can be found [here](proj_docs/projectReport.md)
 
 <!-- ## Available Scripts
 
