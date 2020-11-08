@@ -56,6 +56,7 @@ const PCSAdmin = () => {
   })
 
   const [managed, setManagedCaretakers] = useState([])
+  const [managedFilter, setManagedCaretakersFilter] = useState('All')
   const [baseprice, setBasePrice] = useState();
 
   const onChange = (e) => {
@@ -64,7 +65,9 @@ const PCSAdmin = () => {
 
   const getManagedCareTakers = async () => {
     try {
-      const res = await fetch("/admin/caretakers", {
+      const res = await fetch("/admin/caretakers?" + new URLSearchParams({
+        employment_type: managedFilter
+      }), {
         method: "GET",
         headers: { token: localStorage.token }
       });
@@ -279,9 +282,12 @@ const PCSAdmin = () => {
 
   useEffect(() => {
     getCurrMonthYear()
-    getManagedCareTakers()
     getunderPerformingCaretakers()
   }, [])
+
+  useEffect(() => {
+    getManagedCareTakers()
+  }, [managedFilter])
 
   useEffect(() => {
     getLineData()
@@ -323,7 +329,7 @@ const PCSAdmin = () => {
                 }
               </select>
             </div>
-            
+
             <div className="row">
               <PCSCommission />
             </div>
@@ -411,7 +417,7 @@ const PCSAdmin = () => {
             </div>
 
             <div className="row">
-              
+
             </div>
 
 
@@ -421,39 +427,53 @@ const PCSAdmin = () => {
                 <div className="card ">
                   <div className="card-header ">
                     <h4 className="card-title">Caretakers under management</h4>
-                    <div className="input-group mb-3">
 
+                    <div className="input-group mb-3">
                       <input type="text"
-                       pattern="[0-9]*"
-                       name="baseprice"
-                       placeholder="Enter base price here to change"
-                       className="form-control"
-                      value={baseprice}
-                      onChange={e => onChange(e)} />
-                    <div className="input-group-append">
-                      <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
+                        pattern="[0-9]*"
+                        name="baseprice"
+                        placeholder="Enter base price here to change"
+                        className="form-control"
+                        value={baseprice}
+                        onChange={e => onChange(e)} />
+                      <div className="input-group-append">
+                        <button className="btn btn-warning" type="button" onClick={e => changeBasePrice(e)}>Change</button>
+                      </div>
                     </div>
+                    <div className="input-group mb-3">
+                      <div className="input-group-prepend">
+                        <label className="input-group-text" htmlFor="managedDisplayed">Employment Type</label>
+                      </div>
+                      <select
+                        className="form-control"
+                        value={managedFilter}
+                        onChange={e => setManagedCaretakersFilter(e.target.value)}
+                      >
+                        <option key="1" value="All">All</option>
+                        <option key="2" value="fulltime">Full-Timers</option>
+                        <option key="3" value="parttime">Part-Timers</option>
+                      </select>
                     </div>
                   </div>
-                  
+
                   <div className="card-body">
                     <div className="overflow-auto" Style="max-height: 400px;" >
-                    {managed.map((caretaker, i) => (
-                      <div key={i} className="card mb-3">
-                        <div className="card-body">
-                          <div className = "row">
-                          <div className="col-10">
-                          <h5>Name: {caretaker.full_name}</h5>
-                          <p>Rating: {caretaker.avg_rating.slice(0,3)}</p>
-                          <p>Base price/day: ${caretaker.base_price}</p>
+                      {managed.map((caretaker, i) => (
+                        <div key={i} className="card mb-3">
+                          <div className="card-body">
+                            <div className="row">
+                              <div className="col-10">
+                                <h5>Name: {caretaker.full_name}</h5>
+                                <p>Rating: {caretaker.avg_rating.slice(0, 3)}</p>
+                                {caretaker.employment_type === 'fulltime' && <p>Base price/day: ${caretaker.base_price}</p>}
+                              </div>
+                              <div className="col-2">
+                                <ViewReviews search={caretaker} i={i} />
+                              </div>
+                            </div>
                           </div>
-                          <div className="col-2">
-                            <ViewReviews search={caretaker} i={i} />
-                          </div>
-                          </div>
-                        </div>
-                      </div>)
-                    )}
+                        </div>)
+                      )}
                     </div>
                   </div>
                   <div className="card-footer ">
@@ -475,9 +495,9 @@ const PCSAdmin = () => {
                   <div className="card-body ">
                     <div className="overflow-auto" Style="max-height: 457px;">
                       {
-                        underPerformingCaretakers.map(attributes => (
+                        underPerformingCaretakers.map((attributes, i) => (
 
-                          <div className="card border-danger">
+                          <div key={i} className="card border-danger">
                             <div className="card-header ">
                               <h5>Caretaker: {attributes.split(',')[0]}</h5>
                             </div>
