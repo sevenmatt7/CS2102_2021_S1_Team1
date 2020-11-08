@@ -239,7 +239,7 @@ RETURNS TRIGGER AS $$
 		FROM Caretakers
 		WHERE caretaker_email = NEW.caretaker_email;
 		IF (emp_type = 'fulltime' AND reviews >= 10) THEN
-			IF (rating > 4.2 AND rating < 4.4 ) THEN
+			IF (rating > 4.0 AND rating < 4.2 ) THEN
 				new_price := 52;
 			ELSIF (rating > 4.2 AND rating < 4.4 ) THEN
 				new_price := 55;
@@ -276,7 +276,7 @@ RETURNS NUMERIC AS $$
 		base_price NUMERIC := 50;
 	BEGIN
 	-- if all admins are already in Manages (total participation achieved)
-      IF (SELECT admin_email FROM PCSAdmins EXCEPT SELECT admin_email FROM Manages) = 0     THEN
+      IF (SELECT admin_email FROM PCSAdmins EXCEPT SELECT admin_email FROM Manages) = 0 THEN
   			SELECT admin_email into assigned_admin
 			FROM PCSAdmins
 			ORDER BY RANDOM()
