@@ -3,8 +3,6 @@ import { toast } from "react-toastify";
 
 
 const RequestService = ({ search, i }) => {
-    
-    
 
     // const pet_type = search.type_pref;
     const caretaker_email = search.caretaker_email;
@@ -105,8 +103,7 @@ const RequestService = ({ search, i }) => {
             if (submittedData.duration_from) {
                 const start_date = submittedData.duration_from;
                 const end_date = submittedData.duration_to;
-                const successMessage = 'You have submitted your offer for ' + parseDate(start_date) + ' to ' +
-                                    parseDate(end_date) + '!';
+                const successMessage = 'You have submitted your offer!';
                 toast.success(successMessage);
             } else {
                 switch (submittedData) {
