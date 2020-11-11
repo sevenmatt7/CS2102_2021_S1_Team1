@@ -31,27 +31,31 @@ installed on your system
 
 ### Setting up and installing
 1. Clone the repo
-2. Run the command below inside both the **client** and **server** folder
+2. Run the command below inside both in the **/client** directory and the root directory.
 
 ```javascript
 npm install
 ```
 
-3. Go into the **server** folder and open your terminal and start up *psql* and log in as postgres using the command below
-```
+3. Start up your psql shell and then copy all the code from the **database.sql** file in the root directory
+and paste it in the shell to run the code to create the tables and functions for our schema.
+```sql
 psql -U postgres
 ```
-4. Enter your password (default password when you set up postgres) when prompted.
-5. Once inside the psql env, run the command below to initialise a local database.
+6. Create .env file in the root directory and fill it with the 4 variables listed below and assign the corresponding values to them
 ```
-\i database.sql
+jwtSecret
+PG_USER
+PG_HOST
+PG_PASSWORD
+PG_PORT
+PG_DATABASE
 ```
-6. Edit the **db.js** file in the server folder and change the password to whatever password you used to log in to psql
 
 ## Running the project
 
 ### Front end
-Make sure you are in the client folder and run the command below.
+Make sure you are in the **/client** directory and run the command below.
 ```javascript
 npm start // This will start the front end in development mode.
 ```
@@ -59,28 +63,9 @@ npm start // This will start the front end in development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### Back end
-Make sure you are in the server folder and run the command below.
+Make sure you are in the root directory and run the command below.
 ```javascript
 node index // Run nodemon dev server.
-```
-
-<!-- End with an example of getting some data out of the system or using it for a little demo.
-
-## 🔧 Running the tests <a name = "tests"></a>
-Explain how to run the automated tests for this system.
-
-### Break down into end to end tests
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-Explain what these tests test and why
-
-```
-Give an example
 ```
 
 ## 🎈 Usage <a name="usage"></a>
