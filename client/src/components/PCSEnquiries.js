@@ -10,10 +10,11 @@ const PCSEnquiries = () => {
 	const handleReply = async e => {
 		e.preventDefault();
 		try {
-			const answer = e.target[0].value
+			let answer = e.target[0].value
 			if (answer === '') {
-				toast.error("You have not replied!");
-				return
+				// toast.error("You have not replied!");
+				// return
+				answer = null
 			}
 			const { user_email, enq_message } = enquiries[currReply]
 			const body = { user_email, enq_message, answer }
@@ -31,6 +32,28 @@ const PCSEnquiries = () => {
 			window.location.reload(false)
 		} catch (err) {
 			console.error(err.message)
+		}
+	}
+
+	const handleDelete = async e => {
+		console.log("delete")
+		try {
+			const { user_email, enq_message } = enquiries[currReply]
+			const body = { user_email, enq_message }
+			const respone = await fetch(
+				"/deleteenquiry",
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						token: localStorage.token
+					},
+					body: JSON.stringify(body)
+				}
+			)
+			window.location.reload(false)
+		} catch (error) {
+			console.log(error.message)
 		}
 	}
 
@@ -83,7 +106,7 @@ const PCSEnquiries = () => {
 							<th scope="col" width={"13%"}>Date</th>
 							<th scope="col">Question</th>
 							<th scope="col">Reply</th>
-							<th scope="col" width={"5%"}>Action</th>
+							<th scope="col" width={"15%"}>Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -98,12 +121,15 @@ const PCSEnquiries = () => {
 									<td>{enquiry.answer}</td>
 									<td>
 										{/* <!-- Button trigger modal --> */}
-										{(enquiry.answer == null) && <button type="button" onClick={e => setCurrReply(index)} class="btn btn-danger" data-toggle="modal" data-target={`#staticBackdrop${index}`} >
+										{(enquiry.answer == null) && <button type="button" onClick={e => setCurrReply(index)} class="btn btn-warning" data-toggle="modal" data-target={`#staticBackdrop${index}`} >
 											Reply
 										</button>}
 										{enquiry.answer != null && <button type="button" onClick={e => setCurrReply(index)} class="btn btn-primary" data-toggle="modal" data-target={`#staticBackdrop${index}`} >
 											Edit
 										</button>}
+										<button type="button" onClick={e => setCurrReply(index)} class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+											Delete
+										</button>
 
 										{/* <!-- Modal --> */}
 										<div class="modal fade" id={`staticBackdrop${index}`} data-backdrop="static" data-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -128,6 +154,26 @@ const PCSEnquiries = () => {
 															<button type="submit" class="btn btn-primary">Submit</button>
 														</div>
 													</form>
+												</div>
+											</div>
+										</div>
+
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLabel">Deleting Enquiry...</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														Are you sure?
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+														<button type="button" onClick={handleDelete} class="btn btn-danger">Delete</button>
+													</div>
 												</div>
 											</div>
 										</div>
