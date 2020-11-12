@@ -240,14 +240,26 @@ app.put("/pcsanswer", async (req, res) => {
         const { user_email, enq_message, answer } = req.body
         const jwtToken = req.header("token")
         const admin_email = jwt.verify(jwtToken, process.env.jwtSecret).user.email;
-        const response = await pool.query(`UPDATE enquiries 
-                                            SET answer = '${answer}', 
-                                                admin_email = '${admin_email}' 
-                                            WHERE user_email = '${user_email}' 
-                                            AND enq_message = '${enq_message}'`)
+        const response = await pool.query("UPDATE enquiries \
+                                            SET answer = $1, admin_email = $2 \
+                                            WHERE user_email = $3 \
+                                            AND enq_message = $4", [answer, admin_email, user_email, enq_message])
         res.json(response.rows[0])
     } catch (err) {
         console.error(err.message)
+    }
+})
+
+// delete enquiry
+app.delete("/deleteenquiry", async (req, res) => {
+    try {
+        const { user_email, enq_message } = req.body
+        const response = await pool.query("DELETE FROM enquiries \
+                                            WHERE user_email = $1 \
+                                            AND enq_message = $2", [user_email, enq_message])
+        res.json(response.rows[0])
+    } catch (error) {
+        console.error(error.message)
     }
 })
 
