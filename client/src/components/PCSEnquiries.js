@@ -146,7 +146,7 @@ const PCSEnquiries = () => {
 															<div class="form-group">
 																<div>Question: {enquiry.enq_message}</div>
 																<br></br>
-																<textarea class="form-control" id={`exampleFormControlTextarea${index}`} rows="3" defaultValue={enquiry.answer}></textarea>
+																<textarea class="form-control" id={`exampleFormControlTextarea${index}`} rows="3"></textarea>
 															</div>
 														</div>
 														<div class="modal-footer">
