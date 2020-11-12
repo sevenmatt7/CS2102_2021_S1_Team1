@@ -215,13 +215,11 @@ app.get("/pcsenquiries", async (req, res) => {
         if (filter === 'Pending') {
             query = "SELECT user_email, enq_type, submission, enq_message, answer \
                         FROM enquiries \
-                        WHERE enquiries.answer IS NULL \
-                        AND enquiries.admin_email IS NULL"
+                        WHERE enquiries.answer IS NULL "
         } else if (filter === 'Replied') {
             query = "SELECT user_email, enq_type, submission, enq_message, answer \
                         FROM enquiries \
-                        WHERE enquiries.answer IS NOT NULL \
-                        AND enquiries.admin_email IS NOT NULL"
+                        WHERE enquiries.answer IS NOT NULL"
         } else {
             query = "SELECT user_email, enq_type, submission, enq_message, answer \
                         FROM enquiries"
