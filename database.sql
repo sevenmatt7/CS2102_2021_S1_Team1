@@ -276,7 +276,7 @@ RETURNS NUMERIC AS $$
 		base_price NUMERIC := 50;
 	BEGIN
 	-- if all admins are already in Manages (total participation achieved)
-      IF (SELECT admin_email FROM PCSAdmins EXCEPT SELECT admin_email FROM Manages) = 0 THEN
+      IF (SELECT COUNT(q) FROM (SELECT admin_email FROM PCSAdmins EXCEPT SELECT admin_email FROM Manages) AS q) = 0 THEN
   			SELECT admin_email into assigned_admin
 			FROM PCSAdmins
 			ORDER BY RANDOM()
@@ -312,6 +312,11 @@ CREATE OR REPLACE FUNCTION check_for_leave(input_email VARCHAR, leave_start DATE
 	BEGIN
 		-- Check if the leave period specified is valid, if not just return exception
 		IF leave_end < leave_start THEN
+			RAISE EXCEPTION 'You cannot take leave during this period!';
+		END IF;
+
+		-- Check if the leave period specified is valid, if not just return exception
+		IF leave_end - leave_start >= 65 THEN
 			RAISE EXCEPTION 'You cannot take leave during this period!';
 		END IF;
 
