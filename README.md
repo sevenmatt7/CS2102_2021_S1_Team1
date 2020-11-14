@@ -16,7 +16,7 @@
 
 ## 🧐 About <a name = "about"></a>
 THE WEBSITE IS LIVE AT [AT THIS LINK!!!](https://petsocietyof2102.herokuapp.com/)
-Please find the **project report** [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/CS2102%20Team%201%20Final%20Project%20Report.pdf), preliminary constraints [here](proj_docs/prelim_constraints.md) and the ER diagram [here](proj_docs/Final_ER_Diagram.pdf)
+Please find the **project report** [here](https://github.com/sevenmatt7/CS2102_2021_S1_Team1/blob/master/CS2102%20Team%201%20Final%20Project%20Report.pdf), preliminary constraints [here](proj_docs/prelim_constraints.md), ER diagram [here](proj_docs/Final_ER_Diagram.pdf), and demo video here [here](https://drive.google.com/file/d/14qXJXF3xEZe_1SINtqJxCUHVRSwIEop5/view?usp=drivesdk)!
 
  ## 🏁 Getting Started <a name = "getting_started"></a>
 The instructions below will help to get you set up to develop the project on your local machine.
